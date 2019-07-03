@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PDFTemplate import PDFTemplate
+from pdflib.PDFTemplate import PDFTemplate
 
 
 def test_pdf():
