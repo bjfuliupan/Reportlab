@@ -148,6 +148,11 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
         if main_title_font_color is not None:
             self.titleMainFontColor = main_title_font_color
 
+        self.categoryAxis.labels.boxAnchor = 'ne'
+        self.categoryAxis.labels.dx = 0
+        self.categoryAxis.labels.dy = 0
+        self.categoryAxis.labels.angle = 30
+
     def get_limit_value(self, step_count):
         min_value = 0xffffffff
         max_value = 0 - min_value

@@ -55,8 +55,8 @@ class ReportLabBarChart(BarChart):
         self.data = data
         self.strokeColor = colors.black
         self.categoryAxis.labels.boxAnchor = 'ne'
-        self.categoryAxis.labels.dx = 8
-        self.categoryAxis.labels.dy = -2
+        self.categoryAxis.labels.dx = 0
+        self.categoryAxis.labels.dy = 0
         self.categoryAxis.labels.angle = 30
 
         cat_names_num = len(cat_names)

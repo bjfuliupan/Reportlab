@@ -1,55 +1,63 @@
 # -*- coding: utf-8 -*-
 
-from reportlab.graphics.shapes import *
-from reportlab.graphics import renderPDF
-
-from ReportLabLineCharts import ReportLabHorizontalLineChart
-from ReportLabBarCharts import ReportLabVerticalBarChart, ReportLabHorizontalBarChart
-from ReportLabPieCharts import ReportLabPieChart
+from PDFTemplate import PDFTemplate
 
 
-def drawSamplePDF():
-    drawing = Drawing(500, 1000)
+def test_pdf():
+    # 读取PDF模板文件
+    template = PDFTemplate.read_template("template1.xml")
+    if template is None:
+        print("读取模板文件失败！")
+        return
 
-    lc_cats1 = ["一月", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
-    lc_values1 = [(13, 5, 20, 22, 37, 45, 19, 4), (5, 20, 46, 38, 23, 21, 6, 14), (67, 88, 98, 13, 68, 109, 110, 120),
-                  (6, 9, 77, 88, 91, 130, 135, 125)]
-    lc_cats2 = ["刘攀", "lijie", "longhui", "zijian", "gaofeng", "yilin", "heng", "xuesong"]
-    lc_values2 = [(170, 165, 167, 172, 176, 180, 160, 166), (60, 65, 55, 58, 70, 72, 68, 80)]
-    bc_cats1 = ["刘攀", "lijie", "longhui", "zijian", "gaofeng", "yilin", "heng", "xuesong"]
-    bc_values1 = [(170, 165, 167, 172, 176, 180, 160, 166), (60, 65, 55, 58, 70, 72, 68, 80)]
-    bc_cats2 = ["刘攀", "lijie", "longhui", "zijian", "gaofeng", "yilin", "heng", "xuesong"]
-    bc_values2 = [(170, 165, 167, 172, 176, 180, 160, 166), (60, 65, 55, 58, 70, 72, 68, 80)]
-    pc_cats1 = ["刘攀", "lijie", "longhui", "zijian", "gaofeng", "yilin", "heng", "xuesong"]
-    pc_values1 = [170, 165, 167, 172, 176, 180, 160, 166]
+    try:
+        # 模板中的所有项
+        items = template['items']
 
-    my_line_charts1 = ReportLabHorizontalLineChart(50, 800, 400, 125, lc_cats1, lc_values1,
-                                                   legend_names=["乒乓球", "篮球", "排球", "足球"],
-                                                   legend_position="bottom-mid",
-                                                   main_title="刘攀 first PDF Test.",
-                                                   main_title_font_color=colors.blue,
-                                                   x_desc="月份", y_desc="数量（个）")
-    my_line_charts2 = ReportLabHorizontalLineChart(50, 600, 400, 125, lc_cats2, lc_values2,
-                                                   legend_names=["身高", "体重"],
-                                                   legend_position="bottom-mid",
-                                                   main_title="刘攀 second PDF Test.",
-                                                   x_desc="姓名", y_desc="身高/体重")
-    my_bar_charts1 = ReportLabVerticalBarChart(50, 400, 150, 125, bc_cats1, bc_values1,
-                                               x_desc="姓名", y_desc="身高/体重", label_format="%s",
-                                               legend_names=["身高", "体重"])
-    my_bar_charts2 = ReportLabHorizontalBarChart(275, 400, 150, 125, bc_cats2, bc_values2, style="stacked",
-                                                 x_desc="身高/体重", y_desc="姓名", label_format="%s",
-                                                 legend_names=["身高", "体重"])
-    my_pie_charts1 = ReportLabPieChart(50, 175, 150, 150, pc_cats1, pc_values1)
+        # 设置标题显示内容
+        PDFTemplate.set_text_data(items['title'], "刘攀的第一个PDF测试文档2")
 
-    drawing.add(my_line_charts1)
-    drawing.add(my_line_charts2)
-    drawing.add(my_bar_charts1)
-    drawing.add(my_bar_charts2)
-    drawing.add(my_pie_charts1)
+        # 设置描述说明内容
+        description = ("刘攀的第一个PDF测试文档。第1行我们导入Paragraph和SimpleDocTemplate类。"
+                       "Paragraph是用于生成文本段落的。SimpleDocTemplate是文档布局模板。从上面的例子可以"
+                       "看到通过文档模板及样式可以让我们方便的创建面向对象的应用，而不用再关心坐标、绘制命"
+                       "令等底层的东西，从而可以方便我们的文档生成。打开hello.pdf看一看效果吧。这回就象是"
+                       "真正的文档，\"Hello\"放在上面了。")
+        PDFTemplate.set_paragraph_data(items['description'], description)
 
-    renderPDF.drawToFile(drawing, 'example_charts.pdf')
+        # 设置折线图的数据
+        PDFTemplate.set_line_chart_data(
+            items['line_chart'], [(13, 5, 20, 22, 37, 45, 19, 4, 13, 5, 20, 22, 37, 45, 19, 4, 13, 5, 20, 22, 37, 45, 19, 4),
+                                  (5, 20, 46, 38, 23, 21, 6, 14, 5, 20, 46, 38, 23, 21, 6, 14, 5, 20, 46, 38, 23, 21, 6, 14),
+                                  (67, 88, 98, 13, 68, 109, 110, 120, 67, 88, 98, 13, 68, 109, 110, 120, 67, 88, 98, 13, 68, 109, 110, 120),
+                                  (6, 9, 77, 88, 91, 130, 135, 125, 6, 9, 77, 88, 91, 130, 135, 125, 6, 9, 77, 88, 91, 130, 135, 125)],
+            ["一月", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "一月", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "一月", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+            legend_names=["乒乓球", "篮球", "排球", "足球"])
+
+        # 设置柱状图的数据
+        PDFTemplate.set_bar_chart_data(
+            items['bar_chart'], [(170, 165, 167, 172, 176, 180, 160, 166, 170, 165, 167, 172, 176, 180, 160, 166), (60, 65, 55, 58, 70, 72, 68, 80, 60, 65, 55, 58, 70, 72, 68, 80)],
+            ["刘攀", "立杰", "陇辉", "自建", "高峰", "依琳", "张恒", "雪松", "刘攀", "立杰", "陇辉", "自建", "高峰", "依琳", "张恒", "雪松"],
+            legend_names=["身高", "体重"])
+
+        # # 设置柱状图的数据
+        # PDFTemplate.set_bar_chart_data(
+        #     items['bar_chart2'], [(170, 165, 167, 172, 176, 180, 160, 166), (60, 65, 55, 58, 70, 72, 68, 80)],
+        #     ["刘攀", "立杰", "陇辉", "自建", "高峰", "依琳", "张恒", "雪松"],
+        #     legend_names=["身高", "体重"])
+
+        # 设置柱状图的数据
+        PDFTemplate.set_pie_chart_data(
+            items['pie_chart'], [170, 165, 167, 172, 176, 180, 160, 166],
+            category_names=["刘攀", "立杰", "陇辉", "自建", "高峰", "依琳", "张恒", "雪松"])
+
+        # 生成PDF文档
+        PDFTemplate.draw(template)
+    except Exception as err:
+        import traceback
+        traceback.print_exc()
+        print(err)
 
 
 if __name__ == "__main__":
-    drawSamplePDF()
+    test_pdf()
