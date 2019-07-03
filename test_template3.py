@@ -1,9 +1,74 @@
-from example import utils
+from utils import utils
 from pdflib import PDFTemplate
+import os
 import json
 import datetime
 import traceback
+import requests
 
+
+GROUP_SENSORS_MAPPING = {
+    "无分组": [
+        "WIN0001",
+        "WIN0002",
+        "WIN0004",
+        "WIN0005",
+        "WIN0006",
+        "WIN0008",
+        "WIN0011",
+        "WIN0012",
+        "WIN0013",
+        "WIN0014",
+        "WIN0015",
+        "WIN0016",
+        "WIN0017",
+        "WIN0018",
+        "WIN0019",
+        "WIN0020",
+        "WIN0021",
+        "WIN0022",
+        "WIN0023",
+        "WIN0024",
+        "WIN0025",
+        "WIN0026",
+        "WSR0001",
+    ],
+    "cnwang_laptop": ["WIN0010"],
+    "FAE": ["WIN0003"],
+    "demo": ["WIN0009"],
+    "hjn-demo": ["WIN0007"],
+}
+
+
+SENSOR_GROUP_MAPPING = {
+                        "WIN0001": "无分组",
+                        "WIN0002": "无分组",
+                        "WIN0004": "无分组",
+                        "WIN0005": "无分组",
+                        "WIN0006": "无分组",
+                        "WIN0008": "无分组",
+                        "WIN0011": "无分组",
+                        "WIN0012": "无分组",
+                        "WIN0013": "无分组",
+                        "WIN0014": "无分组",
+                        "WIN0015": "无分组",
+                        "WIN0016": "无分组",
+                        "WIN0017": "无分组",
+                        "WIN0018": "无分组",
+                        "WIN0019": "无分组",
+                        "WIN0020": "无分组",
+                        "WIN0021": "无分组",
+                        "WIN0022": "无分组",
+                        "WIN0023": "无分组",
+                        "WIN0024": "无分组",
+                        "WIN0025": "无分组",
+                        "WIN0026": "无分组",
+                        "WSR0001": "无分组",
+                        "WIN0010": "cnwang_laptop",
+                        "WIN0003": "FAE",
+                        "WIN0009": "demo",
+                        "WIN0007": "hjn-demo"
+                    }
 
 class DrawSensorHostLogPDF(object):
     """
@@ -11,6 +76,7 @@ class DrawSensorHostLogPDF(object):
     """
 
     TITLE = "探针主机日志-运行趋势"
+    url = "http://192.168.8.60:8002"
 
     def __init__(self, payload: dict):
         self.payload = payload
@@ -35,8 +101,10 @@ class DrawSensorHostLogPDF(object):
 
         print(json.dumps(dict(self.data_for_drawing), indent=4))
 
-    def draw(self):
-        template = PDFTemplate.PDFTemplate.read_template("sensor_log_host.xml")
+    def draw(self, template_path):
+
+
+        template = PDFTemplate.PDFTemplate.read_template(template_path)
         if not template:
             raise RuntimeError("读取模板文件失败！")
 
@@ -52,7 +120,7 @@ class DrawSensorHostLogPDF(object):
                 f"{self.TITLE},"
                 f"从{utils.datetime_to_str(self.start_time)} 至 "
                 f"{utils.datetime_to_str(self.end_time)},"
-                f"探针组: {list(utils.GROUP_SENSORS_MAPPING.keys())}"
+                f"探针组: {list(GROUP_SENSORS_MAPPING.keys())}"
             )
 
             PDFTemplate.PDFTemplate.set_paragraph_data(
@@ -80,13 +148,19 @@ class DrawSensorHostLogPDF(object):
             print(f"Error Occur: {e}")
             print(traceback.format_exc())
 
+    def post_log_rule(self, url, data) -> tuple:
+
+        response = requests.post(url, data=json.dumps(data))
+        return response.status_code, json.loads(response.content)
+
     def run(self):
-        status, content = utils.post_log_rule(self.payload)
+        status, content = self.post_log_rule(self.url, self.payload)
         print(f"status: {status},\n"
               f"content: {json.dumps(content, indent=4)}")
 
         self.parse_log(content["result"])
-        self.draw()
+        tpl = os.path.join(os.getcwd(), "templates", "template3.xml")
+        self.draw(tpl)
 
 
 if __name__ == "__main__":
