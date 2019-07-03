@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 import collections
 import xmltodict
+
 from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
 # from reportlab.graphics import renderPDF
 from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings
@@ -17,7 +19,6 @@ from ReportLabLineCharts import ReportLabHorizontalLineChart
 from ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVerticalBarChart
 from ReportLabPieCharts import ReportLabPieChart
 from ReportLabLib import DefaultFontName
-
 
 class PDFTemplate(object):
 
@@ -710,7 +711,7 @@ class PDFTemplate(object):
 
 def test_pdf():
     # 读取PDF模板文件
-    template = PDFTemplate.read_template("template1.xml")
+    template = PDFTemplate.read_template(os.path.join(os.getcwd(), "templates", "template1.xml"))
     if template is None:
         print("读取模板文件失败！")
         return

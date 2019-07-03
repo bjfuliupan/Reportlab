@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pdf>
+    <file_name>test_template.pdf</file_name>
+    <page_size>[826, 1168]</page_size>
+    <coordinate>left-top</coordinate>
+    <header_text>探针日志分析报告</header_text>
+    <items>
+        <title>
+            <page_num>0</page_num>
+            <type>text</type>
+            <content>探针主机日志</content>
+            <rect>[110, 80, 606, 30]</rect>
+            <position>middle</position>
+            <font_color>Color(.501961,.501961,.501961,1)</font_color>
+            <font_size>20</font_size>
+            <font_style>blod</font_style>
+        </title>
+        <description>
+            <page_num>0</page_num>
+            <type>paragraph</type>
+            <rect>[110, 170, 606, 30]</rect>
+            <font_size>12</font_size>
+            <indent_flag>1</indent_flag>
+        </description>
+        <line_chart>
+            <page_num>0</page_num>
+            <type>line_chart</type>
+            <rect>[110, 230, 606, 200]</rect>
+            <main_title>每月消费数量示意图</main_title>
+            <main_title_font_size>11</main_title_font_size>
+            <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+            <x_desc>月份</x_desc>
+            <y_desc>数量</y_desc>
+        </line_chart>
+        <desc1>
+            <page_num>0</page_num>
+            <type>paragraph</type>
+            <rect>[110, 490, 606, 30]</rect>
+            <font_size>12</font_size>
+            <indent_flag>1</indent_flag>
+        </desc1>
+        <bar_chart>
+            <page_num>0</page_num>
+            <type>bar_chart</type>
+            <rect>[110, 550, 606, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>11</main_title_font_size>
+            <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+            <x_desc>姓名</x_desc>
+            <y_desc>身高/体重</y_desc>
+        </bar_chart>
+
+
+        <desc2>
+            <page_num>0</page_num>
+            <type>paragraph</type>
+            <content>运行日志分布展示及探针组{{xxx}}Top10</content>
+            <rect>[80, 780, 606, 30]</rect>
+            <font_size>13</font_size>
+            <font_color>Color(0,0,0,1)</font_color>
+            <indent_flag>1</indent_flag>
+        </desc2>
+
+        <bar_chart2>
+            <page_num>0</page_num>
+            <type>bar_chart</type>
+            <rect>[100, 830, 200, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>11</main_title_font_size>
+            <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+            <x_desc>姓名</x_desc>
+            <y_desc>身高/体重</y_desc>
+        </bar_chart2>
+
+        <bar_chart3>
+            <page_num>0</page_num>
+            <type>bar_chart</type>
+            <rect>[320, 830, 200, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>11</main_title_font_size>
+            <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+            <x_desc>姓名</x_desc>
+            <y_desc>身高/体重</y_desc>
+        </bar_chart3>
+
+
+        <bar_chart4>
+            <page_num>0</page_num>
+            <type>bar_chart</type>
+            <rect>[540, 830, 200, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>11</main_title_font_size>
+            <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+            <x_desc>姓名</x_desc>
+            <y_desc>身高/体重</y_desc>
+        </bar_chart4>
+    </items>
+</pdf>
