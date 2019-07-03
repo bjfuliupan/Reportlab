@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pdf>
+    <file_name>test_template.pdf</file_name>
+    <author>刘攀</author>
+    <title>我的第一个PDF测试文档</title>
+    <page_size>[630, 891]</page_size>
+    <coordinate>left-top</coordinate>
+    <header_text>我的第一个PDF测试文档</header_text>
+    <items>
+        <title>
+            <!--必填项-->
+            <page_num>0</page_num>
+            <type>text</type>
+            <rect>[90, 70, 450, 30]</rect>
+            <content> </content>
+            <!--必填项-->
+            <position>middle</position>
+            <font_color>Color(0.5,0.5,0.5,1)</font_color>
+            <font_size>20</font_size>
+        </title>
+        <description>
+            <!--必填项-->
+            <page_num>0</page_num>
+            <type>paragraph</type>
+            <rect>[90, 150, 450, 50]</rect>
+            <content> </content>
+            <!--必填项-->
+            <font_size>12</font_size>
+            <indent_flag>1</indent_flag>
+        </description>
+        <line_chart>
+            <!--必填项-->
+            <page_num>0</page_num>
+            <type>line_chart</type>
+            <rect>[100, 230, 430, 200]</rect>
+            <data> </data>
+            <!--必填项-->
+            <main_title>每月消费数量示意图</main_title>
+            <main_title_font_size>10</main_title_font_size>
+            <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+            <x_desc>月份</x_desc>
+            <y_desc>数量</y_desc>
+        </line_chart>
+        <bar_chart>
+            <!--必填项-->
+            <page_num>0</page_num>
+            <type>bar_chart</type>
+            <rect>[100, 460, 430, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <data> </data>
+            <!--必填项-->
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>10</main_title_font_size>
+            <x_desc>姓名</x_desc>
+            <y_desc>身高/体重</y_desc>
+        </bar_chart>
+        <bar_chart2>
+            <!--必填项-->
+            <page_num>1</page_num>
+            <type>bar_chart</type>
+            <rect>[100, 460, 430, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <data> </data>
+            <!--必填项-->
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>10</main_title_font_size>
+            <x_desc>姓名</x_desc>
+            <y_desc>身高/体重</y_desc>
+            <!--<invalid>False</invalid>-->
+        </bar_chart2>
+        <pie_chart>
+            <!--必填项-->
+            <page_num>2</page_num>
+            <type>pie_chart</type>
+            <rect>[100, 460, 200, 200]</rect>
+            <data> </data>
+            <!--必填项-->
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>10</main_title_font_size>
+        </pie_chart>
+    </items>
+</pdf>
