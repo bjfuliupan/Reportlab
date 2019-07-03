@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 import collections
 import xmltodict
 from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
