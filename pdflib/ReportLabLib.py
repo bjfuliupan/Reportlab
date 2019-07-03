@@ -139,18 +139,24 @@ class ChartsLegend(LineLegend):
         self.alignment = 'right'
         self.dxTextSpace = 5
 
-    def draw(self):
-        pairs_num = len(self.colorNamePairs)
+    @staticmethod
+    def calc_legend_width(color_name_pairs, dx, deltax, font_name, font_size):
+        pairs_num = len(color_name_pairs)
 
         max_text_width = 0
         x_width = 0
-        for x in self.colorNamePairs:
-            x_width = stringWidth(x[1], self.fontName, self.fontSize)
+        for x in color_name_pairs:
+            x_width = stringWidth(x[1], font_name, font_size)
             if x_width > max_text_width:
                 max_text_width = x_width
         total_text_width = (pairs_num - 1) * max_text_width + x_width
 
-        legend_width = total_text_width + (self.dx * pairs_num) + (self.deltax * pairs_num)
+        legend_width = total_text_width + (dx * pairs_num) + (deltax * pairs_num)
+
+        return legend_width
+
+    def draw(self):
+        legend_width = self.calc_legend_width(self.colorNamePairs, self.dx, self.deltax, self.fontName, self.fontSize)
 
         if self.positionType != "null" and self.backgroundRect is not None:
             if self.positionType == "top-left":
