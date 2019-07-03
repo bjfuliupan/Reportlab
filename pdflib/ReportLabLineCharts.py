@@ -35,7 +35,8 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
         titleMain=AttrMapValue(isString, desc='main title text.'),
         titleMainFontName=AttrMapValue(isString, desc='main title font name.'),
         titleMainFontSize=AttrMapValue(isNumberInRange(0, 100), desc='main title font size.'),
-        titleMainFontColor=AttrMapValue(isColor, desc='main title font color.')
+        titleMainFontColor=AttrMapValue(isColor, desc='main title font color.'),
+        legendFontSize=AttrMapValue(isNumberInRange(0, 100), desc='legend text font size.')
     )
 
     def __init__(self):
@@ -51,6 +52,8 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
         self.titleMainFontName = DefaultFontName
         self.titleMainFontSize = STATE_DEFAULTS['fontSize']
 
+        self.legendFontSize = 7
+
     def set_line_color(self):
         if self.legendCategoryNames is None:
             self.legendCategoryNames = []
@@ -61,25 +64,54 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
             if i >= legend_num:
                 self.legendCategoryNames.append("unknown")
 
+        legend_num = len(self.legendCategoryNames)
+        temp_category_names = self.legendCategoryNames[:]
+        if legend_num > 1:
+            self.legendCategoryNames = []
+            color_name_pairs = [(0, name) for name in temp_category_names]
+
+            legend_width = ChartsLegend.calc_legend_width(
+                color_name_pairs, 10, 10, DefaultFontName, self.legendFontSize)
+            per_legend_width = int(legend_width / legend_num)
+            legend_num_per_row = int(self.width / per_legend_width)
+            index = 0
+            row_names = []
+            for name in temp_category_names:
+                row_names.append(name)
+                index += 1
+                if index == legend_num_per_row:
+                    index = 0
+                    self.legendCategoryNames.append(row_names)
+                    row_names = []
+            if len(row_names) > 0:
+                self.legendCategoryNames.append(row_names)
+        else:
+            self.legendCategoryNames = [temp_category_names]
+
     def draw(self):
         self.set_line_color()
         g = HorizontalLineChart.draw(self)
 
         if self.drawLegend:
-            legend = ChartsLegend()
-
-            legend.positionType = self.legendPositionType
-            if self.legendPositionType != "null":
-                legend.backgroundRect = Rect(self.x, self.y, self.width, self.height)
-
-            legend.adjustX = self.legendAdjustX
-            legend.adjustY = self.legendAdjustY
-
-            legend.colorNamePairs = []
             for i in range(len(self.legendCategoryNames)):
-                legend.colorNamePairs.append((ALL_COLORS[i], self.legendCategoryNames[i]))
+                legend = ChartsLegend()
 
-            g.add(legend)
+                legend.positionType = self.legendPositionType
+                if self.legendPositionType != "null":
+                    legend.backgroundRect = \
+                        Rect(self.x, self.y - (i * int(self.legendFontSize * 1.5)), self.width, self.height)
+
+                legend.adjustX = self.legendAdjustX
+                legend.adjustY = self.legendAdjustY
+
+                legend.fontSize = self.legendFontSize
+
+                legend.colorNamePairs = []
+                for j in range(len(self.legendCategoryNames[i])):
+                    legend.colorNamePairs.append((ALL_COLORS[i * len(self.legendCategoryNames[i]) + j],
+                                                  self.legendCategoryNames[i][j]))
+
+                g.add(legend)
 
         if self.titleMain != "":
             title = String(0, 0, self.titleMain)
