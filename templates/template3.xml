@@ -40,5 +40,25 @@
             <x_desc>日期</x_desc>
             <y_desc>(次)</y_desc>
         </line_chart>
+        <description_for_pie_chart>
+            <!--必填项-->
+            <page_num>0</page_num>
+            <type>paragraph</type>
+            <rect>[90, 500, 450, 50]</rect>
+            <content> </content>
+            <!--必填项-->
+            <font_size>12</font_size>
+            <indent_flag>1</indent_flag>
+        </description_for_pie_chart>
+        <pie_chart>
+            <!--必填项-->
+            <page_num>0</page_num>
+            <type>pie_chart</type>
+            <rect>[200, 580, 200, 200]</rect>
+            <data> </data>
+            <!--必填项-->
+            <main_title>探针组身体状况示意图</main_title>
+            <main_title_font_size>10</main_title_font_size>
+        </pie_chart>
     </items>
 </pdf>

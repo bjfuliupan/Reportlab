@@ -2,6 +2,7 @@ import collections
 import itertools
 import json
 import os
+import copy
 from datetime import timedelta
 
 import requests
@@ -111,6 +112,7 @@ class DrawSensorHostLogPDF(object):
         self.base_payload = collections.defaultdict(lambda: BASE_PAYLOAD_MAPPING)
         self.template = None
         self.items = None
+        self.data_for_draw = utils.init_data_for_PDF(self.days_interval)
 
     def init_template(self):
         # 初始化模板
@@ -154,7 +156,7 @@ class DrawSensorHostLogPDF(object):
         )
 
     def get_trend_data(self) -> dict:
-        data_for_draw = utils.init_data_for_PDF(self.days_interval)
+        data_for_draw = copy.deepcopy(self.data_for_draw)
         payload = self.base_payload["trend"]
         payload["start_time"] = self.start_time
         payload["end_time"] = self.end_time
@@ -180,9 +182,67 @@ class DrawSensorHostLogPDF(object):
 
         return dict(data_for_draw)
 
+    def set_running_log_distributing(self):
+
+        data_for_draw = self.get_running_log_distributing_data()
+        log_formats = list(data_for_draw.keys())
+        value_lists = [data_for_draw[_] for _ in log_formats]
+
+        description = (
+            f"运行日志分布展示,"
+            f"从{utils.datetime_to_str(self.start_time_of_datetime)} 至"
+            f"{utils.datetime_to_str(self.end_time_of_datetime)}"
+            f"日志类型: {log_formats}"
+        )
+
+        PDFTemplate.PDFTemplate.set_paragraph_data(
+            self.items["description_for_pie_chart"],
+            description
+        )
+
+        PDFTemplate.PDFTemplate.set_pie_chart_data(
+            self.items["pie_chart"],
+            value_lists,
+            category_names=log_formats,
+        )
+
+    def get_running_log_distributing_data(self) -> dict:
+        data_for_draw = collections.defaultdict(lambda: 0)
+
+        payload = self.base_payload["running_log_distributing"]
+        payload["start_time"] = self.start_time
+        payload["end_time"] = self.end_time
+        payload["page_name"] = "log_classify"
+        payload["item_id"] = 1
+        payload["rule_id"] = "00"
+        payload["search_index"] = "log*"
+        payload["data_scope"] = {
+            "FORMAT.raw": [
+                "SENSOR_SAFEMODE_BOOT",
+                "SENSOR_MULTIPLE_OS_BOOT",
+                "SENSOR_VM_INSTALLED",
+                "SENSOR_SERVICECHANGE",
+                "SENSOR_HARDWARE_CHANGE",
+                "SENSOR_SOFTWARE_CHANGE",
+                "SENSOR_INFO_WORK_TIME"
+            ],
+            "SENSOR_ID.raw": self.sensors
+        }
+
+        status_code, content = self.post_payload_for_logs(payload)
+        # TODO
+        # print(status_code, "\n", json.dumps(content["result"], indent=4))
+
+        for log_format_dict, value, *_ in content["result"]:
+            log_format = log_format_dict[0]["FORMAT.raw"]
+            data_for_draw[log_format] += value
+
+        return data_for_draw
+
     def run(self):
         self.init_template()
         self.set_trend()
+        self.set_running_log_distributing()
         PDFTemplate.PDFTemplate.draw(self.template)
 
 
