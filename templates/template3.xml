@@ -3,7 +3,7 @@
     <file_name>test_template.pdf</file_name>
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
-    <header_text>PDF测试文档</header_text>
+    <header_text>探针主机日志分析报告</header_text>
     <items>
         <title>
             <!--必填项-->
@@ -34,7 +34,7 @@
             <data> </data>
             <!--必填项-->
             <legend_position>bottom-mid</legend_position>
-            <main_title>平均下行流量统计趋势</main_title>
+            <main_title>主机运行日志-运行趋势</main_title>
             <main_title_font_size>10</main_title_font_size>
             <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
             <x_desc>日期</x_desc>
