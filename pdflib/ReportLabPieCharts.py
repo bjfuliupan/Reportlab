@@ -29,14 +29,14 @@ class ReportLabPieChart(Pie):
         self.data = data
         self.labels = cat_names
 
-        max_i, max_value = self.get_limit_value()
-        self.slices[max_i].popout = 10
-        self.slices[max_i].strokeWidth = 2
-        # self.slices[max_i].strokeDashArray = [2, 2]
-        self.slices[max_i].fontColor = colors.red
+        self.sideLabels = 1
+        # max_i, max_value = self.get_limit_value()
+        # self.slices[max_i].popout = 10
+        # self.slices[max_i].strokeWidth = 2
+        # # self.slices[max_i].strokeDashArray = [2, 2]
+        # self.slices[max_i].fontColor = colors.red
         self.slices.fontName = DefaultFontName
         self.slices.strokeWidth = 0.5
-        # self.sideLabels = 1
 
         self.titleMain = main_title
         self.titleMainFontName = DefaultFontName
