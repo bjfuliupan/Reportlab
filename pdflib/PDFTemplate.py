@@ -18,8 +18,6 @@ from pdflib.ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVert
 from pdflib.ReportLabPieCharts import ReportLabPieChart
 from pdflib.ReportLabLib import DefaultFontName
 
-Draw_Board = True
-
 
 class PDFTemplate(object):
 
@@ -88,6 +86,11 @@ class PDFTemplate(object):
             raise ValueError("page size error.")
         if len(template_content['page_size']) != 2:
             raise ValueError("page size error.")
+
+        if "coordinate" not in template_content:
+            raise ValueError("no page coordinate-system.")
+        if template_content['coordinate'] != "left-top":
+            raise ValueError("coordinate must be left-top. other not support auto_position.")
 
         if "pages" not in template_content:
             raise ValueError("no pages.")
@@ -458,7 +461,14 @@ class PDFTemplate(object):
         _pages = {}
         index = 0
         for page_num in valid_count:
-            _pages[index] = {'items': [], 'rect': [], 'auto_position': False, 'x-padding': 0, 'y-padding': 0}
+            _pages[index] = {
+                'items': [],
+                'rect': [],
+                'auto_position': False,
+                'x-padding': 0,
+                'y-padding': 0,
+                'align-type': ""
+            }
 
             page = pages['page%d' % page_num]
 
@@ -466,6 +476,7 @@ class PDFTemplate(object):
             _pages[index]['auto_position'] = page['auto_position']
             _pages[index]['x-padding'] = page['x-padding']
             _pages[index]['y-padding'] = page['y-padding']
+            _pages[index]['align-type'] = page['align-type']
             for item in page['items']:
                 item = page['items'][item]
                 _pages[index]['items'].append(item)
@@ -545,7 +556,7 @@ class PDFTemplate(object):
             cv.setTitle(template_content['title'])
 
     @staticmethod
-    def _draw_page(cv, items):
+    def _draw_page(cv, items, show_border=False):
         for it in items:
             item = None
             if it['type'] == 'line_chart':
@@ -559,11 +570,11 @@ class PDFTemplate(object):
             elif it['type'] == 'paragraph':
                 item = PDFTemplate._draw_paragraph(it)
 
-            if Draw_Board:
+            if show_border:
                 d = Drawing(it['rect'][2], it['rect'][3])
                 r = Rect(0, 0, it['rect'][2], it['rect'][3],
                          strokeColor=Color(1, 0, 0, 1),
-                         fillColor=Color(0.95, 0.95, 0.95, 0))
+                         fillColor=Color(0, 0, 0, 0))
                 d.add(r)
                 d.drawOn(cv, it['rect'][0], it['rect'][1])
 
@@ -579,15 +590,22 @@ class PDFTemplate(object):
 
     @staticmethod
     def _calc_positon_align(page, page_width, x_padding, start_index, end_index, align_type):
-        if align_type == "middle":
+        if align_type == "middle" or align_type == "right":
             items_width = (end_index - start_index - 1) * x_padding
             for i in range(end_index - start_index):
                 items_width += page['items'][start_index + i]['rect'][2]
-            start_pos = int((page_width - items_width) / 2)
+
+            start_pos = 0
+            if align_type == "middle":
+                start_pos = int((page_width - items_width) / 2)
+            elif align_type == "right":
+                start_pos = page_width - items_width
 
             for i in range(end_index - start_index):
                 page['items'][start_index + i]['rect'][0] = start_pos
                 start_pos += page['items'][start_index + i]['rect'][2] + x_padding
+        elif align_type == "left":
+            pass
 
     @staticmethod
     def _calc_positon(page):
@@ -598,6 +616,7 @@ class PDFTemplate(object):
         page_height = page['rect'][3]
         x_padding = page['x-padding']
         y_padding = page['y-padding']
+        align_type = page['align-type']
 
         cur_x = 0
         cur_y = 0
@@ -612,7 +631,7 @@ class PDFTemplate(object):
             item_height = item['rect'][3]
 
             if cur_x != 0 and cur_x + item_width > page_width:
-                PDFTemplate._calc_positon_align(page, page_width, x_padding, row_start, index, "middle")
+                PDFTemplate._calc_positon_align(page, page_width, x_padding, row_start, index, align_type)
 
                 next_page_index = index
                 row_start = index
@@ -633,7 +652,7 @@ class PDFTemplate(object):
                 break
 
             index += 1
-        PDFTemplate._calc_positon_align(page, page_width, x_padding, row_start, index, "middle")
+        PDFTemplate._calc_positon_align(page, page_width, x_padding, row_start, index, align_type)
 
         if next_page_flag:
             next_page['items'] = page['items'][next_page_index:]
@@ -674,6 +693,7 @@ class PDFTemplate(object):
         if "header_text" in template_content:
             header_text = template_content["header_text"]
         page_size = template_content["page_size"]
+        show_border = template_content["show_border"]
 
         cv = canvas.Canvas(template_content['file_name'], pagesize=page_size, bottomup=1)
 
@@ -696,7 +716,7 @@ class PDFTemplate(object):
                 PDFTemplate._draw_header(cv, page_size, header_text)
                 PDFTemplate._draw_feet(cv, page_size, page_num + 1)
 
-            PDFTemplate._draw_page(cv, pages[page_num]['items'])
+            PDFTemplate._draw_page(cv, pages[page_num]['items'], show_border)
 
         cv.save()
 
@@ -774,11 +794,22 @@ class PDFTemplate(object):
         if "page_size" in json_data:
             json_data['page_size'] = json.loads(json_data['page_size'])
 
+        if "show_border" in json_data:
+            if json_data['show_border'] == "True":
+                json_data['show_border'] = True
+            elif json_data['show_border'] == "False":
+                json_data['show_border'] = False
+            else:
+                json_data['show_border'] = False
+        else:
+            json_data['show_border'] = False
+
         if "pages" in json_data:
             for page in json_data['pages']:
                 page = json_data['pages'][page]
                 if "rect" in page:
                     page['rect'] = json.loads(page['rect'])
+
                 if "auto_position" in page:
                     if page['auto_position'] == "True":
                         page['auto_position'] = True
@@ -788,14 +819,20 @@ class PDFTemplate(object):
                         page['auto_position'] = False
                 else:
                     page['auto_position'] = False
+
                 if "x-padding" in page:
                     page['x-padding'] = int(page['x-padding'])
                 else:
                     page['x-padding'] = 0
+
                 if "y-padding" in page:
                     page['y-padding'] = int(page['y-padding'])
                 else:
                     page['y-padding'] = 0
+
+                if "align-type" not in page:
+                    page['align-type'] = "middle"
+
                 if "items" in page:
                     for it in page['items']:
                         it = page['items'][it]
