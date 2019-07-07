@@ -766,14 +766,15 @@ class PDFTemplate(object):
                 if cur_y + item_height + y_padding > next_y:
                     next_y = cur_y + item_height + y_padding
 
-            if cur_y != 0 and next_y > page_height:
-                if item['type'] == "paragraph" and "auto_height" in item and item['auto_height'] is True:
-                    split_flag = PDFTemplate._split_paragraph(page['items'], index, page_height)
-                    if split_flag:
-                        next_page_index += 1
-                        index += 1
-                next_page_flag = True
-                break
+            if next_y > page_height:
+                if cur_y != 0 or item['type'] == "paragraph":
+                    if "auto_height" in item and item['auto_height'] is True:
+                        split_flag = PDFTemplate._split_paragraph(page['items'], index, page_height)
+                        if split_flag:
+                            next_page_index += 1
+                            index += 1
+                    next_page_flag = True
+                    break
 
             index += 1
         PDFTemplate._calc_positon_align(page, page_width, x_padding, row_start, index, align_type)
