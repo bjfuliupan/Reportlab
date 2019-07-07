@@ -6,7 +6,7 @@
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
-<!--    <show_border>True</show_border>-->
+    <show_border>True</show_border>
     <pages>
         <page0>
             <rect>[90, 75, 450, 700]</rect>

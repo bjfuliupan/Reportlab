@@ -3,6 +3,7 @@
 import json
 import collections
 import xmltodict
+from copy import deepcopy
 from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
 # from reportlab.graphics import renderPDF
 from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings
@@ -595,6 +596,13 @@ class PDFTemplate(object):
             cv.setTitle(template_content['title'])
 
     @staticmethod
+    def _draw_border(cv, x, y, width, height):
+        d = Drawing(width, height)
+        r = Rect(0, 0, width, height, strokeColor=Color(1, 0, 0, 1), fillColor=Color(0, 0, 0, 0))
+        d.add(r)
+        d.drawOn(cv, x, y)
+
+    @staticmethod
     def _draw_page(cv, items, show_border=False):
         for it in items:
             item = None
@@ -610,12 +618,7 @@ class PDFTemplate(object):
                 item = PDFTemplate._draw_paragraph(it)
 
             if show_border:
-                d = Drawing(it['rect'][2], it['rect'][3])
-                r = Rect(0, 0, it['rect'][2], it['rect'][3],
-                         strokeColor=Color(1, 0, 0, 1),
-                         fillColor=Color(0, 0, 0, 0))
-                d.add(r)
-                d.drawOn(cv, it['rect'][0], it['rect'][1])
+                PDFTemplate._draw_border(cv, it['rect'][0], it['rect'][1], it['rect'][2], it['rect'][3])
 
             if item is not None:
                 item.wrapOn(cv, it['rect'][2], it['rect'][3])
@@ -647,6 +650,17 @@ class PDFTemplate(object):
             pass
 
     @staticmethod
+    def _calc_text_height(content, width, leading, font_name, font_size):
+        content_width = stringWidth(content, font_name, font_size)
+        row_num = int(content_width / width) + 1
+        if leading > 1:
+            height = int(row_num * font_size * leading + ((leading - 1) * font_size))
+        else:
+            height = int(row_num * font_size * leading)
+
+        return height
+
+    @staticmethod
     def _calc_paragraph_height(item):
         content = item['content']
         font_name = DefaultFontName
@@ -657,17 +671,61 @@ class PDFTemplate(object):
             font_size = item['font_size']
         paragraph_width = item['rect'][2]
 
-        content_width = stringWidth(content, font_name, font_size)
-        row_num = int(content_width / paragraph_width) + 1
-        if PDFTemplate.paragraph_leading > 1:
-            item['rect'][3] = int(row_num * font_size * PDFTemplate.paragraph_leading +
-                                  ((PDFTemplate.paragraph_leading - 1) * font_size))
-        else:
-            item['rect'][3] = int(row_num * font_size * PDFTemplate.paragraph_leading)
+        item['rect'][3] = PDFTemplate._calc_text_height(content, paragraph_width, PDFTemplate.paragraph_leading,
+                                                        font_name, font_size)
+
+    @staticmethod
+    def _split_paragraph_text_by_height(content, width, split_height, leading, font_name, font_size):
+        split_index = 0
+
+        str_len = len(content)
+        # content_width = PDFTemplate._calc_text_height(content, width, leading, font_name, font_size)
+        for i in range(str_len):
+            split_index += 1
+            tmp_str = content[:split_index]
+            tmp_height = PDFTemplate._calc_text_height(tmp_str, width, leading, font_name, font_size)
+            if tmp_height > split_height:
+                break
+
+        return split_index
+
+    @staticmethod
+    def _split_paragraph(items, index, page_height):
+        item = items[index]
+        if item['type'] != "paragraph":
+            return False
+
+        item_height = item['rect'][3]
+        y = item['rect'][1]
+        if item_height + y <= page_height:
+            return True
+
+        content = item['content']
+        split_height = page_height - y
+        item_width = item['rect'][2]
+        font_name = DefaultFontName
+        if 'font_name' in item:
+            font_name = item['font_name']
+        font_size = STATE_DEFAULTS['fontSize']
+        if 'font_size' in item:
+            font_size = item['font_size']
+        split_index = PDFTemplate._split_paragraph_text_by_height(content, item_width, split_height,
+                                                                  PDFTemplate.paragraph_leading, font_name, font_size)
+
+        new_item = deepcopy(item)
+        new_item['content'] = new_item['content'][split_index:]
+        new_item['indent_flag'] = 0
+
+        item['content'] = item['content'][:split_index]
+        item['rect'][3] = split_height
+
+        items.insert(index + 1, new_item)
+
+        return True
 
     @staticmethod
     def _calc_positon(page):
-        next_page = page.copy()
+        next_page = deepcopy(page)
         next_page['items'] = []
 
         page_width = page['rect'][2]
@@ -709,6 +767,11 @@ class PDFTemplate(object):
                     next_y = cur_y + item_height + y_padding
 
             if cur_y != 0 and next_y > page_height:
+                if item['type'] == "paragraph" and "auto_height" in item and item['auto_height'] is True:
+                    split_flag = PDFTemplate._split_paragraph(page['items'], index, page_height)
+                    if split_flag:
+                        next_page_index += 1
+                        index += 1
                 next_page_flag = True
                 break
 
@@ -731,20 +794,21 @@ class PDFTemplate(object):
             page = pages[page_num]
             if page['auto_position'] is True:
                 next_page = PDFTemplate._calc_positon(page)
-                _pages[page_num + add_count] = page.copy()
+                _pages[page_num + add_count] = deepcopy(page)
                 while next_page:
                     add_count += 1
                     _next_page = PDFTemplate._calc_positon(next_page)
-                    _pages[page_num + add_count] = next_page.copy()
+                    _pages[page_num + add_count] = deepcopy(next_page)
 
                     if _next_page:
-                        next_page = _next_page.copy()
+                        next_page = deepcopy(_next_page)
                     else:
                         next_page = None
             else:
-                _pages[page_num + add_count] = pages[page_num].copy()
+                _pages[page_num + add_count] = deepcopy(pages[page_num])
+        pages = deepcopy(_pages)
 
-        return _pages
+        return pages
 
     @staticmethod
     def draw(template_content):
@@ -777,6 +841,9 @@ class PDFTemplate(object):
                 PDFTemplate._draw_header(cv, page_size, header_text)
                 PDFTemplate._draw_feet(cv, page_size, page_num + 1)
 
+            # if show_border:
+            #     PDFTemplate._draw_border(cv, pages[page_num]['rect'][0], pages[page_num]['rect'][1],
+            #                              pages[page_num]['rect'][2], pages[page_num]['rect'][3])
             PDFTemplate._draw_page(cv, pages[page_num]['items'], show_border)
 
         cv.save()
