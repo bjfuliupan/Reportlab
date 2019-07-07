@@ -6,7 +6,7 @@
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
-    <show_border>True</show_border>
+<!--    <show_border>True</show_border>-->
     <pages>
         <page0>
             <rect>[90, 75, 450, 700]</rect>
@@ -17,7 +17,6 @@
             <items>
                 <title>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>text</type>
                     <rect>[0, 0, 450, 30]</rect>
                     <content> </content>
@@ -28,17 +27,16 @@
                 </title>
                 <description>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 90]</rect>
+                    <rect>[0, 0, 450, 0]</rect>
                     <content> </content>
                     <!--必填项-->
+                    <auto_height>True</auto_height>
                     <font_size>12</font_size>
                     <indent_flag>1</indent_flag>
                 </description>
                 <line_chart>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>line_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <data> </data>
@@ -51,7 +49,6 @@
                 </line_chart>
                 <bar_chart>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <bar_style>vertical</bar_style>
@@ -64,7 +61,6 @@
                 </bar_chart>
                 <line_chart2>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>line_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <data> </data>
@@ -77,7 +73,6 @@
                 </line_chart2>
                 <bar_chart2>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <bar_style>vertical</bar_style>
@@ -90,7 +85,6 @@
                 </bar_chart2>
                 <line_chart3>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>line_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <data> </data>
@@ -103,7 +97,6 @@
                 </line_chart3>
                 <bar_chart3>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <bar_style>vertical</bar_style>
@@ -116,7 +109,6 @@
                 </bar_chart3>
                 <line_chart4>
                     <!--必填项-->
-                    <page_num>0</page_num>
                     <type>line_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
                     <data> </data>

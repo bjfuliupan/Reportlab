@@ -21,6 +21,8 @@ from pdflib.ReportLabLib import DefaultFontName
 
 class PDFTemplate(object):
 
+    paragraph_leading = 1.5
+
     def __init__(self):
         pass
 
@@ -71,6 +73,80 @@ class PDFTemplate(object):
         return False
 
     @staticmethod
+    def type_format(json_data):
+        if "page_size" in json_data:
+            json_data['page_size'] = json.loads(json_data['page_size'])
+
+        if "show_border" in json_data:
+            if json_data['show_border'] == "True":
+                json_data['show_border'] = True
+            elif json_data['show_border'] == "False":
+                json_data['show_border'] = False
+            else:
+                json_data['show_border'] = False
+        else:
+            json_data['show_border'] = False
+
+        if "pages" in json_data:
+            for page in json_data['pages']:
+                page = json_data['pages'][page]
+                if "rect" in page:
+                    page['rect'] = json.loads(page['rect'])
+
+                if "auto_position" in page:
+                    if page['auto_position'] == "True":
+                        page['auto_position'] = True
+                    elif page['auto_position'] == "False":
+                        page['auto_position'] = False
+                    else:
+                        page['auto_position'] = False
+                else:
+                    page['auto_position'] = False
+
+                if "x-padding" in page:
+                    page['x-padding'] = int(page['x-padding'])
+                else:
+                    page['x-padding'] = 0
+
+                if "y-padding" in page:
+                    page['y-padding'] = int(page['y-padding'])
+                else:
+                    page['y-padding'] = 0
+
+                if "align-type" not in page:
+                    page['align-type'] = "middle"
+
+                if "items" in page:
+                    for it in page['items']:
+                        it = page['items'][it]
+                        if "page_num" in it:
+                            it["page_num"] = int(it["page_num"])
+                        if "rect" in it:
+                            it['rect'] = json.loads(it['rect'])
+                        if "category_names" in it and type(it['category_names']) is str:
+                            it['category_names'] = json.loads(it['category_names'])
+                        if "font_color" in it:
+                            it["font_color"] = eval(it["font_color"])
+                        if "main_title_font_color" in it:
+                            it["main_title_font_color"] = eval(it["main_title_font_color"])
+                        if "font_size" in it:
+                            it["font_size"] = int(it["font_size"])
+                        if "main_title_font_size" in it:
+                            it["main_title_font_size"] = int(it["main_title_font_size"])
+                        if "indent_flag" in it:
+                            it["indent_flag"] = int(it["indent_flag"])
+
+                        if "auto_height" in it:
+                            if it['auto_height'] == "True":
+                                it['auto_height'] = True
+                            elif it['auto_height'] == "False":
+                                it['auto_height'] = False
+                            else:
+                                it['auto_height'] = False
+
+        return json_data
+
+    @staticmethod
     def args_check(template_content):
         if PDFTemplate.is_dict(template_content) is False:
             raise ValueError("template content is not dict.")
@@ -115,6 +191,32 @@ class PDFTemplate(object):
                     PDFTemplate.args_check_pie_chart(it)
 
     @staticmethod
+    def _draw_chart_rect(d, x, y, width, height, format_json):
+        r = Rect(x, y, width, height, fillColor=Color(0.95, 0.95, 0.95, 1))
+        d.add(r)
+
+        width += 40
+        height += 40
+        text_format = {"rect": [int(width / 2), int(height / 2), width, height],
+                       "content": "暂无数据", "position": "middle",
+                       "font_name": DefaultFontName, "font_size": 30, "font_color": Color(0.5, 0.5, 0.5, 1)}
+        t = PDFTemplate._draw_text(text_format)
+        d.add(t)
+
+        if "main_title" in format_json:
+            text_format = {"rect": [0, height, width, height - 15],
+                           "content": format_json['main_title'], "position": "start",
+                           "font_name": DefaultFontName, "font_size": 15, "font_color": Color(0.5, 0.5, 0.5, 1)}
+            if "main_title_font_name" in format_json:
+                text_format['font_name'] = format_json['main_title_font_name']
+            if "main_title_font_size" in format_json:
+                text_format['font_size'] = format_json['main_title_font_size']
+            if "main_title_font_color" in format_json:
+                text_format['font_color'] = format_json['main_title_font_color']
+            main_title = PDFTemplate._draw_text(text_format)
+            d.add(main_title)
+
+    @staticmethod
     def _draw_line_chart(format_json):
         width = format_json['rect'][2]
         height = format_json['rect'][3]
@@ -126,29 +228,7 @@ class PDFTemplate(object):
         width -= 40
         height -= 50
         if format_json['data'] is None or type(format_json['data']) is str:
-            r = Rect(x, y, width, height, fillColor=Color(0.95, 0.95, 0.95, 1))
-            d.add(r)
-
-            width += 40
-            height += 40
-            text_format = {"rect": [int(width / 2), int(height / 2), width, height - 30],
-                           "content": "暂无数据", "position": "middle",
-                           "font_name": DefaultFontName, "font_size": 30, "font_color": Color(0.5, 0.5, 0.5, 1)}
-            t = PDFTemplate._draw_text(text_format)
-            d.add(t)
-
-            if "main_title" in format_json:
-                text_format = {"rect": [0, height, width, height - 15],
-                               "content": format_json['main_title'], "position": "start",
-                               "font_name": DefaultFontName, "font_size": 15, "font_color": Color(0.5, 0.5, 0.5, 1)}
-                if "main_title_font_name" in format_json:
-                    text_format['font_name'] = format_json['main_title_font_name']
-                if "main_title_font_size" in format_json:
-                    text_format['font_size'] = format_json['main_title_font_size']
-                if "main_title_font_color" in format_json:
-                    text_format['font_color'] = format_json['main_title_font_color']
-                main_title = PDFTemplate._draw_text(text_format)
-                d.add(main_title)
+            PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
             data = format_json['data']
@@ -210,29 +290,7 @@ class PDFTemplate(object):
         width -= 40
         height -= 50
         if format_json['data'] is None or type(format_json['data']) is str:
-            r = Rect(x, y, width, height, fillColor=Color(0.95, 0.95, 0.95, 1))
-            d.add(r)
-
-            width += 40
-            height += 40
-            text_format = {"rect": [int(width / 2), int(height / 2), width, height - 30],
-                           "content": "暂无数据", "position": "middle",
-                           "font_name": DefaultFontName, "font_size": 30, "font_color": Color(0.5, 0.5, 0.5, 1)}
-            t = PDFTemplate._draw_text(text_format)
-            d.add(t)
-
-            if "main_title" in format_json:
-                text_format = {"rect": [0, height, width, height - 15],
-                               "content": format_json['main_title'], "position": "start",
-                               "font_name": DefaultFontName, "font_size": 15, "font_color": Color(0.5, 0.5, 0.5, 1)}
-                if "main_title_font_name" in format_json:
-                    text_format['font_name'] = format_json['main_title_font_name']
-                if "main_title_font_size" in format_json:
-                    text_format['font_size'] = format_json['main_title_font_size']
-                if "main_title_font_color" in format_json:
-                    text_format['font_color'] = format_json['main_title_font_color']
-                main_title = PDFTemplate._draw_text(text_format)
-                d.add(main_title)
+            PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
             data = format_json['data']
@@ -314,29 +372,7 @@ class PDFTemplate(object):
         width -= 60
         height -= 60
         if format_json['data'] is None or type(format_json['data']) is str:
-            r = Rect(x, y, width, height, fillColor=Color(0.95, 0.95, 0.95, 1))
-            d.add(r)
-
-            width += 40
-            height += 40
-            text_format = {"rect": [int(width / 2), int(height / 2), width, height - 30],
-                           "content": "暂无数据", "position": "middle",
-                           "font_name": DefaultFontName, "font_size": 30, "font_color": Color(0.5, 0.5, 0.5, 1)}
-            t = PDFTemplate._draw_text(text_format)
-            d.add(t)
-
-            if "main_title" in format_json:
-                text_format = {"rect": [0, height, width, height - 15],
-                               "content": format_json['main_title'], "position": "start",
-                               "font_name": DefaultFontName, "font_size": 15, "font_color": Color(0.5, 0.5, 0.5, 1)}
-                if "main_title_font_name" in format_json:
-                    text_format['font_name'] = format_json['main_title_font_name']
-                if "main_title_font_size" in format_json:
-                    text_format['font_size'] = format_json['main_title_font_size']
-                if "main_title_font_color" in format_json:
-                    text_format['font_color'] = format_json['main_title_font_color']
-                main_title = PDFTemplate._draw_text(text_format)
-                d.add(main_title)
+            PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
             data = format_json['data']
@@ -374,10 +410,14 @@ class PDFTemplate(object):
         x = 0  # format_json['x']
         y = 0  # format_json['y']
 
+        font_size = STATE_DEFAULTS['fontSize']
+        if "font_size" in format_json:
+            font_size = format_json['font_size']
+
         if auto_calc:
             if position == "middle":
                 x = int(width / 2)
-                y = int(height / 2)
+                y = int(height / 2) - int(font_size / 2)
             elif position == "start":
                 y = height
         else:
@@ -389,8 +429,7 @@ class PDFTemplate(object):
         text.fontName = DefaultFontName
         if "font_name" in format_json:
             text.fontName = format_json['font_name']
-        if "font_size" in format_json:
-            text.fontSize = format_json['font_size']
+        text.fontSize = font_size
         if "font_color" in format_json:
             text.fillColor = format_json['font_color']
         text.textAnchor = position
@@ -429,7 +468,7 @@ class PDFTemplate(object):
         stylesheet['BodyText'].fillColor = font_color
         if indent_flag:
             stylesheet['BodyText'].firstLineIndent = word_width * 2
-        stylesheet['BodyText'].leading = word_width * 1.5
+        stylesheet['BodyText'].leading = word_width * PDFTemplate.paragraph_leading
 
         paragraph = Paragraph(content, stylesheet['BodyText'])
         if "force_top" in format_json and int(format_json['force_top']) == 1:
@@ -608,6 +647,25 @@ class PDFTemplate(object):
             pass
 
     @staticmethod
+    def _calc_paragraph_height(item):
+        content = item['content']
+        font_name = DefaultFontName
+        if 'font_name' in item:
+            font_name = item['font_name']
+        font_size = STATE_DEFAULTS['fontSize']
+        if 'font_size' in item:
+            font_size = item['font_size']
+        paragraph_width = item['rect'][2]
+
+        content_width = stringWidth(content, font_name, font_size)
+        row_num = int(content_width / paragraph_width) + 1
+        if PDFTemplate.paragraph_leading > 1:
+            item['rect'][3] = int(row_num * font_size * PDFTemplate.paragraph_leading +
+                                  ((PDFTemplate.paragraph_leading - 1) * font_size))
+        else:
+            item['rect'][3] = int(row_num * font_size * PDFTemplate.paragraph_leading)
+
+    @staticmethod
     def _calc_positon(page):
         next_page = page.copy()
         next_page['items'] = []
@@ -627,6 +685,9 @@ class PDFTemplate(object):
         row_start = 0
 
         for item in page['items']:
+            if item['type'] == "paragraph" and "auto_height" in item and item['auto_height'] is True:
+                PDFTemplate._calc_paragraph_height(item)
+
             item_width = item['rect'][2]
             item_height = item['rect'][3]
 
@@ -777,83 +838,19 @@ class PDFTemplate(object):
 
     @staticmethod
     def set_text_data(pages, page_num, item_name, content):
-        pages['page%d' % page_num]['items'][item_name]['content'] = content
-        pages['page%d' % page_num]['items'][item_name]['invalid'] = False
+        item = pages['page%d' % page_num]['items'][item_name]
+        item['content'] = content
+        item['invalid'] = False
 
         return pages
 
     @staticmethod
     def set_paragraph_data(pages, page_num, item_name, content):
-        pages['page%d' % page_num]['items'][item_name]['content'] = content
-        pages['page%d' % page_num]['items'][item_name]['invalid'] = False
+        item = pages['page%d' % page_num]['items'][item_name]
+        item['content'] = content
+        item['invalid'] = False
 
         return pages
-
-    @staticmethod
-    def type_format(json_data):
-        if "page_size" in json_data:
-            json_data['page_size'] = json.loads(json_data['page_size'])
-
-        if "show_border" in json_data:
-            if json_data['show_border'] == "True":
-                json_data['show_border'] = True
-            elif json_data['show_border'] == "False":
-                json_data['show_border'] = False
-            else:
-                json_data['show_border'] = False
-        else:
-            json_data['show_border'] = False
-
-        if "pages" in json_data:
-            for page in json_data['pages']:
-                page = json_data['pages'][page]
-                if "rect" in page:
-                    page['rect'] = json.loads(page['rect'])
-
-                if "auto_position" in page:
-                    if page['auto_position'] == "True":
-                        page['auto_position'] = True
-                    elif page['auto_position'] == "False":
-                        page['auto_position'] = False
-                    else:
-                        page['auto_position'] = False
-                else:
-                    page['auto_position'] = False
-
-                if "x-padding" in page:
-                    page['x-padding'] = int(page['x-padding'])
-                else:
-                    page['x-padding'] = 0
-
-                if "y-padding" in page:
-                    page['y-padding'] = int(page['y-padding'])
-                else:
-                    page['y-padding'] = 0
-
-                if "align-type" not in page:
-                    page['align-type'] = "middle"
-
-                if "items" in page:
-                    for it in page['items']:
-                        it = page['items'][it]
-                        if "page_num" in it:
-                            it["page_num"] = int(it["page_num"])
-                        if "rect" in it:
-                            it['rect'] = json.loads(it['rect'])
-                        if "category_names" in it and type(it['category_names']) is str:
-                            it['category_names'] = json.loads(it['category_names'])
-                        if "font_color" in it:
-                            it["font_color"] = eval(it["font_color"])
-                        if "main_title_font_color" in it:
-                            it["main_title_font_color"] = eval(it["main_title_font_color"])
-                        if "font_size" in it:
-                            it["font_size"] = int(it["font_size"])
-                        if "main_title_font_size" in it:
-                            it["main_title_font_size"] = int(it["main_title_font_size"])
-                        if "indent_flag" in it:
-                            it["indent_flag"] = int(it["indent_flag"])
-
-        return json_data
 
     @staticmethod
     def read_template(file_name):
@@ -877,13 +874,13 @@ class PDFTemplate(object):
                 for item in page['items']:
                     item = page['items'][item]
                     if "invalid" not in item:
-                        item['invalid'] = True
+                        item['invalid'] = False
                     elif item['invalid'] == "True":
                         item['invalid'] = True
                     elif item['invalid'] == "False":
                         item['invalid'] = False
                     else:
-                        item['invalid'] = True
+                        item['invalid'] = False
         except Exception as err_info:
             import traceback
             traceback.print_exc()
