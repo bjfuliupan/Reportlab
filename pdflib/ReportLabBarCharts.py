@@ -159,7 +159,7 @@ class ReportLabBarChart(BarChart):
 
         legend_num = len(self.legendCategoryNames)
         temp_category_names = self.legendCategoryNames[:]
-        if legend_num > 1:
+        if legend_num >= 1:
             self.legendCategoryNames = []
             color_name_pairs = [(0, name) for name in temp_category_names]
 
@@ -179,7 +179,7 @@ class ReportLabBarChart(BarChart):
             if len(row_names) > 0:
                 self.legendCategoryNames.append(row_names)
         else:
-            self.legendCategoryNames = [temp_category_names]
+            self.legendCategoryNames = temp_category_names
 
     def draw(self):
         self.set_bar_color()
