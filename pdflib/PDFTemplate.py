@@ -650,68 +650,28 @@ class PDFTemplate(object):
             pass
 
     @staticmethod
-    def _calc_text_height(content, width, leading, font_name, font_size, indent_flag=0):
-        if indent_flag == 0:
-            tmp_content = content
-        else:
-            tmp_content = "    " + content
-
-        content_len = len(tmp_content)
-        # content_width = stringWidth(content, font_name, font_size)
-        row_num = 0
-        start_index = 0
-        i = 0
-        while i < content_len:
-            tmp_str = tmp_content[start_index:i]
-            tmp_width = stringWidth(tmp_str, font_name, font_size)
-            if tmp_width == width:
-                start_index = i
-                row_num += 1
-            elif tmp_width > width:
-                start_index = i - 1
-                row_num += 1
-            i += 1
-        if i != content_len:
-            row_num += 1
-
-        if leading > 1:
-            height = int(row_num * font_size * leading + ((leading - 1) * font_size))
-        else:
-            height = int(row_num * font_size * leading)
-
-        return height
-
-        # content_width = stringWidth(content, font_name, font_size)
-        # row_num = int(content_width / width) + 1
-        # if leading > 1:
-        #     height = int(row_num * font_size * leading + ((leading - 1) * font_size))
-        # else:
-        #     height = int(row_num * font_size * leading)
-        #
-        # return height
-
-    @staticmethod
     def _calc_paragraph_height(item):
-        content = item['content']
-        font_name = DefaultFontName
-        if 'font_name' in item:
-            font_name = item['font_name']
-        font_size = STATE_DEFAULTS['fontSize']
-        if 'font_size' in item:
-            font_size = item['font_size']
-        paragraph_width = item['rect'][2]
-        indent_flag = item['indent_flag']
-
-        item['rect'][3] = PDFTemplate._calc_text_height(content, paragraph_width, PDFTemplate.paragraph_leading,
-                                                        font_name, font_size, indent_flag)
+        p = PDFTemplate._draw_paragraph(item)
+        _, h = p.wrap(item['rect'][2], 0)
+        del p
+        return h
 
     @staticmethod
-    def _split_paragraph_text_by_height(content, width, split_height, leading, font_name, font_size, indent_flag):
+    def _auto_set_paragraph_height(item):
+        item['rect'][3] = PDFTemplate._calc_paragraph_height(item)
+
+    @staticmethod
+    def _split_paragraph_text_by_height(item, split_height):
+        content = item['content']
         str_len = len(content)
-        content_height = PDFTemplate._calc_text_height(content, width, leading, font_name, font_size, indent_flag)
+        content_height = PDFTemplate._calc_paragraph_height(item)
         split_index = int(split_height / content_height * str_len)
-        tmp_str = content[:split_index]
-        content_height = PDFTemplate._calc_text_height(tmp_str, width, leading, font_name, font_size, indent_flag)
+
+        tmp_item = deepcopy(item)
+        tmp_item['content'] = content[:split_index]
+        content_height = PDFTemplate._calc_paragraph_height(tmp_item)
+        del tmp_item
+
         if content_height > split_height:
             flag = 0
         else:
@@ -723,16 +683,18 @@ class PDFTemplate(object):
             else:
                 split_index += 1
 
-            tmp_str = content[:split_index]
-            tmp_height = PDFTemplate._calc_text_height(tmp_str, width, leading, font_name, font_size, indent_flag)
+            tmp_item = deepcopy(item)
+            tmp_item['content'] = content[:split_index]
+            tmp_height = PDFTemplate._calc_paragraph_height(tmp_item)
+            del tmp_item
 
             if flag == 0:
                 if tmp_height <= split_height:
-                    split_index -= 1
+                    # split_index -= 1
                     break
             else:
                 if tmp_height >= split_height:
-                    split_index -= 1
+                    # split_index -= 1
                     break
 
         return split_index
@@ -748,18 +710,8 @@ class PDFTemplate(object):
         if item_height + y <= page_height:
             return True
 
-        content = item['content']
         split_height = page_height - y
-        item_width = item['rect'][2]
-        indent_flag = item['indent_flag']
-        font_name = DefaultFontName
-        if 'font_name' in item:
-            font_name = item['font_name']
-        font_size = STATE_DEFAULTS['fontSize']
-        if 'font_size' in item:
-            font_size = item['font_size']
-        split_index = PDFTemplate._split_paragraph_text_by_height(
-            content, item_width, split_height, PDFTemplate.paragraph_leading, font_name, font_size, indent_flag)
+        split_index = PDFTemplate._split_paragraph_text_by_height(item, split_height)
 
         new_item = deepcopy(item)
         new_item['content'] = new_item['content'][split_index:]
@@ -793,7 +745,7 @@ class PDFTemplate(object):
 
         for item in page['items']:
             if item['type'] == "paragraph" and "auto_height" in item and item['auto_height'] is True:
-                PDFTemplate._calc_paragraph_height(item)
+                PDFTemplate._auto_set_paragraph_height(item)
 
             item_width = item['rect'][2]
             item_height = item['rect'][3]
