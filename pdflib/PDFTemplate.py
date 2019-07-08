@@ -120,6 +120,8 @@ class PDFTemplate(object):
                 if "items" in page:
                     for it in page['items']:
                         it = page['items'][it]
+                        it_type = it['type']
+
                         if "page_num" in it:
                             it["page_num"] = int(it["page_num"])
                         if "rect" in it:
@@ -137,13 +139,18 @@ class PDFTemplate(object):
                         if "indent_flag" in it:
                             it["indent_flag"] = int(it["indent_flag"])
 
-                        if "auto_height" in it:
-                            if it['auto_height'] == "True":
-                                it['auto_height'] = True
-                            elif it['auto_height'] == "False":
-                                it['auto_height'] = False
+                        if it_type == "paragraph":
+                            if "auto_height" in it:
+                                if it['auto_height'] == "True":
+                                    it['auto_height'] = True
+                                elif it['auto_height'] == "False":
+                                    it['auto_height'] = False
+                                else:
+                                    it['auto_height'] = False
                             else:
                                 it['auto_height'] = False
+                            if "style" not in it:
+                                it['style'] = "BodyText"
 
         return json_data
 
@@ -442,36 +449,31 @@ class PDFTemplate(object):
     @staticmethod
     def _draw_paragraph(format_json):
         content = format_json['content']
+        style_name = format_json['style']
         font_name = DefaultFontName
         if "font_name" in format_json:
             font_name = format_json['font_name']
-        font_size = STATE_DEFAULTS['fontSize']
+
+        stylesheet = getSampleStyleSheet()
+        ss = stylesheet[style_name]
+        ss.fontName = font_name
+
         if "font_size" in format_json:
-            font_size = format_json['font_size']
-        font_color = STATE_DEFAULTS['fontSize']
+            ss.fontSize = format_json['font_size']
+
         if "font_color" in format_json:
-            font_color = format_json['font_color']
+            ss.fillColor = format_json['font_color']
+
+        word_width = stringWidth(" ", font_name, ss.fontSize) * 2
+        ss.leading = word_width * PDFTemplate.paragraph_leading
+
         indent_flag = 0
         if "indent_flag" in format_json:
             indent_flag = format_json['indent_flag']
-
-        word_width = stringWidth(" ", font_name, font_size) * 2
-
-        # style = ParagraphStyle(
-        #     name='Normal',
-        #     fontName=font_name,
-        #     fontSize=font_size,
-        #     fillColor=font_color
-        # )
-        stylesheet = getSampleStyleSheet()
-        stylesheet['BodyText'].fontName = font_name
-        stylesheet['BodyText'].fontSize = font_size
-        stylesheet['BodyText'].fillColor = font_color
         if indent_flag:
-            stylesheet['BodyText'].firstLineIndent = word_width * 2
-        stylesheet['BodyText'].leading = word_width * PDFTemplate.paragraph_leading
+            ss.firstLineIndent = word_width * 2
 
-        paragraph = Paragraph(content, stylesheet['BodyText'])
+        paragraph = Paragraph(content, ss)
         if "force_top" in format_json and int(format_json['force_top']) == 1:
             _, h = paragraph.wrap(format_json['rect'][2], format_json['rect'][3])
             format_json['rect'][1] = format_json['rect'][1] + format_json['rect'][3] - h
@@ -690,11 +692,11 @@ class PDFTemplate(object):
 
             if flag == 0:
                 if tmp_height <= split_height:
-                    # split_index -= 1
+                    split_index -= 1
                     break
             else:
                 if tmp_height >= split_height:
-                    # split_index -= 1
+                    split_index -= 1
                     break
 
         return split_index

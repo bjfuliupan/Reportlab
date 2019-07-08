@@ -30,9 +30,10 @@
                     <type>paragraph</type>
                     <rect>[0, 0, 450, 0]</rect>
                     <content> </content>
+                    <style>BodyText</style>
                     <!--必填项-->
                     <auto_height>True</auto_height>
-                    <font_size>20</font_size>
+                    <!--<font_size>20</font_size>-->
                     <indent_flag>1</indent_flag>
                 </description>
                 <line_chart>
