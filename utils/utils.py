@@ -2,6 +2,7 @@ import collections
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+import json
 
 
 def datetime_to_str(dt: datetime) -> str:
@@ -30,3 +31,10 @@ def init_data_for_PDF(days_interval: int) -> collections.defaultdict:
 def datetime_z_convert(dt, fmt="%Y-%m-%dT%H:%M:%S.%fZ"):
     d = datetime.strptime(dt, fmt)
     return str(d.replace(tzinfo=timezone.utc).astimezone(tz=None))[:10]
+
+
+def pretty_print(data):
+    if isinstance(data, dict):
+        print(json.dumps(data, indent=4, ensure_ascii=False))
+    else:
+        print(data)

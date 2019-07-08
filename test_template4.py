@@ -9,6 +9,7 @@ import requests
 
 from pdflib import PDFTemplate
 from utils import utils
+from utils.utils import pretty_print
 
 GROUP_SENSORS_MAPPING = {
     "无分组": [
@@ -108,11 +109,14 @@ class DrawSensorHostLogPDF(object):
         self.group_sensor_mapping = post_data["group_sensor_mapping"]
         self.sensor_groups = list(self.group_sensor_mapping.keys())
         self.sensors = list(itertools.chain(*self.group_sensor_mapping.values()))
+        self.sensor_group_mapping = {sensor_id: group
+                                     for group, sensor_id_list in self.group_sensor_mapping.items()
+                                     for sensor_id in sensor_id_list}
         self.url = url
         self.base_payload = collections.defaultdict(lambda: BASE_PAYLOAD_MAPPING)
         self.template = None
         self.items = None
-        self.data_for_draw = utils.init_data_for_PDF(self.days_interval)
+        # self.data_for_draw = utils.init_data_for_PDF(self.days_interval)
 
     def init_template(self):
         # 初始化模板
@@ -156,7 +160,7 @@ class DrawSensorHostLogPDF(object):
         )
 
     def get_trend_data(self) -> dict:
-        data_for_draw = copy.deepcopy(self.data_for_draw)
+        data_for_draw = collections.defaultdict(lambda: [0] * (self.days_interval + 1))
         payload = self.base_payload["trend"]
         payload["start_time"] = self.start_time
         payload["end_time"] = self.end_time
@@ -239,10 +243,144 @@ class DrawSensorHostLogPDF(object):
 
         return data_for_draw
 
+    def set_sensor_groups_top10(self):
+        # 探针组TOP10
+        data_for_draw = self.get_sensor_groups_top10_data()
+
+        data_for_draw_reverse = {value: group for group, value in data_for_draw.items()}
+
+        value_list_sorted = sorted(list(data_for_draw_reverse.keys()), reverse=True)
+        sensor_groups = [data_for_draw_reverse[_] for _ in value_list_sorted]
+        value_list = [[_] for _ in value_list_sorted]
+
+        description = (
+            f"虚机安装日志-探针组TOP10，"
+            f"从{utils.datetime_to_str(self.start_time_of_datetime)} 至 "
+            f"{utils.datetime_to_str(self.end_time_of_datetime)},"
+            f"探针组: {sensor_groups}"
+        )
+
+        PDFTemplate.PDFTemplate.set_paragraph_data(
+            self.items["description_for_bar_chart"],
+            description
+        )
+
+        PDFTemplate.PDFTemplate.set_bar_chart_data(
+            self.items["bar_chart_sensor_group_top10"],
+            [value_list_sorted],
+            category_names=sensor_groups,
+            legend_names=["日志数量"]
+        )
+
+    def get_sensor_groups_top10_data(self) -> dict:
+
+        data_for_draw = collections.defaultdict(lambda: 0)
+
+        payload = self.base_payload["sensor_groups_top10"]
+        payload["start_time"] = self.start_time
+        payload["end_time"] = self.end_time
+        payload["page_name"] = "log_classify"
+        payload["item_id"] = 2
+        payload["rule_id"] = "00"
+        payload["search_index"] = "log*"
+        payload["data_scope"] = {
+            "FORMAT.raw": [
+                # "SENSOR_SAFEMODE_BOOT",
+                # "SENSOR_MULTIPLE_OS_BOOT",
+                "SENSOR_VM_INSTALLED",
+                # "SENSOR_SERVICECHANGE",
+                # "SENSOR_HARDWARE_CHANGE",
+                # "SENSOR_SOFTWARE_CHANGE",
+                # "SENSOR_INFO_WORK_TIME"
+            ],
+            "SENSOR_ID.raw": self.sensors,
+        }
+
+        status_code, content = self.post_payload_for_logs(payload)
+        # TODO if status_code != 200
+
+        # print(json.dumps(content["result"], indent=4))
+
+        for sensor_id_dict, value, *_ in content["result"]:
+            sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
+            group = self.sensor_group_mapping[sensor_id]
+            data_for_draw[group] += value
+
+        # pretty_print(data_for_draw)
+
+        return data_for_draw
+
+    def get_sensor_top10_data(self) -> dict:
+        data_for_draw = collections.defaultdict(lambda: 0)
+
+        payload = self.base_payload["sensor_top10"]
+        payload["start_time"] = self.start_time
+        payload["end_time"] = self.end_time
+        payload["page_name"] = "log_classify"
+        payload["item_id"] = 2
+        payload["rule_id"] = "00"
+        payload["search_index"] = "log*"
+        payload["data_scope"] = {
+            "FORMAT.raw": [
+                # "SENSOR_SAFEMODE_BOOT",
+                # "SENSOR_MULTIPLE_OS_BOOT",
+                "SENSOR_VM_INSTALLED",
+                # "SENSOR_SERVICECHANGE",
+                # "SENSOR_HARDWARE_CHANGE",
+                # "SENSOR_SOFTWARE_CHANGE",
+                # "SENSOR_INFO_WORK_TIME"
+            ],
+            "SENSOR_ID.raw": self.sensors,
+        }
+
+        status_code, content = self.post_payload_for_logs(payload)
+        # TODO if status_code != 200
+
+        # print(json.dumps(content["result"], indent=4))
+
+        for sensor_id_dict, value, *_ in content["result"]:
+            sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
+            data_for_draw[sensor_id] += value
+
+        # pretty_print(data_for_draw)
+
+        return data_for_draw
+
+    def set_sensor_top10(self):
+        data_for_draw = self.get_sensor_top10_data()
+        data_for_draw_reverse = {value: sensor_id for sensor_id, value in data_for_draw.items()}
+
+        sensor_id_list = []
+        value_list = []
+        for value in sorted(data_for_draw_reverse.keys(), reverse=True):
+            value_list.append(value)
+            sensor_id_list.append(data_for_draw_reverse[value])
+
+        description = (
+            f"虚机安装日志-探针TOP10，"
+            f"从{utils.datetime_to_str(self.start_time_of_datetime)} 至 "
+            f"{utils.datetime_to_str(self.end_time_of_datetime)},"
+            f"探针: {sensor_id_list}"
+        )
+
+        PDFTemplate.PDFTemplate.set_paragraph_data(
+            self.items["description_for_bar_chart1"],
+            description
+        )
+
+        PDFTemplate.PDFTemplate.set_bar_chart_data(
+            self.items["bar_chart_sensor_top10"],
+            [value_list],
+            category_names=sensor_id_list,
+            legend_names=["日志数量"]
+        )
+
     def run(self):
         self.init_template()
         self.set_trend()
         self.set_running_log_distributing()
+        self.set_sensor_groups_top10()
+        self.set_sensor_top10()
         PDFTemplate.PDFTemplate.draw(self.template)
 
 

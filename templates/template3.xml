@@ -57,8 +57,54 @@
             <rect>[200, 580, 200, 200]</rect>
             <data> </data>
             <!--必填项-->
-            <main_title>探针组身体状况示意图</main_title>
+            <main_title>运行日志分布展示</main_title>
             <main_title_font_size>10</main_title_font_size>
         </pie_chart>
+        <description_for_bar_chart>
+            <!--必填项-->
+            <page_num>1</page_num>
+            <type>paragraph</type>
+            <rect>[90, 50, 450, 50]</rect>
+            <content> </content>
+            <!--必填项-->
+            <font_size>12</font_size>
+            <indent_flag>1</indent_flag>
+        </description_for_bar_chart>
+        <bar_chart_sensor_group_top10>
+            <!--必填项-->
+            <page_num>1</page_num>
+            <type>bar_chart</type>
+            <rect>[100, 150, 430, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <data> </data>
+            <!--必填项-->
+            <main_title>虚机安装日志-探针组TOP10</main_title>
+            <main_title_font_size>10</main_title_font_size>
+            <x_desc>探针组</x_desc>
+            <y_desc>日志数量</y_desc>
+        </bar_chart_sensor_group_top10>
+        <description_for_bar_chart1>
+            <!--必填项-->
+            <page_num>1</page_num>
+            <type>paragraph</type>
+            <rect>[90, 400, 450, 50]</rect>
+            <content> </content>
+            <!--必填项-->
+            <font_size>12</font_size>
+            <indent_flag>1</indent_flag>
+        </description_for_bar_chart1>
+        <bar_chart_sensor_top10>
+            <!--必填项-->
+            <page_num>1</page_num>
+            <type>bar_chart</type>
+            <rect>[100, 480, 430, 200]</rect>
+            <bar_style>vertical</bar_style>
+            <data> </data>
+            <!--必填项-->
+            <main_title>虚机安装日志-探针TOP10</main_title>
+            <main_title_font_size>10</main_title_font_size>
+            <x_desc>探针组</x_desc>
+            <y_desc>日志数量</y_desc>
+        </bar_chart_sensor_top10>
     </items>
 </pdf>
