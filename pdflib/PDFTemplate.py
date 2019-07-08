@@ -521,6 +521,9 @@ class PDFTemplate(object):
             _pages[index]['align-type'] = page['align-type']
             for item in page['items']:
                 item = page['items'][item]
+                if item['invalid'] is True:
+                    continue
+
                 _pages[index]['items'].append(item)
 
             index += 1
@@ -598,9 +601,9 @@ class PDFTemplate(object):
             cv.setTitle(template_content['title'])
 
     @staticmethod
-    def _draw_border(cv, x, y, width, height):
+    def _draw_border(cv, x, y, width, height, color):
         d = Drawing(width, height)
-        r = Rect(0, 0, width, height, strokeColor=Color(1, 0, 0, 1), fillColor=Color(0, 0, 0, 0))
+        r = Rect(0, 0, width, height, strokeColor=color, fillColor=Color(0, 0, 0, 0))
         d.add(r)
         d.drawOn(cv, x, y)
 
@@ -620,7 +623,8 @@ class PDFTemplate(object):
                 item = PDFTemplate._draw_paragraph(it)
 
             if show_border:
-                PDFTemplate._draw_border(cv, it['rect'][0], it['rect'][1], it['rect'][2], it['rect'][3])
+                PDFTemplate._draw_border(cv, it['rect'][0], it['rect'][1], it['rect'][2], it['rect'][3],
+                                         Color(1, 0, 0, 1))
 
             if item is not None:
                 item.wrapOn(cv, it['rect'][2], it['rect'][3])
@@ -811,6 +815,7 @@ class PDFTemplate(object):
             else:
                 _pages[page_num + add_count] = deepcopy(pages[page_num])
         pages = deepcopy(_pages)
+        del _pages
 
         return pages
 
@@ -845,9 +850,9 @@ class PDFTemplate(object):
                 PDFTemplate._draw_header(cv, page_size, header_text)
                 PDFTemplate._draw_feet(cv, page_size, page_num + 1)
 
-            # if show_border:
-            #     PDFTemplate._draw_border(cv, pages[page_num]['rect'][0], pages[page_num]['rect'][1],
-            #                              pages[page_num]['rect'][2], pages[page_num]['rect'][3])
+            if show_border:
+                PDFTemplate._draw_border(cv, pages[page_num]['rect'][0], pages[page_num]['rect'][1],
+                                         pages[page_num]['rect'][2], pages[page_num]['rect'][3], Color(0, 0, 1, 1))
             PDFTemplate._draw_page(cv, pages[page_num]['items'], show_border)
 
         cv.save()
