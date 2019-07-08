@@ -49,7 +49,6 @@ class ReportLabPieChart(Pie):
         if main_title_font_color is not None:
             self.titleMainFontColor = main_title_font_color
 
-
     def get_limit_value(self):
         max_value = -9999999
         i = 0
