@@ -9,11 +9,12 @@
     <show_border>True</show_border>
     <pages>
         <page0>
-            <rect>[90, 75, 450, 700]</rect>
+            <rect>[90, 80, 450, 731]</rect>
             <auto_position>True</auto_position>
             <x-padding>20</x-padding>
             <y-padding>20</y-padding>
             <align-type>middle</align-type>
+            <invalid>False</invalid>
             <items>
                 <title>
                     <!--必填项-->
@@ -30,8 +31,8 @@
                     <type>paragraph</type>
                     <rect>[0, 0, 450, 0]</rect>
                     <content> </content>
+                    <style>BodyText</style>
                     <!--必填项-->
-                    <auto_height>True</auto_height>
                     <font_size>12</font_size>
                     <indent_flag>1</indent_flag>
                 </description>
@@ -46,6 +47,7 @@
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>月份</x_desc>
                     <y_desc>数量</y_desc>
+                    <invalid>True</invalid>
                 </line_chart>
                 <bar_chart>
                     <!--必填项-->
@@ -122,14 +124,16 @@
             </items>
         </page0>
         <page1>
-            <rect>[0, 0, 630, 891]</rect>
+            <rect>[90, 80, 450, 731]</rect>
+            <auto_position>True</auto_position>
+            <align-type>middle</align-type>
             <invalid>False</invalid>
             <items>
                 <bar_chart2>
                     <!--必填项-->
                     <page_num>1</page_num>
                     <type>bar_chart</type>
-                    <rect>[100, 460, 430, 200]</rect>
+                    <rect>[0, 85, 430, 200]</rect>
                     <bar_style>vertical</bar_style>
                     <data> </data>
                     <!--必填项-->
@@ -142,7 +146,8 @@
             </items>
         </page1>
         <page2>
-            <rect>[0, 0, 630, 891]</rect>
+            <rect>[90, 80, 450, 731]</rect>
+            <align-type>middle</align-type>
             <items>
                 <pie_chart>
                     <!--必填项-->
