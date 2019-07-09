@@ -152,8 +152,9 @@ class ReportLabBarChart(BarChart):
         legend_num = len(self.legendCategoryNames)
         data_num = len(self.data)
         for i in range(data_num):
-            self.bars[i].strokeColor = ALL_COLORS[i]
-            self.bars[i].fillColor = ALL_COLORS[i]
+            bar = self.bars[i]
+            bar.strokeColor = ALL_COLORS[i]
+            bar.fillColor = ALL_COLORS[i]
             if i >= legend_num:
                 self.legendCategoryNames.append("unknown")
 
@@ -183,6 +184,12 @@ class ReportLabBarChart(BarChart):
 
     def draw(self):
         self.set_bar_color()
+        if self.drawLegend is True:
+            if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
+                row_count = len(self.legendCategoryNames)
+                self.height -= 20 + row_count * self.legendFontSize
+                self.y += 20 + row_count * self.legendFontSize
+
         g = BarChart.draw(self)
 
         if self.drawLegend is True:

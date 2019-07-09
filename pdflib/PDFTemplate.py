@@ -852,6 +852,9 @@ class PDFTemplate(object):
     def set_line_chart_data(pages, page_num, item_name, data, category_names=None,
                             legend_names=None, main_title=None, x_desc=None, y_desc=None):
         item = pages['page%d' % page_num]['items'][item_name]
+        if item['type'] != "line_chart":
+            raise ValueError("item type is not line_chart.")
+
         item['data'] = data
         item['invalid'] = False
 
@@ -872,6 +875,9 @@ class PDFTemplate(object):
     def set_bar_chart_data(pages, page_num, item_name, data, category_names=None, bar_style=None,
                            legend_names=None, main_title=None, x_desc=None, y_desc=None):
         item = pages['page%d' % page_num]['items'][item_name]
+        if item['type'] != "bar_chart":
+            raise ValueError("item type is not bar_chart.")
+
         item['data'] = data
         item['invalid'] = False
 
@@ -893,6 +899,9 @@ class PDFTemplate(object):
     @staticmethod
     def set_pie_chart_data(pages, page_num, item_name, data, category_names=None, main_title=None):
         item = pages['page%d' % page_num]['items'][item_name]
+        if item['type'] != "pie_chart":
+            raise ValueError("item type is not pie_chart.")
+
         item['data'] = data
         item['invalid'] = False
 
@@ -906,6 +915,9 @@ class PDFTemplate(object):
     @staticmethod
     def set_text_data(pages, page_num, item_name, content):
         item = pages['page%d' % page_num]['items'][item_name]
+        if item['type'] != "text":
+            raise ValueError("item type is not text.")
+
         item['content'] = content
         item['invalid'] = False
 
@@ -914,6 +926,9 @@ class PDFTemplate(object):
     @staticmethod
     def set_paragraph_data(pages, page_num, item_name, content):
         item = pages['page%d' % page_num]['items'][item_name]
+        if item['type'] != "paragraph":
+            raise ValueError("item type is not paragraph.")
+
         item['content'] = content
         item['invalid'] = False
 

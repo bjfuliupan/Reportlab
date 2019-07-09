@@ -48,6 +48,7 @@
                     <x_desc>月份</x_desc>
                     <y_desc>数量</y_desc>
                     <invalid>True</invalid>
+                    <legend_position>bottom-mid</legend_position>
                 </line_chart>
                 <bar_chart>
                     <!--必填项-->
@@ -60,6 +61,7 @@
                     <main_title_font_size>10</main_title_font_size>
                     <x_desc>姓名</x_desc>
                     <y_desc>身高/体重</y_desc>
+                    <legend_position>bottom-mid</legend_position>
                 </bar_chart>
                 <line_chart2>
                     <!--必填项-->

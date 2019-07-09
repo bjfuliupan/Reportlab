@@ -60,7 +60,8 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
         legend_num = len(self.legendCategoryNames)
         data_num = len(self.data)
         for i in range(data_num):
-            self.lines[i].strokeColor = ALL_COLORS[i]
+            line = self.lines[i]
+            line.strokeColor = ALL_COLORS[i]
             if i >= legend_num:
                 self.legendCategoryNames.append("unknown")
 
@@ -90,6 +91,12 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
 
     def draw(self):
         self.set_line_color()
+        if self.drawLegend is True:
+            if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
+                row_count = len(self.legendCategoryNames)
+                self.height -= 20 + row_count * self.legendFontSize
+                self.y += 20 + row_count * self.legendFontSize
+
         g = HorizontalLineChart.draw(self)
 
         if self.drawLegend:
