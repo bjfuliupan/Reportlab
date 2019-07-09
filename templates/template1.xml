@@ -12,7 +12,7 @@
             <rect>[90, 80, 450, 731]</rect>
             <auto_position>True</auto_position>
             <x-padding>20</x-padding>
-            <y-padding>0</y-padding>
+            <y-padding>20</y-padding>
             <align-type>middle</align-type>
             <invalid>False</invalid>
             <items>
@@ -33,8 +33,7 @@
                     <content> </content>
                     <style>BodyText</style>
                     <!--必填项-->
-                    <auto_height>True</auto_height>
-                    <font_size>20</font_size>
+                    <font_size>12</font_size>
                     <indent_flag>1</indent_flag>
                 </description>
                 <line_chart>

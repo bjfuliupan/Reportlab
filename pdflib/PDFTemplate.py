@@ -140,15 +140,6 @@ class PDFTemplate(object):
                             it["indent_flag"] = int(it["indent_flag"])
 
                         if it_type == "paragraph":
-                            if "auto_height" in it:
-                                if it['auto_height'] == "True":
-                                    it['auto_height'] = True
-                                elif it['auto_height'] == "False":
-                                    it['auto_height'] = False
-                                else:
-                                    it['auto_height'] = False
-                            else:
-                                it['auto_height'] = False
                             if "style" not in it:
                                 it['style'] = "BodyText"
 
@@ -750,7 +741,7 @@ class PDFTemplate(object):
         row_start = 0
 
         for item in page['items']:
-            if item['type'] == "paragraph" and "auto_height" in item and item['auto_height'] is True:
+            if item['type'] == "paragraph":
                 PDFTemplate._auto_set_paragraph_height(item)
 
             item_width = item['rect'][2]
@@ -775,7 +766,7 @@ class PDFTemplate(object):
 
             if next_y > page_height:
                 if cur_y != 0 or item['type'] == "paragraph":
-                    if "auto_height" in item and item['auto_height'] is True:
+                    if item['type'] == "paragraph":
                         split_flag = PDFTemplate._split_paragraph(page['items'], index, page_height)
                         if split_flag:
                             next_page_index += 1
