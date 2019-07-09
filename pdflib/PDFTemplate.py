@@ -10,7 +10,7 @@ from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isList
 from reportlab.lib.styles import getSampleStyleSheet  # , ParagraphStyle
 from reportlab.platypus import Paragraph  # , SimpleDocTemplate  # , KeepTogether
 from reportlab.pdfgen import canvas
-# from reportlab.lib import colors
+from reportlab.lib import colors
 from reportlab.lib.colors import Color
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
@@ -18,6 +18,7 @@ from pdflib.ReportLabLineCharts import ReportLabHorizontalLineChart
 from pdflib.ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVerticalBarChart
 from pdflib.ReportLabPieCharts import ReportLabPieChart
 from pdflib.ReportLabLib import DefaultFontName
+from reportlab.platypus import Table, TableStyle
 
 
 class PDFTemplate(object):
@@ -440,6 +441,63 @@ class PDFTemplate(object):
         return d
 
     @staticmethod
+    def _draw_table(format_json):
+        """
+        :param format_json:
+        :return:
+        """
+
+        font_name = DefaultFontName
+        if "font_name" in format_json:
+            font_name = format_json['font_name']
+        font_size = STATE_DEFAULTS['fontSize']
+        if "font_size" in format_json:
+            font_size = format_json['font_size']
+        font_color = STATE_DEFAULTS['fontSize']
+        if "font_color" in format_json:
+            font_color = format_json['font_color']
+        indent_flag = 0
+        if "indent_flag" in format_json:
+            indent_flag = format_json['indent_flag']
+
+        word_width = stringWidth(" ", font_name, font_size) * 2
+
+        # style = ParagraphStyle(
+        #     name='Normal',
+        #     fontName=font_name,
+        #     fontSize=font_size,
+        #     fillColor=font_color
+        # )
+        stylesheet = getSampleStyleSheet()
+        stylesheet['BodyText'].fontName = font_name
+        stylesheet['BodyText'].fontSize = font_size
+        stylesheet['BodyText'].fillColor = font_color
+
+        if "columns" not in format_json:
+            raise ValueError("don't have any columns infomation. ")
+
+        cols = format_json["columns"]
+
+        # columns names
+        data = cols.items().values()
+
+        # generate table style
+        style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.burlywood),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.red),
+            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+        ])
+        content = format_json["content"]
+
+        # merage data
+        data.extend(content)
+        table = Table(data)
+        table.setStyle(style)
+
+        return table
+
+    @staticmethod
     def _draw_paragraph(format_json):
         content = format_json['content']
         font_name = DefaultFontName
@@ -616,6 +674,8 @@ class PDFTemplate(object):
                 item = PDFTemplate._draw_text(it)
             elif it['type'] == 'paragraph':
                 item = PDFTemplate._draw_paragraph(it)
+            elif it['type'] == 'table':
+                item = PDFTemplate._draw_table(it)
 
             if show_border:
                 PDFTemplate._draw_border(cv, it['rect'][0], it['rect'][1], it['rect'][2], it['rect'][3])
@@ -897,6 +957,13 @@ class PDFTemplate(object):
             PDFTemplate._draw_page(cv, pages[page_num]['items'], show_border)
 
         cv.save()
+
+    @staticmethod
+    def set_table_data(pages, page_num, item_name, data):
+        item = pages['page%d' % page_num]['items'][item_name]
+        item['data'] = data
+        item['invalid'] = False
+        return pages
 
     @staticmethod
     def set_line_chart_data(pages, page_num, item_name, data, category_names=None,
