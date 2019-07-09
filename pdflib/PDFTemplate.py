@@ -454,11 +454,6 @@ class PDFTemplate(object):
         font_color = STATE_DEFAULTS['fontSize']
         if "font_color" in format_json:
             font_color = format_json['font_color']
-        indent_flag = 0
-        if "indent_flag" in format_json:
-            indent_flag = format_json['indent_flag']
-
-        word_width = stringWidth(" ", font_name, font_size) * 2
 
         # style = ParagraphStyle(
         #     name='Normal',
@@ -467,9 +462,10 @@ class PDFTemplate(object):
         #     fillColor=font_color
         # )
         stylesheet = getSampleStyleSheet()
-        stylesheet['BodyText'].fontName = font_name
-        stylesheet['BodyText'].fontSize = font_size
-        stylesheet['BodyText'].fillColor = font_color
+        ss = stylesheet['BodyText']
+        ss.fontName = font_name
+        ss.fontSize = font_size
+        ss.fillColor = font_color
 
         if "columns" not in format_json:
             raise ValueError("don't have any columns infomation. ")
@@ -477,7 +473,8 @@ class PDFTemplate(object):
         cols = format_json["columns"]
 
         # columns names
-        data = cols.items().values()
+        _cols = cols.items()
+        data = [tuple([v for _, v in cols.items()])]
 
         # generate table style
         style = TableStyle([
@@ -707,6 +704,34 @@ class PDFTemplate(object):
             pass
 
     @staticmethod
+    def _cut_table_rows(item, split_height):
+        ret = 0
+        t = PDFTemplate._draw_table(item)
+        t.wrap(1, 0)
+
+        curr_y = 0
+        for idx, val in enumerate(t._rowHeights):
+            curr_y += val
+            if curr_y >= split_height:
+                ret = idx
+                break
+            # print(idx, val)
+        del t
+        return ret - 1
+
+
+    @staticmethod
+    def _calc_table_height(item):
+        t = PDFTemplate._draw_table(item)
+        _, h = t.wrap(1, 0)
+        del t
+        return h
+
+    @staticmethod
+    def _auto_set_table_height(item):
+        item['rect'][3] = PDFTemplate._calc_table_height(item)
+
+    @staticmethod
     def _calc_paragraph_height(item):
         p = PDFTemplate._draw_paragraph(item)
         _, h = p.wrap(item['rect'][2], 0)
@@ -757,6 +782,28 @@ class PDFTemplate(object):
         return split_index
 
     @staticmethod
+    def _split_table(items, index, page_height):
+        item = items[index]
+
+        item_height = item['rect'][3]
+        y = item['rect'][1]
+        if item_height + y <= page_height:
+            return True
+
+        split_height = page_height - y
+        split_index = PDFTemplate._cut_table_rows(item, split_height)
+
+        new_item = deepcopy(item)
+        new_item['content'] = new_item['content'][split_index:]
+
+        item['content'] = item['content'][:split_index]
+        item['rect'][3] = split_height
+
+        items.insert(index + 1, new_item)
+
+        return True
+
+    @staticmethod
     def _split_paragraph(items, index, page_height):
         item = items[index]
         if item['type'] != "paragraph":
@@ -803,6 +850,12 @@ class PDFTemplate(object):
         for item in page['items']:
             if item['type'] == "paragraph":
                 PDFTemplate._auto_set_paragraph_height(item)
+            elif item['type'] == 'table':
+                PDFTemplate._auto_set_table_height(item)
+
+                table_width = item['rect'][2]
+                if table_width > page_width:
+                    raise ValueError("table width too long")
 
             item_width = item['rect'][2]
             item_height = item['rect'][3]
@@ -825,12 +878,18 @@ class PDFTemplate(object):
                     next_y = cur_y + item_height + y_padding
 
             if next_y > page_height:
-                if cur_y != 0 or item['type'] == "paragraph":
+                if cur_y != 0 or item['type'] == "paragraph" or item['type'] == "table":
+                    split_flag = False
                     if item['type'] == "paragraph":
                         split_flag = PDFTemplate._split_paragraph(page['items'], index, page_height)
-                        if split_flag:
-                            next_page_index += 1
-                            index += 1
+                    elif item['type'] == "table":
+                        #Todo: split table to next page
+                        split_flag = PDFTemplate._split_table(page['items'], index, page_height)
+
+                    if split_flag:
+                        next_page_index += 1
+                        index += 1
+
                     next_page_flag = True
                     break
 
@@ -910,8 +969,25 @@ class PDFTemplate(object):
 
     @staticmethod
     def set_table_data(pages, page_num, item_name, data):
+        """
+
+        :param pages:
+        :param page_num:
+        :param item_name:
+        :param data: list(tuple())
+        :return:
+        """
         item = pages['page%d' % page_num]['items'][item_name]
-        item['data'] = data
+
+        stylesheet = getSampleStyleSheet()
+        ss = stylesheet['BodyText']
+        ss.fontName = DefaultFontName
+
+        # convert data to paragraph
+        temp = []
+        for d in data:
+            temp.append(tuple([Paragraph(str(i), ss) for i in d]))
+        item['content'] = temp
         item['invalid'] = False
         return pages
 
