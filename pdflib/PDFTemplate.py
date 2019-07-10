@@ -367,10 +367,12 @@ class PDFTemplate(object):
 
         d = Drawing(width, height, vAlign="TOP")
 
-        x = 30  # format_json['rect'][0]
-        y = 30  # format_json['rect'][1]
-        width -= 60
-        height -= 60
+        x = 0
+        y = 0
+        # x = 30  # format_json['rect'][0]
+        # y = 30  # format_json['rect'][1]
+        # width -= 60
+        # height -= 60
         if format_json['data'] is None or type(format_json['data']) is str:
             PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
         elif type(format_json['data']) is list:
@@ -393,7 +395,8 @@ class PDFTemplate(object):
             pie_chart = ReportLabPieChart(x, y, width, height, cat_names, data, main_title=main_title,
                                           main_title_font_name=main_title_font_name,
                                           main_title_font_size=main_title_font_size,
-                                          main_title_font_color=main_title_font_color)
+                                          main_title_font_color=main_title_font_color,
+                                          draw_legend=True)
             d.add(pie_chart)
 
         return d
@@ -477,7 +480,7 @@ class PDFTemplate(object):
         data = [tuple([v for _, v in cols.items()])]
 
         # generate table style
-        style = TableStyle([
+        ts = TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.burlywood),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.red),
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
@@ -488,7 +491,7 @@ class PDFTemplate(object):
         # merage data
         data.extend(content)
         table = Table(data)
-        table.setStyle(style)
+        table.setStyle(ts)
 
         return table
 
@@ -715,10 +718,9 @@ class PDFTemplate(object):
             if curr_y >= split_height:
                 ret = idx
                 break
-            # print(idx, val)
+
         del t
         return ret - 1
-
 
     @staticmethod
     def _calc_table_height(item):
@@ -883,7 +885,7 @@ class PDFTemplate(object):
                     if item['type'] == "paragraph":
                         split_flag = PDFTemplate._split_paragraph(page['items'], index, page_height)
                     elif item['type'] == "table":
-                        #Todo: split table to next page
+                        # split table to next page
                         split_flag = PDFTemplate._split_table(page['items'], index, page_height)
 
                     if split_flag:
@@ -989,11 +991,11 @@ class PDFTemplate(object):
             temp.append(tuple([Paragraph(str(i), ss) for i in d]))
         item['content'] = temp
         item['invalid'] = False
+
         return pages
 
     @staticmethod
-    def set_line_chart_data(pages, page_num, item_name, data, category_names=None,
-                            legend_names=None, main_title=None, x_desc=None, y_desc=None):
+    def set_line_chart_data(pages, page_num, item_name, data, **kwargs):
         item = pages['page%d' % page_num]['items'][item_name]
         if item['type'] != "line_chart":
             raise ValueError("item type is not line_chart.")
@@ -1001,22 +1003,13 @@ class PDFTemplate(object):
         item['data'] = data
         item['invalid'] = False
 
-        if category_names is not None:
-            item['category_names'] = category_names
-        if legend_names is not None:
-            item['legend_names'] = legend_names
-        if main_title is not None:
-            item['main_title'] = main_title
-        if x_desc is not None:
-            item['x_desc'] = x_desc
-        if y_desc is not None:
-            item['y_desc'] = y_desc
+        for k, v in kwargs.items():
+            item[k] = v
 
         return pages
 
     @staticmethod
-    def set_bar_chart_data(pages, page_num, item_name, data, category_names=None, bar_style=None,
-                           legend_names=None, main_title=None, x_desc=None, y_desc=None):
+    def set_bar_chart_data(pages, page_num, item_name, data, **kwargs):
         item = pages['page%d' % page_num]['items'][item_name]
         if item['type'] != "bar_chart":
             raise ValueError("item type is not bar_chart.")
@@ -1024,23 +1017,13 @@ class PDFTemplate(object):
         item['data'] = data
         item['invalid'] = False
 
-        if category_names is not None:
-            item['category_names'] = category_names
-        if bar_style is not None:
-            item['bar_style'] = bar_style
-        if legend_names is not None:
-            item['legend_names'] = legend_names
-        if main_title is not None:
-            item['main_title'] = main_title
-        if x_desc is not None:
-            item['x_desc'] = x_desc
-        if y_desc is not None:
-            item['y_desc'] = y_desc
+        for k, v in kwargs.items():
+            item[k] = v
 
         return pages
 
     @staticmethod
-    def set_pie_chart_data(pages, page_num, item_name, data, category_names=None, main_title=None):
+    def set_pie_chart_data(pages, page_num, item_name, data, **kwargs):
         item = pages['page%d' % page_num]['items'][item_name]
         if item['type'] != "pie_chart":
             raise ValueError("item type is not pie_chart.")
@@ -1048,10 +1031,8 @@ class PDFTemplate(object):
         item['data'] = data
         item['invalid'] = False
 
-        if category_names is not None:
-            item['category_names'] = category_names
-        if main_title is not None:
-            item['main_title'] = main_title
+        for k, v in kwargs.items():
+            item[k] = v
 
         return pages
 

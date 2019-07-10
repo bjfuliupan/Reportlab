@@ -155,7 +155,7 @@
                     <!--必填项-->
                     <page_num>2</page_num>
                     <type>pie_chart</type>
-                    <rect>[100, 460, 200, 200]</rect>
+                    <rect>[100, 460, 250, 200]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针组身体状况示意图</main_title>
