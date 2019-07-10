@@ -650,9 +650,9 @@ class PDFTemplate(object):
             cv.setTitle(template_content['title'])
 
     @staticmethod
-    def _draw_border(cv, x, y, width, height, color):
+    def _draw_border(cv, x, y, width, height, color, stroke_width=1):
         d = Drawing(width, height)
-        r = Rect(0, 0, width, height, strokeColor=color, fillColor=Color(0, 0, 0, 0))
+        r = Rect(0, 0, width, height, strokeWidth=stroke_width, strokeColor=color, fillColor=Color(0, 0, 0, 0))
         d.add(r)
         d.drawOn(cv, x, y)
 
@@ -964,7 +964,7 @@ class PDFTemplate(object):
 
             if show_border:
                 PDFTemplate._draw_border(cv, pages[page_num]['rect'][0], pages[page_num]['rect'][1],
-                                         pages[page_num]['rect'][2], pages[page_num]['rect'][3], Color(0, 0, 1, 1))
+                                         pages[page_num]['rect'][2], pages[page_num]['rect'][3], Color(0, 0, 1, 1), 2)
             PDFTemplate._draw_page(cv, pages[page_num]['items'], show_border)
 
         cv.save()
