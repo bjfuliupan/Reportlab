@@ -143,6 +143,8 @@ class PDFTemplate(object):
                         if it_type == "paragraph":
                             if "style" not in it:
                                 it['style'] = "BodyText"
+                            if not it.get("content"):
+                                it["content"] = ""
 
         return json_data
 
