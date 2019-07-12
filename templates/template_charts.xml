@@ -42,7 +42,7 @@
         </page0>
         <page1>
             <!--探针主机日志分析页面-->
-            <rect>[0, 80, 630, 731]</rect>
+            <rect>[90, 80, 450, 731]</rect>
             <auto_position>True</auto_position>
             <x-padding>10</x-padding>
             <y-padding>25</y-padding>
@@ -293,7 +293,7 @@
         </page1>
         <page2>
             <!--探针安全日志分析页分为三大块分别为 违规定义日志分析图， 违规详情日志， 其他安全日志-->
-            <rect>[0, 0, 630, 731]</rect>
+            <rect>[90, 80, 450, 731]</rect>
             <auto_position>True</auto_position>
             <x-padding>10</x-padding>
             <y-padding>10</y-padding>
