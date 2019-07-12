@@ -6,7 +6,7 @@
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
-    <show_border>False</show_border>
+    <show_border>True</show_border>
     <pages>
         <page0>
             <rect>[90, 80, 450, 731]</rect>
@@ -42,7 +42,11 @@
         </page0>
         <page1>
             <!--探针主机日志分析页面-->
-            <rect>[0, 0, 630, 731]</rect>
+            <rect>[0, 80, 630, 731]</rect>
+            <auto_position>True</auto_position>
+            <x-padding>10</x-padding>
+            <y-padding>25</y-padding>
+            <align-type>middle</align-type>
             <invalid>False</invalid>
             <items>
                 <section_heading>
@@ -82,7 +86,7 @@
                     <!--必填项-->
                     <type>paragraph</type>
                     <rect>[0, 0, 450, 0]</rect>
-                    <content><![CDATA[运行日志分析图 - 日志分布:]]> </content>
+                    <content> </content>
                     <!--必填项-->
                     <indent_flag>0</indent_flag>
                 </section_heading1>
@@ -101,7 +105,7 @@
                     <!--必填项-->
                     <type>paragraph</type>
                     <rect>[0, 0, 450, 0]</rect>
-                    <content><![CDATA[运行日志分析图 - 探针组TOP10分析:]]> </content>
+                    <content> </content>
                     <!--必填项-->
                     <indent_flag>1</indent_flag>
                 </section_desc3>
@@ -135,6 +139,16 @@
                     <!--必填项-->
                     <main_title_font_size>10</main_title_font_size>
                 </sensor_group_top_SENSOR_VM_INSTALLED>
+
+                <sensor_group_top_SENSOR_SERVICECHANGE>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 200, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title_font_size>10</main_title_font_size>
+                </sensor_group_top_SENSOR_SERVICECHANGE>
 
                 <sensor_group_top_SENSOR_SERVICERUN>
                     <!--必填项-->
@@ -191,7 +205,7 @@
                     <!--必填项-->
                     <type>paragraph</type>
                     <rect>[0, 0, 450, 0]</rect>
-                    <content><![CDATA[运行日志分析图 - 探针TOP10分析:]]> </content>
+                    <content> </content>
                     <!--必填项-->
                     <indent_flag>1</indent_flag>
                 </section_desc4>
@@ -270,6 +284,10 @@
         <page2>
             <!--探针安全日志分析页分为三大块分别为 违规定义日志分析图， 违规详情日志， 其他安全日志-->
             <rect>[0, 0, 630, 731]</rect>
+            <auto_position>True</auto_position>
+            <x-padding>10</x-padding>
+            <y-padding>10</y-padding>
+            <align-type>middle</align-type>
             <items>
                 <violation_triggered_heading>
                     <!--违规定义日志-->
@@ -277,6 +295,7 @@
                     <type>paragraph</type>
                     <style>Heading2</style>
                     <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
                     <!--必填项-->
                     <indent_flag>0</indent_flag>
                 </violation_triggered_heading>
@@ -341,6 +360,7 @@
                     <type>paragraph</type>
                     <style>Heading2</style>
                     <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
                     <!--必填项-->
                     <indent_flag>0</indent_flag>
                 </violation_detail_heading>
@@ -482,6 +502,7 @@
                     <type>paragraph</type>
                     <style>Heading2</style>
                     <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
                     <!--必填项-->
                     <indent_flag>0</indent_flag>
                 </violation_others_heading>

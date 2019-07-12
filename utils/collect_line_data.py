@@ -11,7 +11,7 @@ def collect_data_from_es(payload: dict, days_interval: int, start_time_datetime:
     # util.pretty_print(es_log_data)
 
     # 统计数据
-    chart_data = util.init_data_for_PDF(days_interval)
+    chart_data = util.init_data_for_pdf_with_interval(days_interval)
     for key_list, value, *_ in es_log_data["result"]:
         log_format, log_time = None, None
         for key_dict in key_list:
@@ -60,7 +60,7 @@ def collect_data_from_es(payload: dict, days_interval: int, start_time_datetime:
 
 def collect_line_data_for_draw(payload: dict) -> tuple:
     """通过payload获取日志，进行清洗并返回
-    :param payload: ES 日志post 参数
+    :param payload: ES 日志 POST 参数
     :return:
     """
     start_time_datetime = util.payload_time_to_datetime(payload["start_time"])

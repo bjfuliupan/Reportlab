@@ -26,9 +26,14 @@ def time_with_Z_to_datetime(z_time: str) -> datetime:
            timedelta(hours=8)
 
 
-def init_data_for_PDF(days_interval: int) -> collections.defaultdict:
+def init_data_for_pdf_with_interval(days_interval: int) -> collections.defaultdict:
     # 初始化图数据，初始list中元素数量为 end_time - start_time + 1
     return collections.defaultdict(lambda: [0 for _ in range(days_interval+1)])
+
+
+def init_data_for_pdf_with_format() -> collections.defaultdict:
+    # 初始化图数据，默认value为 int， default 0
+    return collections.defaultdict(lambda: 0)
 
 
 def datetime_z_convert(dt, fmt="%Y-%m-%dT%H:%M:%S.%fZ"):
