@@ -121,16 +121,18 @@ class ReportLabPieChart(Pie):
         for i in range(cn_len):
             max_width.append(0)
 
+        max_legend_width = 0
         for i in range(cn_len):
+            tmp_width = ChartsLegend.calc_legend_width([(0, self.legendCategoryNames[i])], 10, 10, DefaultFontName,
+                                                       self.legendFontSize)
+            if tmp_width > max_legend_width:
+                max_legend_width = tmp_width
+
             for str_i in range(len(self.legendCategoryNames[i])):
                 tmp_width = stringWidth(self.legendCategoryNames[i][str_i],
                                         self.legendFontName, self.legendFontSize) + 2
                 if tmp_width > max_width[str_i]:
                     max_width[str_i] = tmp_width
-
-        total_width = 0
-        for i in range(cn_len):
-            total_width += max_width[i]
 
         for i in range(len(self.legendCategoryNames)):
             legend = ChartsLegend()
@@ -138,7 +140,7 @@ class ReportLabPieChart(Pie):
             legend.positionType = self.legendPositionType
             if self.legendPositionType != "null":
                 legend.backgroundRect = \
-                    Rect(self.x - 20 + total_width, self.y - 60 - (i * int(self.legendFontSize * 1.5)),
+                    Rect(self.x + max_legend_width + 5, self.y - 60 - (i * int(self.legendFontSize * 1.5)),
                          self.width + 60, self.height + 60)
 
             legend.adjustX = self.legendAdjustX

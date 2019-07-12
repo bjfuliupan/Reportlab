@@ -371,11 +371,11 @@ class PDFTemplate(object):
 
         x = 0
         y = 0
-        # x = 30  # format_json['rect'][0]
-        # y = 30  # format_json['rect'][1]
-        # width -= 60
-        # height -= 60
         if format_json['data'] is None or type(format_json['data']) is str:
+            x = 20
+            y = 20
+            width -= 40
+            height -= 50
             PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
