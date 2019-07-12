@@ -240,6 +240,16 @@
                     <main_title_font_size>10</main_title_font_size>
                 </sensor_top_SENSOR_SERVICERUN>
 
+                <sensor_top_SENSOR_SERVICECHANGE>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 200, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title_font_size>10</main_title_font_size>
+                </sensor_top_SENSOR_SERVICECHANGE>
+
                 <sensor_top_SENSOR_HARDWARE_CHANGE>
                     <!--必填项-->
                     <type>bar_chart</type>

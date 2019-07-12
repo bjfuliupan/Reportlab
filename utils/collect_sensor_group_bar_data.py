@@ -24,6 +24,9 @@ def collect_bar_data_for_draw(base_payload: dict, log_formats: list, sensor_id_g
 
         # 获取数据
         es_log_data = util.post_mrule(payload)
+        # 请求结果为空
+        if not es_log_data["result"]:
+            continue
         # util.pretty_print(es_log_data)
 
         # 数据统计
@@ -34,14 +37,14 @@ def collect_bar_data_for_draw(base_payload: dict, log_formats: list, sensor_id_g
             data_for_draw_with_group[sensor_gorup] += value
 
         if sort_flag:
-            data_for_draw_with_group_orderd = \
+            data_for_draw_with_group_ordered = \
                 sorted(
                     data_for_draw_with_group.items(),
                     key=lambda group_value: group_value[1],
                     reverse=True
                 )
             data_for_draw_with_group = \
-                collections.OrderedDict(data_for_draw_with_group_orderd)
+                collections.OrderedDict(data_for_draw_with_group_ordered)
 
         # 获取柱状图横坐标（如探针组）
         category_names = list(data_for_draw_with_group.keys())
@@ -56,7 +59,7 @@ def collect_bar_data_for_draw(base_payload: dict, log_formats: list, sensor_id_g
 
         # print(groups, "\n", datas)
         data_for_draw[log_format] = {
-            "datas": datas,
+            "data": datas,
             "category_names": category_names,
             "legend_names": legend_names
         }

@@ -1,6 +1,7 @@
 from utils import collect_line_data
 from utils import collect_pie_data
-from utils import collect_bar_data
+from utils import collect_sensor_group_bar_data
+from utils import collect_sensor_bar_data
 import os
 from pdflib.PDFTemplate import PDFTemplate
 
@@ -13,6 +14,7 @@ class TemplateTable():
         self.template_path = template_path
         self.sensor_id_group_mapping = sensor_id_group_mapping
         self.log_formats_for_bar = payloads["log_formats"]
+        self.template = None
         self.pages = None
 
     def init_template(self):
@@ -75,8 +77,8 @@ class TemplateTable():
             category_names=category_names
         )
 
-    def produce_bar_chart(self):
-        bar_chart_data_dict = collect_bar_data.collect_bar_data_for_draw(
+    def produce_sensor_group_bar_chart(self):
+        bar_chart_data_dict = collect_sensor_group_bar_data.collect_bar_data_for_draw(
             self.payloads["bar_chart"],
             self.log_formats_for_bar,
             self.sensor_id_group_mapping
@@ -90,10 +92,35 @@ class TemplateTable():
                 self.pages,
                 1,
                 f"sensor_group_top_{log_format}",
-                data=bar_chart_data["datas"],
+                data=bar_chart_data["data"],
                 category_names=category_names,
                 legend_names=legend_names
             )
+
+    def produce_sensor_bar_chart(self):
+        bar_chart_data_dict = collect_sensor_bar_data.collect_bar_data_for_draw(
+            self.payloads["bar_chart"],
+            self.log_formats_for_bar,
+            self.sensor_id_group_mapping,
+        )
+
+        for log_format, bar_chart_data in bar_chart_data_dict.items():
+            print(log_format, "\n", bar_chart_data)
+            category_names = bar_chart_data["category_names"]
+            legend_names = bar_chart_data["legend_names"]
+
+            PDFTemplate.set_bar_chart_data(
+                self.pages,
+                1,
+                f"sensor_top_{log_format}",
+                data=bar_chart_data["data"],
+                category_names=category_names,
+                legend_names=legend_names,
+            )
+
+    def produce_bar_chart(self):
+        self.produce_sensor_group_bar_chart()
+        self.produce_sensor_bar_chart()
 
     def main(self):
         self.init_template()
@@ -249,7 +276,12 @@ def test_case():
 },
         "log_formats": [
             "SENSOR_SERVICECHANGE",
-            "SENSOR_HARDWARE_CHANGE"
+            "SENSOR_HARDWARE_CHANGE",
+            "SENSOR_MULTIPLE_OS_BOOT",
+            "SENSOR_SAFEMODE_BOOT",
+            "SENSOR_VM_INSTALLED",
+            "SENSOR_SOFTWARE_CHANGE",
+            "SENSOR_INFO_WORK_TIME"
         ]
     }
     sensor_id_group_mapping = {
