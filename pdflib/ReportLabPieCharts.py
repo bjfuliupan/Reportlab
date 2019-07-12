@@ -64,6 +64,8 @@ class ReportLabPieChart(Pie):
         self.drawLegend = draw_legend
         self.legendCategoryNames = []
         if self.drawLegend is True:
+            self.labels = None
+
             if isListOfStrings(cat_names) is True:
                 self.legendCategoryNames = cat_names
             self.legendPositionType = legend_position
