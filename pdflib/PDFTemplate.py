@@ -225,12 +225,8 @@ class PDFTemplate(object):
 
         d = Drawing(width, height, vAlign="TOP")
 
-        x = 20  # format_json['rect'][0]
-        y = 20  # format_json['rect'][1]
-        width -= 40
-        height -= 50
         if format_json['data'] is None or type(format_json['data']) is str:
-            PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
+            PDFTemplate._draw_chart_rect(d, 20, 20, width - 40, height - 50, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
             data = format_json['data']
@@ -269,7 +265,7 @@ class PDFTemplate(object):
             if "y_desc" in format_json and isString(format_json['y_desc']) is True:
                 y_desc = format_json['y_desc']
 
-            line_chart = ReportLabHorizontalLineChart(x, y, width, height, cat_names, data, step_count=step_count,
+            line_chart = ReportLabHorizontalLineChart(0, 0, width, height, cat_names, data, step_count=step_count,
                                                       legend_names=legend_names, legend_position=legend_position,
                                                       legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,
                                                       main_title=main_title, main_title_font_name=main_title_font_name,

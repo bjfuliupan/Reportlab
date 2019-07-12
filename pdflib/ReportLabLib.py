@@ -121,7 +121,8 @@ class ChartsLegend(LineLegend):
             desc="The position of LinLegend."),
         backgroundRect=AttrMapValue(None, desc="The position of LinLegend."),
         adjustX=AttrMapValue(isNumber, desc='xxx.'),
-        adjustY=AttrMapValue(isNumber, desc='xxx.')
+        adjustY=AttrMapValue(isNumber, desc='xxx.'),
+        bottom_gap=AttrMapValue(isNumber, desc='xxx.')
     )
 
     def __init__(self):
@@ -140,6 +141,8 @@ class ChartsLegend(LineLegend):
         self.fontSize = 7
         self.alignment = 'right'
         self.dxTextSpace = 5
+
+        self.bottom_gap = 40
 
     @staticmethod
     def calc_legend_width(color_name_pairs, dx, deltax, font_name, font_size, subCols=None):
@@ -181,13 +184,13 @@ class ChartsLegend(LineLegend):
                 self.y = self.backgroundRect.y + self.backgroundRect.height
             elif self.positionType == "bottom-left":
                 self.x = self.backgroundRect.x
-                self.y = self.backgroundRect.y - 40
+                self.y = self.backgroundRect.y - self.bottom_gap
             elif self.positionType == "bottom-mid":
                 self.x = self.backgroundRect.x + int(self.backgroundRect.width / 2) - int(legend_width / 2)
-                self.y = self.backgroundRect.y - 40
+                self.y = self.backgroundRect.y - self.bottom_gap
             elif self.positionType == "bottom-right":
                 self.x = self.backgroundRect.x + self.backgroundRect.width - legend_width
-                self.y = self.backgroundRect.y - 40
+                self.y = self.backgroundRect.y - self.bottom_gap
             elif self.positionType == "right":
                 self.x = self.backgroundRect.x + self.backgroundRect.width + 10
                 self.y = self.backgroundRect.y + self.backgroundRect.height
