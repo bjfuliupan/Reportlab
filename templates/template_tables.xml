@@ -6,19 +6,20 @@
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
-    <show_border>True</show_border>
+    <show_border>False</show_border>
     <pages>
         <page0>
             <rect>[90, 80, 450, 731]</rect>
             <auto_position>True</auto_position>
-            <x-padding>20</x-padding>
-            <y-padding>20</y-padding>
+            <x-padding>10</x-padding>
+            <y-padding>10</y-padding>
             <align-type>middle</align-type>
             <items>
                 <title>
                     <!--必填项-->
-                    <type>text</type>
+                    <type>paragraph</type>
                     <rect>[0, 0, 450, 30]</rect>
+                    <style>Title</style>
                     <content> </content>
                     <!--必填项-->
                     <position>middle</position>
@@ -49,6 +50,18 @@
                         <col5>t5</col5>
                     </columns>
                 </table>
+                <sub_desc>
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content><![CDATA[图例描述：
+                    <b>A pa<font color=red>r</font>a<i>graph</i></b><super><font color=red size=8>线图</font></super>]]>
+                    </content>
+                    <style>Heading1</style>
+                    <!--必填项-->
+                    <indent_flag>0</indent_flag>
+                </sub_desc>
+
                 <line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
@@ -84,6 +97,8 @@
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>月份</x_desc>
                     <y_desc>数量</y_desc>
+                    <invalid>True</invalid>
+
                 </line_chart2>
                 <bar_chart2>
                     <!--必填项-->

@@ -20,7 +20,7 @@ def test_pdf():
         PDFTemplate.set_text_data(pages, 0, "title", "刘攀的第一个PDF测试文档2")
 
         # 设置描述说明内容
-        description = ("刘攀的第一个PDF测试文档。第1行我们导入Paragraph和SimpleDocTemplate类。"
+        description = ("的第一个PDF测试文档。第1行我们导入Paragraph和SimpleDocTemplate类。"
                        "Paragraph是用于生成文本段落的。SimpleDocTemplate是文档布局模板。从上面的例子可以"
                        "看到通过文档模板及样式可以让我们方便的创建面向对象的应用，而不用再关心坐标、绘制命"
                        "令等底层的东西，从而可以方便我们的文档生成。打开hello.pdf看一看效果吧。这回就象是"

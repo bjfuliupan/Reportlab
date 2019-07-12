@@ -13,7 +13,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
 pdfmetrics.registerFont(TTFont('SimSun', 'SimSun.ttf'))
-DefaultFontName = "SimSun"
+pdfmetrics.registerFont(TTFont('hei', 'simhei.ttf'))
+DefaultFontName = "hei"
 
 ALL_COLORS = [
     colors.red,
