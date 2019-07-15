@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import math
 from reportlab.lib import colors
 from reportlab.graphics.charts.barcharts import BarChart
 from reportlab.lib.attrmap import AttrMap
@@ -10,6 +11,7 @@ from reportlab.graphics.shapes import Rect
 from pdflib.ReportLabLib import ChartsLegend, ALL_COLORS, XCategoryAxisWithDesc, YCategoryAxisWithDesc, \
     YValueAxisWithDesc, XValueAxisWithDesc, DefaultFontName
 from reportlab.graphics.shapes import String, STATE_DEFAULTS
+from reportlab.pdfbase.pdfmetrics import stringWidth
 
 
 class ReportLabBarChart(BarChart):
@@ -29,7 +31,9 @@ class ReportLabBarChart(BarChart):
         titleMainFontName=AttrMapValue(isString, desc='main title font name.'),
         titleMainFontSize=AttrMapValue(isNumberInRange(0, 100), desc='main title font size.'),
         titleMainFontColor=AttrMapValue(isColor, desc='main title font color.'),
-        legendFontSize=AttrMapValue(isNumberInRange(0, 100), desc='legend text font size.')
+        legendFontSize=AttrMapValue(isNumberInRange(0, 100), desc='legend text font size.'),
+        x_labels_height=AttrMapValue(isNumberInRange(0, 100), desc='the max height in x-labels.'),
+        y_labels_height=AttrMapValue(isNumberInRange(0, 100), desc='the max height in y-labels.')
     )
 
     def __init__(self, x, y, width, height, cat_names, data, step_count=4, style="parallel", label_format=None,
@@ -56,8 +60,8 @@ class ReportLabBarChart(BarChart):
         self.data = data
         self.strokeColor = colors.black
         self.categoryAxis.labels.boxAnchor = 'ne'
-        self.categoryAxis.labels.dx = 0
-        self.categoryAxis.labels.dy = 0
+        # self.categoryAxis.labels.dx = 0
+        # self.categoryAxis.labels.dy = 0
         self.categoryAxis.labels.angle = 30
 
         cat_names_num = len(cat_names)
@@ -99,6 +103,9 @@ class ReportLabBarChart(BarChart):
             self.titleMainFontSize = main_title_font_size
         if main_title_font_color is not None:
             self.titleMainFontColor = main_title_font_color
+
+        self.x_labels_height = 0
+        self.y_labels_height = 0
 
     def get_limit_value(self, step_count):
         min_value = 0xffffffff
@@ -182,36 +189,40 @@ class ReportLabBarChart(BarChart):
         else:
             self.legendCategoryNames = temp_category_names
 
+    def _draw_legend(self, g):
+        for i in range(len(self.legendCategoryNames)):
+            legend = ChartsLegend()
+
+            legend.positionType = self.legendPositionType
+            if self.legendPositionType != "null":
+                legend.backgroundRect = \
+                    Rect(self.x, self.y + legend.bottom_gap - self.x_labels_height - 15 - ((i + 1) * legend.fontSize),
+                         self.width, self.height)
+
+            legend.adjustX = self.legendAdjustX
+            legend.adjustY = self.legendAdjustY
+
+            legend.fontSize = self.legendFontSize
+
+            legend.colorNamePairs = []
+            for j in range(len(self.legendCategoryNames[i])):
+                legend.colorNamePairs.append((ALL_COLORS[i * len(self.legendCategoryNames[i]) + j],
+                                              self.legendCategoryNames[i][j]))
+
+            g.add(legend)
+
     def draw(self):
         self.set_bar_color()
         if self.drawLegend is True:
             if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
-                row_count = len(self.legendCategoryNames)
-                self.height -= 20 + row_count * self.legendFontSize
-                self.y += 20 + row_count * self.legendFontSize
+                row_count = len(self.legendCategoryNames) + 1
+                self.height -= row_count * self.legendFontSize
+                self.y += row_count * self.legendFontSize
 
         g = BarChart.draw(self)
 
         if self.drawLegend is True:
-            for i in range(len(self.legendCategoryNames)):
-                legend = ChartsLegend()
-
-                legend.positionType = self.legendPositionType
-                if self.legendPositionType != "null":
-                    legend.backgroundRect = \
-                        Rect(self.x, self.y - (i * int(self.legendFontSize * 1.5)), self.width, self.height)
-
-                legend.adjustX = self.legendAdjustX
-                legend.adjustY = self.legendAdjustY
-
-                legend.fontSize = self.legendFontSize
-
-                legend.colorNamePairs = []
-                for j in range(len(self.legendCategoryNames[i])):
-                    legend.colorNamePairs.append((ALL_COLORS[i * len(self.legendCategoryNames[i]) + j],
-                                                  self.legendCategoryNames[i][j]))
-
-                g.add(legend)
+            self._draw_legend(g)
 
         if self.titleMain != "":
             title = String(0, 0, self.titleMain)
@@ -231,6 +242,33 @@ class ReportLabVerticalBarChart(ReportLabBarChart):
 
     _flipXY = 0
 
+    def __init__(self, *args, **kwargs):
+        ReportLabBarChart.__init__(self, *args, **kwargs)
+
+    def _calc_labels_size(self):
+        max_width = 0
+        for label_text in self.categoryAxis.categoryNames:
+            tmp_width = stringWidth(label_text, self.categoryAxis.labels.fontName, self.categoryAxis.labels.fontSize)
+            if tmp_width > max_width:
+                max_width = tmp_width
+
+        self.x_labels_height = int(max_width * math.sin(self.categoryAxis.labels.angle / 180 * math.pi))
+        self.y_labels_height = 0
+
+        return self.x_labels_height, self.y_labels_height
+
+    def _adjust_positon(self):
+        self.x += 30
+        self.y += self.x_labels_height + 10
+        self.width -= 60
+        self.height -= self.x_labels_height + 10 + self.titleMainFontSize + 10 + 10
+
+    def draw(self):
+        self._calc_labels_size()
+        self._adjust_positon()
+
+        return ReportLabBarChart.draw(self)
+
 
 class ReportLabHorizontalBarChart(ReportLabBarChart):
 
@@ -240,6 +278,30 @@ class ReportLabHorizontalBarChart(ReportLabBarChart):
         ReportLabBarChart.__init__(self, *args, **kwargs)
 
         self.categoryAxis.labels.labelPosFrac = 1
+
+    def _calc_labels_size(self):
+        max_width = 0
+        for label_text in self.categoryAxis.categoryNames:
+            tmp_width = stringWidth(label_text, self.categoryAxis.labels.fontName, self.categoryAxis.labels.fontSize)
+            if tmp_width > max_width:
+                max_width = tmp_width
+
+        self.x_labels_height = 5
+        self.y_labels_height = int(max_width * math.cos(self.categoryAxis.labels.angle / 180 * math.pi))
+
+        return self.x_labels_height, self.y_labels_height
+
+    def _adjust_positon(self):
+        self.x += self.y_labels_height + 10
+        self.y += self.x_labels_height + 10
+        self.width -= self.y_labels_height + 40
+        self.height -= self.x_labels_height + 10 + self.titleMainFontSize + 10 + 10
+
+    def draw(self):
+        self._calc_labels_size()
+        self._adjust_positon()
+
+        return ReportLabBarChart.draw(self)
 
 
 if __name__ == "__main__":

@@ -283,12 +283,8 @@ class PDFTemplate(object):
 
         d = Drawing(width, height, vAlign="TOP")
 
-        x = 20  # format_json['rect'][0]
-        y = 20  # format_json['rect'][1]
-        width -= 40
-        height -= 50
         if format_json['data'] is None or type(format_json['data']) is str:
-            PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
+            PDFTemplate._draw_chart_rect(d, 20, 20, width - 40, height - 50, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
             data = format_json['data']
@@ -337,7 +333,7 @@ class PDFTemplate(object):
             bar_chart = None
             if bar_style == "horizontal":
                 bar_chart = ReportLabHorizontalBarChart(
-                    x, y, width, height, cat_names, data, style=style,
+                    0, 0, width, height, cat_names, data, style=style,
                     label_format=label_format,  step_count=step_count,
                     legend_names=legend_names, legend_position=legend_position,
                     legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,
@@ -346,7 +342,7 @@ class PDFTemplate(object):
                     main_title_font_color=main_title_font_color, x_desc=x_desc, y_desc=y_desc)
             elif bar_style == "vertical":
                 bar_chart = ReportLabVerticalBarChart(
-                    x, y, width, height, cat_names, data, style=style,
+                    0, 0, width, height, cat_names, data, style=style,
                     label_format=label_format,  step_count=step_count,
                     legend_names=legend_names, legend_position=legend_position,
                     legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,

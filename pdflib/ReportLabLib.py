@@ -145,7 +145,7 @@ class ChartsLegend(LineLegend):
         self.bottom_gap = 40
 
     @staticmethod
-    def calc_legend_width(color_name_pairs, dx, deltax, font_name, font_size, subCols=None):
+    def calc_legend_width(color_name_pairs, dx, deltax, font_name, font_size, sub_cols=None):
         pairs_num = len(color_name_pairs)
 
         max_text_width = 0
@@ -154,8 +154,8 @@ class ChartsLegend(LineLegend):
             if type(x[1]) is tuple:
                 for str_i in x[1]:
                     tmp_width = stringWidth(str(str_i), font_name, font_size)
-                    if subCols is not None and tmp_width < subCols[0].minWidth:
-                        tmp_width = subCols[0].minWidth
+                    if sub_cols is not None and tmp_width < sub_cols[0].minWidth:
+                        tmp_width = sub_cols[0].minWidth
                     x_width += tmp_width
             else:
                 str_x = x[1]
