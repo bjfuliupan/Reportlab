@@ -505,7 +505,7 @@ class ReportSenHost(PDFReport):
     探针主机日志生成
     """
     # report_tpl_pg_num = 1
-    all_fmts = [
+    ALL_FMTS = [
         "SENSOR_SAFEMODE_BOOT",
         "SENSOR_MULTIPLE_OS_BOOT",
         "SENSOR_VM_INSTALLED",
@@ -544,7 +544,7 @@ class ReportSenHost(PDFReport):
                               desc)
 
         # 饼图
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.all_fmts, item_id=1)
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.ALL_FMTS, item_id=1)
         self.report_draw_pie(self.report_tpl_pg_num,
                              "section_log_distribution_pie_chart",
                              pie_ret["datas"], pie_ret["category_names"]
@@ -573,7 +573,7 @@ class ReportSenSafe(PDFReport):
     探针安全日志
     """
     # report_tpl_pg_num = 2
-    ALL_HOST_SAFE_FMTS = [
+    ALL_VIOLATION_TRIGGERED_FMTS = [
         "SENSOR_ALARM_MSG"
     ]
     ALL_VIOLATION_DETAIL_FMTS = [
@@ -615,7 +615,7 @@ class ReportSenSafe(PDFReport):
 
     def draw_violation_triggered(self, begin_t, end_t, sensors):
         # 违规定义日志-折线图
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=self.ALL_HOST_SAFE_FMTS)
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=self.ALL_VIOLATION_TRIGGERED_FMTS)
         self.report_draw_line(self.report_tpl_pg_num,
                               "violation_triggered_trend_line_chart",
                               line_ret['datas'],
@@ -631,9 +631,8 @@ class ReportSenSafe(PDFReport):
                              )
 
         # 违规定义日志-柱图（探针）
-        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar",
-                                   fmts=self.ALL_HOST_SAFE_FMTS, item_id=3,
-                                   page_name="violation_define")
+        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=self.ALL_VIOLATION_TRIGGERED_FMTS,
+                                   item_id=3, page_name="violation_define")
         self.report_draw_bar(
             self.report_tpl_pg_num,
             "violation_triggered_sensor_top",
@@ -641,9 +640,8 @@ class ReportSenSafe(PDFReport):
         )
 
         # 违规定义日志-柱图（探针组）
-        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar",
-                                   fmts=[self.ALL_HOST_SAFE_FMTS], item_id=3,
-                                   page_name="violation_define", grouping=True)
+        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=self.ALL_VIOLATION_TRIGGERED_FMTS,
+                                   item_id=3, page_name="violation_define", grouping=True)
         self.report_draw_bar(
             self.report_tpl_pg_num,
             "violation_triggered_sensor_group_top",
@@ -652,8 +650,7 @@ class ReportSenSafe(PDFReport):
 
     def draw_violation_detail(self, begin_t, end_t, sensors, violation_detail_fmts):
         # 违规详情日志运行趋势
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line",
-                                    fmts=violation_detail_fmts, item_id=0,
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=violation_detail_fmts, item_id=0,
                                     page_name="log_classify")
         self.report_draw_line(self.report_tpl_pg_num,
                               "violation_detail_trend_line_chart",
@@ -662,8 +659,7 @@ class ReportSenSafe(PDFReport):
                               line_ret['category_names'])
 
         # 违规详情日志分布展示
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie",
-                                   fmts=self.ALL_VIOLATION_DETAIL_FMTS,
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.ALL_VIOLATION_DETAIL_FMTS,
                                    item_id=1, page_name="log_classify")
         self.report_draw_pie(self.report_tpl_pg_num,
                              "violation_detail_distrbution",
@@ -691,8 +687,7 @@ class ReportSenSafe(PDFReport):
 
     def draw_violation_other(self, begin_t, end_t, sensors, violation_other_fmts):
         # 其他安全日志分析图-主机安全趋势
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line",
-                                    fmts=violation_other_fmts, item_id=0,
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=violation_other_fmts, item_id=0,
                                     page_name="log_classify")
         self.report_draw_line(self.report_tpl_pg_num,
                               "violation_others_trend_line_chart",
@@ -701,8 +696,7 @@ class ReportSenSafe(PDFReport):
                               line_ret['category_names'])
 
         # 其他安全日志分析图-分布展示
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie",
-                                   fmts=self.ALL_VIOLATION_OTHER_FMTS,
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.ALL_VIOLATION_OTHER_FMTS,
                                    item_id=1, page_name="log_classify")
         self.report_draw_pie(self.report_tpl_pg_num,
                              "violation_others_distrbution",
@@ -721,7 +715,7 @@ class ReportSenSafe(PDFReport):
 
         # 其他安全日志-探针Top10
         sensor_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_other_fmts,
-                                                item_id=2)
+                                          item_id=2)
         self.report_draw_bar(
             self.report_tpl_pg_num,
             "violation_others_sensor_top_",
