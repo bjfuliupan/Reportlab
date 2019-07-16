@@ -255,23 +255,27 @@ class ReportLabVerticalBarChart(ReportLabBarChart):
             if tmp_width > max_width:
                 max_width = tmp_width
 
-            # if self.categoryAxis.labels[index].angle == 0:
             self.categoryAxis.labels[index].dx = \
                 int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
                 int(self.categoryAxis.labels.fontSize * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
                     / 2)
             index += 1
 
-        self.x_labels_height = int(max_width * math.sin(self.categoryAxis.labels.angle / 180 * math.pi))
+        self.x_labels_height = \
+            int(max_width * math.sin(self.categoryAxis.labels.angle / 180 * math.pi)) + \
+            int(self.categoryAxis.labels.fontSize * math.cos(self.categoryAxis.labels.angle / 180 * math.pi))
         self.y_labels_height = 0
 
         return self.x_labels_height, self.y_labels_height
 
     def _adjust_positon(self):
-        self.x += 30
-        self.y += self.x_labels_height + 10
-        self.width -= 60
-        self.height -= self.x_labels_height + 10 + self.titleMainFontSize + 10 + 10
+        self.x = 30
+        if self.x_labels_height > 20:
+            self.y = self.x_labels_height + 10
+        else:
+            self.y = 30
+        self.width -= self.x + 30
+        self.height -= self.y + self.titleMainFontSize + 20
 
     def draw(self):
         self._calc_labels_size()
@@ -302,6 +306,8 @@ class ReportLabHorizontalBarChart(ReportLabBarChart):
                 int(tmp_width * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) +  \
                 int(self.categoryAxis.labels.fontSize * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi)
                     / 2)
+            self.categoryAxis.labels[index].dx += \
+                -self.categoryAxis.labels.fontSize * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
             index += 1
 
         self.x_labels_height = 5
@@ -310,9 +316,12 @@ class ReportLabHorizontalBarChart(ReportLabBarChart):
         return self.x_labels_height, self.y_labels_height
 
     def _adjust_positon(self):
-        self.x += self.y_labels_height + 10
+        if self.y_labels_height > 20:
+            self.x += self.y_labels_height + 10
+        else:
+            self.x += 30
         self.y += self.x_labels_height + 10
-        self.width -= self.y_labels_height + 40
+        self.width -= self.x + 30
         self.height -= self.x_labels_height + 10 + self.titleMainFontSize + 10 + 10
 
     def draw(self):
