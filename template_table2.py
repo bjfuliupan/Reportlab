@@ -267,22 +267,16 @@ class PDFReport(DummyOb):
 
     report_tpl = report_template
 
-    def __init__(self, template_path: str,
-                 sensor_id_group_mapping: dict):
+    def __init__(self):
         """
         init
-        :param template_path:  reportlib pdf模板路径
-        :param sensor_id_group_mapping: sensor_id & sensor_group_id 对应表
         """
 
         super(PDFReport, self).__init__()
-        if not os.path.exists(template_path):
-            raise ValueError(f"reportlib template not found. {template_path}")
 
         self.report_tpl_pgs = self.report_tpl["pages"]
-        self.report_tpl_pg_num = 0
 
-        self.indicate_sen_group_map(sensor_id_group_mapping)
+        # self.indicate_sen_group_map(sensor_id_group_mapping)
 
         # self.report_tpl = PDFTemplate.read_template(template_path)
         # self.payloads = payloads
@@ -379,7 +373,7 @@ class PDFReport(DummyOb):
             desc = (
                 f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
                 f"包含日志类型: {legend_names},"
-                f"时间范围: {cateogry_names[0]} 至 {category_names[-1]}"
+                f"时间范围: {category_names[0]} 至 {category_names[-1]}"
             )
             PDFTemplate.set_paragraph_data(
                 self.report_tpl_pgs,
@@ -478,200 +472,98 @@ class ReportSenHost(PDFReport):
     探针主机日志生成
     """
 
-    def __int__(self):
-        self.report_tpl_pg_num = 1
+    report_tpl_pg_num = 1
 
+    def draw_page(self):
 
+        begin_t = "2019-07-04T00:00:00.000"
+        end_t = "2019-07-12T00:00:00.000"
+        item_id = 0
 
-
-def test_case():
-    payload = {
-        "line_chart": {
-            "start_time": "2019-07-04T00:00:00.000",
-            "end_time": "2019-07-12T00:00:00.000",
-            "page_name": "log_classify",
-            "item_id": 0,
-            "rule_id": "00",
-            "search_index": "log*",
-            "data_scope": {
-                "FORMAT.raw": [
-                    "SENSOR_SAFEMODE_BOOT",
-                    "SENSOR_MULTIPLE_OS_BOOT",
-                    "SENSOR_VM_INSTALLED",
-                    "SENSOR_SERVICECHANGE",
-                    "SENSOR_HARDWARE_CHANGE"
-                ],
-                "SENSOR_ID.raw": [
-                    "WIN0001",
-                    "WIN0002",
-                    "WIN0004",
-                    "WIN0005",
-                    "WIN0006",
-                    "WIN0008",
-                    "WIN0011",
-                    "WIN0012",
-                    "WIN0013",
-                    "WIN0014",
-                    "WIN0015",
-                    "WIN0016",
-                    "WIN0017",
-                    "WIN0018",
-                    "WIN0019",
-                    "WIN0020",
-                    "WIN0021",
-                    "WIN0022",
-                    "WIN0023",
-                    "WIN0024",
-                    "WIN0025",
-                    "WIN0026",
-                    "WIN0027",
-                    "WSR0001",
-                    "WIN0010",
-                    "WIN0003",
-                    "WIN0009",
-                    "WIN0007"
-                ]
-            }
-        },
-        "pie_chart": {
-            "start_time": "2019-07-05T00:00:00.000",
-            "end_time": "2019-07-13T00:00:00.000",
-            "page_name": "log_classify",
-            "item_id": 1,
-            "rule_id": "00",
-            "search_index": "log*",
-            "data_scope": {
-                "FORMAT.raw": [
-                    "SENSOR_SAFEMODE_BOOT",
-                    "SENSOR_MULTIPLE_OS_BOOT",
-                    "SENSOR_VM_INSTALLED",
-                    "SENSOR_SERVICECHANGE",
-                    "SENSOR_HARDWARE_CHANGE",
-                    "SENSOR_SOFTWARE_CHANGE",
-                    "SENSOR_INFO_WORK_TIME"
-                ],
-                "SENSOR_ID.raw": [
-                    "WIN0001",
-                    "WIN0002",
-                    "WIN0004",
-                    "WIN0005",
-                    "WIN0006",
-                    "WIN0008",
-                    "WIN0011",
-                    "WIN0012",
-                    "WIN0013",
-                    "WIN0014",
-                    "WIN0015",
-                    "WIN0016",
-                    "WIN0017",
-                    "WIN0018",
-                    "WIN0019",
-                    "WIN0020",
-                    "WIN0021",
-                    "WIN0022",
-                    "WIN0023",
-                    "WIN0024",
-                    "WIN0025",
-                    "WIN0026",
-                    "WIN0027",
-                    "WIN0028",
-                    "WSR0001",
-                    "WIN0010",
-                    "WIN0003",
-                    "WIN0009",
-                    "WIN0007"
-                ]
-            }
-        },
-        "bar_chart": {
-            "start_time": "2019-07-05T00:00:00.000",
-            "end_time": "2019-07-13T00:00:00.000",
-            "page_name": "log_classify",
-            "item_id": 2,
-            "rule_id": "00",
-            "search_index": "log*",
-            "data_scope": {
-                "FORMAT.raw": [
-                    "SENSOR_SAFEMODE_BOOT"
-                ],
-                "SENSOR_ID.raw": [
-                    "WIN0001",
-                    "WIN0002",
-                    "WIN0004",
-                    "WIN0005",
-                    "WIN0006",
-                    "WIN0008",
-                    "WIN0011",
-                    "WIN0012",
-                    "WIN0013",
-                    "WIN0014",
-                    "WIN0015",
-                    "WIN0016",
-                    "WIN0017",
-                    "WIN0018",
-                    "WIN0019",
-                    "WIN0020",
-                    "WIN0021",
-                    "WIN0022",
-                    "WIN0023",
-                    "WIN0024",
-                    "WIN0025",
-                    "WIN0026",
-                    "WIN0027",
-                    "WIN0028",
-                    "WSR0001",
-                    "WIN0010",
-                    "WIN0003",
-                    "WIN0009",
-                    "WIN0007"
-                ]
-            }
-        },
-        "log_formats": [
-            "SENSOR_SERVICECHANGE",
-            "SENSOR_HARDWARE_CHANGE",
-            "SENSOR_MULTIPLE_OS_BOOT",
+        fmts = [
             "SENSOR_SAFEMODE_BOOT",
+            "SENSOR_MULTIPLE_OS_BOOT",
             "SENSOR_VM_INSTALLED",
-            "SENSOR_SOFTWARE_CHANGE",
-            "SENSOR_INFO_WORK_TIME"
+            "SENSOR_SERVICECHANGE",
+            "SENSOR_HARDWARE_CHANGE"
         ]
-    }
-    sensor_id_group_mapping = {
-        "WIN0001": "无分组",
-        "WIN0002": "无分组",
-        "WIN0004": "无分组",
-        "WIN0005": "无分组",
-        "WIN0006": "无分组",
-        "WIN0008": "无分组",
-        "WIN0011": "无分组",
-        "WIN0012": "无分组",
-        "WIN0013": "无分组",
-        "WIN0014": "无分组",
-        "WIN0015": "无分组",
-        "WIN0016": "无分组",
-        "WIN0017": "无分组",
-        "WIN0018": "无分组",
-        "WIN0019": "无分组",
-        "WIN0020": "无分组",
-        "WIN0021": "无分组",
-        "WIN0022": "无分组",
-        "WIN0023": "无分组",
-        "WIN0024": "无分组",
-        "WIN0025": "无分组",
-        "WIN0026": "无分组",
-        "WSR0001": "无分组",
-        "WIN0028": "无分组",
-        "WIN0010": "cnwang_laptop",
-        "WIN0003": "FAE",
-        "WIN0009": "demo",
-        "WIN0007": "hjn-demo",
-    }
 
-    template_path = os.path.join(os.getcwd(), "templates", "template_charts.xml")
-    tt = PDFReport(payload, template_path, sensor_id_group_mapping)
-    tt.main()
+
+        sensors = [
+            "WIN0001",
+            "WIN0002",
+            "WIN0004",
+            "WIN0005",
+            "WIN0006",
+            "WIN0008",
+            "WIN0011",
+            "WIN0012",
+            "WIN0013",
+            "WIN0014",
+            "WIN0015",
+            "WIN0016",
+            "WIN0017",
+            "WIN0018",
+            "WIN0019",
+            "WIN0020",
+            "WIN0021",
+            "WIN0022",
+            "WIN0023",
+            "WIN0024",
+            "WIN0025",
+            "WIN0026",
+            "WIN0027",
+            "WSR0001",
+            "WIN0010",
+            "WIN0003",
+            "WIN0009",
+            "WIN0007"
+        ]
+
+        datas, legend_names, category_names = self.making_data(begin_t, end_t, fmts, sensors, chart_typ="line")
+        self.report_draw_line(self.report_tpl_pg_num,
+                              "section_operation_trend_line_chart",
+                              datas, legend_names, category_names,
+                              True,
+                              "section_desc2")
+
+        sensor_id_group_mapping = {
+            "WIN0001": "无分组",
+            "WIN0002": "无分组",
+            "WIN0004": "无分组",
+            "WIN0005": "无分组",
+            "WIN0006": "无分组",
+            "WIN0008": "无分组",
+            "WIN0011": "无分组",
+            "WIN0012": "无分组",
+            "WIN0013": "无分组",
+            "WIN0014": "无分组",
+            "WIN0015": "无分组",
+            "WIN0016": "无分组",
+            "WIN0017": "无分组",
+            "WIN0018": "无分组",
+            "WIN0019": "无分组",
+            "WIN0020": "无分组",
+            "WIN0021": "无分组",
+            "WIN0022": "无分组",
+            "WIN0023": "无分组",
+            "WIN0024": "无分组",
+            "WIN0025": "无分组",
+            "WIN0026": "无分组",
+            "WSR0001": "无分组",
+            "WIN0028": "无分组",
+            "WIN0010": "cnwang_laptop",
+            "WIN0003": "FAE",
+            "WIN0009": "demo",
+            "WIN0007": "hjn-demo",
+
+        }
+        self.indicate_sen_group_map(sensor_id_group_mapping)
+
+        self.draw()
+
 
 
 if __name__ == "__main__":
-    test_case()
+    prt = ReportSenHost()
+    prt.draw_page()
