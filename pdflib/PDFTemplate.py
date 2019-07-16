@@ -145,6 +145,14 @@ class PDFTemplate(object):
                                 it['style'] = "BodyText"
                             if not it.get("content"):
                                 it["content"] = ""
+                        if it_type == "line_chart" or it_type == "bar_chart":
+                            if "cat_label_angle" in it:
+                                it['cat_label_angle'] = int(it['cat_label_angle'])
+                            if "cat_label_all" in it:
+                                if it['cat_label_all'] == "True":
+                                    it['cat_label_all'] = True
+                                elif it['cat_label_all'] == "False":
+                                    it['cat_label_all'] = False
 
         return json_data
 
@@ -264,6 +272,12 @@ class PDFTemplate(object):
             y_desc = None
             if "y_desc" in format_json and isString(format_json['y_desc']) is True:
                 y_desc = format_json['y_desc']
+            cat_label_all = False
+            if "cat_label_all" in format_json:
+                cat_label_all = format_json['cat_label_all']
+            cat_label_angle = 30
+            if "cat_label_angle" in format_json and isNumber(format_json['cat_label_angle']) is True:
+                cat_label_angle = format_json['cat_label_angle']
 
             line_chart = ReportLabHorizontalLineChart(0, 0, width, height, cat_names, data, step_count=step_count,
                                                       legend_names=legend_names, legend_position=legend_position,
@@ -271,7 +285,8 @@ class PDFTemplate(object):
                                                       main_title=main_title, main_title_font_name=main_title_font_name,
                                                       main_title_font_size=main_title_font_size,
                                                       main_title_font_color=main_title_font_color,
-                                                      x_desc=x_desc, y_desc=y_desc)
+                                                      x_desc=x_desc, y_desc=y_desc,
+                                                      cat_label_angle=cat_label_angle, cat_label_all=cat_label_all)
             d.add(line_chart)
 
         return d
@@ -361,14 +376,8 @@ class PDFTemplate(object):
 
         d = Drawing(width, height, vAlign="TOP")
 
-        x = 0
-        y = 0
         if format_json['data'] is None or type(format_json['data']) is str:
-            x = 20
-            y = 20
-            width -= 40
-            height -= 50
-            PDFTemplate._draw_chart_rect(d, x, y, width, height, format_json)
+            PDFTemplate._draw_chart_rect(d, 20, 20, width - 40, height - 50, format_json)
         elif type(format_json['data']) is list:
             cat_names = format_json['category_names']
             data = format_json['data']
@@ -386,7 +395,7 @@ class PDFTemplate(object):
             if "main_title_font_color" in format_json:
                 main_title_font_color = format_json['main_title_font_color']
 
-            pie_chart = ReportLabPieChart(x, y, width, height, cat_names, data, main_title=main_title,
+            pie_chart = ReportLabPieChart(0, 0, width, height, cat_names, data, main_title=main_title,
                                           main_title_font_name=main_title_font_name,
                                           main_title_font_size=main_title_font_size,
                                           main_title_font_color=main_title_font_color,
