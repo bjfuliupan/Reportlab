@@ -95,10 +95,18 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
 
     def _calc_labels_size(self):
         max_width = 0
+        index = 0
         for label_text in self.categoryAxis.categoryNames:
             tmp_width = stringWidth(label_text, self.categoryAxis.labels.fontName, self.categoryAxis.labels.fontSize)
             if tmp_width > max_width:
                 max_width = tmp_width
+
+            # if self.categoryAxis.labels[index].angle == 0:
+            self.categoryAxis.labels[index].dx = \
+                int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
+                int(self.categoryAxis.labels.fontSize * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
+                    / 2)
+            index += 1
 
         self.labels_height = int(max_width * math.sin(self.categoryAxis.labels.angle / 180 * math.pi))
 
@@ -165,7 +173,7 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
                  x, y, width, height, cat_names, data,
                  step_count=4, legend_names=None, legend_position="top-right", legend_adjust_x=0, legend_adjust_y=0,
                  main_title="", main_title_font_name=None, main_title_font_size=None, main_title_font_color=None,
-                 x_desc=None, y_desc=None):
+                 x_desc=None, y_desc=None, cat_label_angle=30, cat_label_all=False):
         LegendedHorizontalLineChart.__init__(self)
 
         self.categoryAxis = XCategoryAxisWithDesc(desc=x_desc)
@@ -177,13 +185,14 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
         self.width = width
         self.data = data
 
-        cat_names_num = len(cat_names)
-        show_cat_num = 7
-        if cat_names_num > show_cat_num:
-            gap_num = int(cat_names_num / show_cat_num)
-            for i in range(cat_names_num):
-                if i % gap_num != 0:
-                    cat_names[i] = ""
+        if cat_label_all is False:
+            cat_names_num = len(cat_names)
+            show_cat_num = 7
+            if cat_names_num > show_cat_num:
+                gap_num = int(cat_names_num / show_cat_num)
+                for i in range(cat_names_num):
+                    if i % gap_num != 0:
+                        cat_names[i] = ""
 
         self.categoryAxis.categoryNames = cat_names
         self.categoryAxis.labels.boxAnchor = 'n'
@@ -214,8 +223,8 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
 
         self.categoryAxis.labels.boxAnchor = 'ne'
         self.categoryAxis.labels.dx = 0
-        self.categoryAxis.labels.dy = 0
-        self.categoryAxis.labels.angle = 30
+        self.categoryAxis.labels.angle = cat_label_angle
+        self.categoryAxis.labels.boxFillColor = colors.Color(1, 0, 0, 1)
 
     def get_limit_value(self, step_count):
         min_value = 0xffffffff
