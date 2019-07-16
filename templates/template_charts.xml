@@ -334,7 +334,7 @@
 
                 <violation_triggered_distrbution>
                     <type>pie_chart</type>
-                    <rect>[0, 0, 200, 200]</rect>
+                    <rect>[0, 0, 300, 300]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>运行日志分析图 - 日志分布:</main_title>
@@ -365,7 +365,7 @@
 
                 <!--违规详情-->
                 <violation_detail_heading>
-                    <!--违规定义日志-->
+                    <!--违规详情日志-->
                     <!--必填项-->
                     <type>paragraph</type>
                     <style>Heading2</style>
@@ -390,7 +390,7 @@
                     <rect>[0, 0, 450, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>违规定义日志趋势</main_title>
+                    <main_title>违规详情日志趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>月份</x_desc>
@@ -402,7 +402,7 @@
                     <rect>[0, 0, 200, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>运行日志分析图 - 日志分布:</main_title>
+                    <main_title>违规详情日志分布展示:</main_title>
                     <main_title_font_size>10</main_title_font_size>
                 </violation_detail_distrbution>
 
@@ -507,7 +507,7 @@
 
                 <!--其他安全日志-->
                 <violation_others_heading>
-                    <!--违规定义日志-->
+                    <!--其他安全日志-->
                     <!--必填项-->
                     <type>paragraph</type>
                     <style>Heading2</style>
@@ -532,7 +532,7 @@
                     <rect>[0, 0, 450, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>违规定义日志趋势</main_title>
+                    <main_title>其他安全日志趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>月份</x_desc>

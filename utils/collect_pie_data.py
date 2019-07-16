@@ -11,7 +11,7 @@ def collect_data_from_es(payload: dict) -> tuple:
     # util.pretty_print(es_log_data)
 
     # 统计数据
-    pie_data = util.init_data_for_pdf_with_format()
+    pie_data = util.init_data_for_pdf_with_default_int()
     for format_dict, value, *_ in es_log_data["result"]:
         log_format = format_dict[0]["FORMAT.raw"]
         pie_data[log_format] += value

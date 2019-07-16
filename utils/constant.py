@@ -10,6 +10,7 @@ class LogConstant:
         "SENSOR_NETIO": "网络访问日志",
         "SENSOR_IO": "外设操作日志",
         "SENSOR_INPUT_ACTIVITY": "探针绩效日志",
+        # "SENSOR_ACTIVITY": "探针绩效日志",  # SENSOR_INPUT_ACTIVITY在后台清洗后，重写为SENSOR_ACTIVITY
         "SENSOR_OUTLOOK": "邮件审计日志",
         "SENSOR_PRINT": "打印审计日志",
         "SENSOR_CDBURN": "光盘刻录审计日志",
@@ -47,6 +48,9 @@ class LogConstant:
         "SENSOR_NETWORK_FLOW": "服务器/程序流量使用异常日志",
         "SENSOR_ALARM_MSG": "违规定义日志",
         "SENSOR_CURRENT_AUTORUN_DAILY": "主机服务运行日志",
+        # "SENSOR_FILEPARSE_LOG": "关键文件分析日志",
+        # "SENSOR_FILESYSYTEM_MERGE": "文件合并日志",
+        # "SENSOR_POLICY_UPDATE_DAILY": "探针策略更新日志",
     }
 
     CATAEGORY_TIME_FORMAT = "%Y-%m-%d"

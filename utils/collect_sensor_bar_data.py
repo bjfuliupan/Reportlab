@@ -27,7 +27,7 @@ def collect_bar_data_for_draw(base_payload: dict, log_formats: list, sort_flag=T
             continue
 
         # 数据统计
-        data_for_draw_with_sensor = util.init_data_for_pdf_with_format()
+        data_for_draw_with_sensor = util.init_data_for_pdf_with_default_int()
         for sensor_id_dict, value, *_ in es_log_data["result"]:
             sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
             data_for_draw_with_sensor[sensor_id] += value

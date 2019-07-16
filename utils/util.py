@@ -31,7 +31,7 @@ def init_data_for_pdf_with_interval(days_interval: int) -> collections.defaultdi
     return collections.defaultdict(lambda: [0 for _ in range(days_interval+1)])
 
 
-def init_data_for_pdf_with_format() -> collections.defaultdict:
+def init_data_for_pdf_with_default_int() -> collections.defaultdict:
     # 初始化图数据，默认value为 int， default 0
     return collections.defaultdict(lambda: 0)
 

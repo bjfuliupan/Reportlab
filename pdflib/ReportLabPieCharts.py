@@ -131,8 +131,8 @@ class ReportLabPieChart(Pie):
             for str_i in range(len(self.legendCategoryNames[i])):
                 tmp_width = stringWidth(self.legendCategoryNames[i][str_i],
                                         self.legendFontName, self.legendFontSize) + 2
-                if tmp_width > max_width[str_i]:
-                    max_width[str_i] = tmp_width
+                if tmp_width > max_width[i]:
+                    max_width[i] = tmp_width
 
         for i in range(len(self.legendCategoryNames)):
             legend = ChartsLegend()
@@ -152,7 +152,7 @@ class ReportLabPieChart(Pie):
                 for str_i in range(len(self.legendCategoryNames[i])):
                     sub_col = legend.subCols[str_i]
                     sub_col.align = 'left'
-                    sub_col.minWidth = max_width[str_i]
+                    sub_col.minWidth = max_width[i]
             legend.colorNamePairs = []
             legend.colorNamePairs.append((ALL_COLORS[i], self.legendCategoryNames[i]))
 

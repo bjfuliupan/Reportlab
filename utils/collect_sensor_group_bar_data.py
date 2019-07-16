@@ -30,7 +30,7 @@ def collect_bar_data_for_draw(base_payload: dict, log_formats: list, sensor_id_g
         # util.pretty_print(es_log_data)
 
         # 数据统计
-        data_for_draw_with_group = util.init_data_for_pdf_with_format()
+        data_for_draw_with_group = util.init_data_for_pdf_with_default_int()
         for sensor_id_dict, value, *_ in es_log_data["result"]:
             sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
             sensor_gorup = sensor_id_group_mapping[sensor_id]

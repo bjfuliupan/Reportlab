@@ -4,6 +4,7 @@ import json
 import requests
 import collections
 import copy
+import traceback
 
 from datetime import timedelta
 from utils import util
@@ -41,7 +42,6 @@ class DummyOb(object):
         :param payload:
         :return:
         """
-
         begin_t = util.payload_time_to_datetime(payload["start_time"])
         end_t = util.payload_time_to_datetime(payload["end_time"])
         interval = (end_t - begin_t).days
@@ -51,7 +51,7 @@ class DummyOb(object):
         data = json.dumps(payload)
         es_log_data = self.ruleng_url_post(data)
 
-        chart_data = util.init_data_for_pdf_with_interval(interval)
+        chart_datas = util.init_data_for_pdf_with_interval(interval)
         for key_list, value, *_ in es_log_data["result"]:
             log_format, log_time = None, None
             for key_dict in key_list:
@@ -73,7 +73,7 @@ class DummyOb(object):
             if log_format is None:
                 log_format = "UNKNOW_FORMAT"
 
-            chart_data[log_format][value_index] += value
+            chart_datas[log_format][value_index] += value
 
         # 获取折线图横坐标数据
         category_names = [
@@ -82,20 +82,27 @@ class DummyOb(object):
         ]
 
         # 获取折线标签
-        legend_format_names = list(chart_data.keys())
+        legend_format_names = list(chart_datas.keys())
         legend_names = [
             constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
             for _ in legend_format_names
         ]
 
         # 获取折线图纵坐标数据
-        datas = [
-            chart_data[_]
+        chart_data = [
+            chart_datas[_]
             for _ in legend_format_names
         ]
-        return datas, legend_names, category_names
 
-    def cook_pie_data(self, payload: dict):
+        ret = {
+            "datas": chart_data,
+            "legend_names": legend_names,
+            "category_names": category_names
+        }
+
+        return ret
+
+    def cook_pie_data(self, payload: dict, page_name=None):
         # 通过payload及时间参数，获取ES日志，并清洗
         # 返回饼图日志类别、日志数量
         data = json.dumps(payload)
@@ -103,31 +110,48 @@ class DummyOb(object):
         # util.pretty_print(es_log_data)
 
         # 统计数据
-        pie_data = util.init_data_for_pdf_with_format()
+        pie_data = util.init_data_for_pdf_with_default_int()
         for format_dict, value, *_ in es_log_data["result"]:
-            log_format = format_dict[0]["FORMAT.raw"]
-            pie_data[log_format] += value
+            category_dict = format_dict[0]
+            if "FORMAT.raw" in category_dict:
+                category = format_dict[0]["FORMAT.raw"]
+            elif "RULENAME.raw" in category_dict:
+                category = format_dict[0]["RULENAME.raw"]
+            else:
+                continue
+            pie_data[category] += value
 
         # 获取饼图日志类型
         log_formats = list(pie_data.keys())
-        category_names = [
-            constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
-            for _ in log_formats
-        ]
+        # 违规定义日志的类型为'规则名称'
+        if page_name == "violation_define":
+            category_names = list(pie_data.keys())
+        else:
+            category_names = [
+                constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
+                for _ in log_formats
+            ]
 
         # 获取饼图日志数量
         datas = [
             pie_data[_]
             for _ in log_formats
         ]
-        return datas, category_names
 
-    def cook_bar_data(self, payload:dict, sort=True, limit=10):
+        ret = {
+            "datas": datas,
+            "category_names": category_names,
+        }
+
+        return ret
+
+    def cook_bar_data(self, payload: dict, sort=True, limit=10, grouping=False):
         """
         通过payload获取日志，进行清洗并返回
         :param payload: payload的FORMAT缺省，使用log_formats字段顺序填充
         :param sort: 是否排序，支持倒序
         :param limit: 最大展示数量
+        :param grouping: 是否分组
         :return:
         """
         ret = {}
@@ -142,32 +166,39 @@ class DummyOb(object):
             # 获取数据
             raw_data = json.dumps(payload)
             es_log_data = self.ruleng_url_post(raw_data)
+            # util.pretty_print(es_log_data)
             # 请求结果为空
             if not es_log_data["result"]:
                 continue
 
             # 数据统计
-            data_for_draw_with_sensor = util.init_data_for_pdf_with_format()
+            data_for_draw = util.init_data_for_pdf_with_default_int()
             for sensor_id_dict, value, *_ in es_log_data["result"]:
                 sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
-                data_for_draw_with_sensor[sensor_id] += value
+                data_for_draw[sensor_id] += value
+
+            if grouping:
+                data_for_draw_tmp = util.init_data_for_pdf_with_default_int()
+                for sensor_id, value in data_for_draw.items():
+                    data_for_draw_tmp[self.sensor_group_map[sensor_id]] += value
+                data_for_draw = data_for_draw_tmp
 
             if sort:
-                data_for_draw_with_sensor_ordered = \
+                data_for_draw_ordered = \
                     sorted(
-                        data_for_draw_with_sensor.items(),
-                        key=lambda sensor_value: sensor_value[1],
+                        data_for_draw.items(),
+                        key=lambda key_value: key_value[1],
                         reverse=True
                     )
-                data_for_draw_with_sensor = \
-                    collections.OrderedDict(data_for_draw_with_sensor_ordered)
+                data_for_draw = \
+                    collections.OrderedDict(data_for_draw_ordered)
 
             # 获取柱状图横坐标（如探针）
-            category_names = list(data_for_draw_with_sensor.keys())[:limit]
+            category_names = list(data_for_draw.keys())[:limit]
 
             # 获取柱状图纵坐标
-            data = [
-                [data_for_draw_with_sensor[_]
+            datas = [
+                [data_for_draw[_]
                  for _ in category_names]
             ]
 
@@ -177,7 +208,7 @@ class DummyOb(object):
             ]
 
             ret[log_format] = {
-                "data": data,
+                "datas": datas,
                 "category_names": category_names,
                 "legend_names": legend_names,
             }
@@ -209,7 +240,7 @@ class DummyOb(object):
             # util.pretty_print(es_log_data)
 
             # 数据统计
-            data_for_draw_with_group = util.init_data_for_pdf_with_format()
+            data_for_draw_with_group = util.init_data_for_pdf_with_default_int()
             for sensor_id_dict, value, *_ in es_log_data["result"]:
                 sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
                 sensor_gorup = self.sensor_group_map[sensor_id]
@@ -274,6 +305,7 @@ class PDFReport(DummyOb):
         super(PDFReport, self).__init__()
 
         self.report_tpl_pgs = self.report_tpl["pages"]
+        self.report_tpl_pg_num = None
 
         # self.indicate_sen_group_map(sensor_id_group_mapping)
 
@@ -309,8 +341,9 @@ class PDFReport(DummyOb):
                                   element_name,
                                   content)
 
-    def making_data(self, begin_t: str, end_t: str, fmts, sids, chart_typ,
-                    page_name="log_classify", item_id=0, rule_id="00", search_index="log*"):
+    def making_data(self, begin_t: str, end_t: str, sids, chart_typ, fmts=None,
+                    page_name="log_classify", item_id=0, rule_id="00", search_index="log*",
+                    grouping=False):
         """
         生成数据并进行翻译
         :param begin_t: 查询开始时间
@@ -322,6 +355,7 @@ class PDFReport(DummyOb):
         :param item_id: rule engine param *
         :param rule_id: rule engine param *
         :param search_index: rule engine param *
+        :param grouping: 是否按探针组对数据进行分组
         :return: cooked data
         """
 
@@ -335,17 +369,21 @@ class PDFReport(DummyOb):
             "rule_id": rule_id,
             "search_index": search_index,
             "data_scope": {
-                "FORMAT.raw": fmts,
+                # 探针安全日志-违规定义日志分布展示 不需要此参数
+                # "FORMAT.raw": fmts,
                 "SENSOR_ID.raw": sids
             }
         }
 
+        if fmts:
+            content["data_scope"]["FORMAT.raw"] = fmts
+
         if chart_typ == "line":
             ret = self.cook_line_data(content)
         elif chart_typ == "bar":
-            ret = self.cook_bar_data(content)
+            ret = self.cook_bar_data(content, grouping=grouping)
         elif chart_typ == "pie":
-            ret = self.cook_pie_data(content)
+            ret = self.cook_pie_data(content, page_name=page_name)
         elif chart_typ == "group_bar":
             ret = self.cook_group_bar_data(content)
         else:
@@ -353,8 +391,9 @@ class PDFReport(DummyOb):
 
         return ret
 
-    def report_draw_line(self, page_idx, elname, datas, legend_names,
-                         category_names, has_description=False, description_elname="",
+    def report_draw_line(self, page_idx, elname,
+                         datas, legend_names, category_names,
+                         has_description=False, description_elname="",
                          description_intro=""):
         """
         自定义报告画线图
@@ -444,12 +483,15 @@ class PDFReport(DummyOb):
         for log_format, bar_chart_data in bar_infos.items():
             category_names = bar_chart_data["category_names"]
             legend_names = bar_chart_data["legend_names"]
+            # 触发隔离违规定义TOP10 不需要后缀
+            item_name = elname_prefix if log_format == "SENSOR_ALARM_MSG" \
+                else f"{elname_prefix}{log_format}"
 
             PDFTemplate.set_bar_chart_data(
                 self.report_tpl_pgs,
                 page_idx,
-                f"{elname_prefix}{log_format}",
-                data=bar_chart_data["data"],
+                item_name,
+                data=bar_chart_data["datas"],
                 category_names=category_names,
                 legend_names=legend_names
             )
@@ -462,206 +504,410 @@ class ReportSenHost(PDFReport):
     """
     探针主机日志生成
     """
+    # report_tpl_pg_num = 1
+    all_fmts = [
+        "SENSOR_SAFEMODE_BOOT",
+        "SENSOR_MULTIPLE_OS_BOOT",
+        "SENSOR_VM_INSTALLED",
+        "SENSOR_SERVICECHANGE",
+        "SENSOR_HARDWARE_CHANGE"
+    ]
 
-    report_tpl_pg_num = 1
+    def __init__(self):
+        super(ReportSenHost, self).__init__()
+        self.set_page_idx(1)
 
-    def draw_page(self):
+    def draw_page(self, begin_t, end_t, sensors, sensor_id_group_mapping, **kwargs):
+        """
+        :param begin_t: 日志起始时间
+        :param end_t:  日志截止时间
+        :param sensors: 目标探针
+        :param sensor_id_group_mapping: 探针与探针组映射关系
+        :param kwargs: 其他参数，如日志类型（fmts）
+        :return:
+        """
+        self.indicate_sen_group_map(sensor_id_group_mapping)
+        fmts = kwargs["fmts"]
 
-        begin_t = "2019-07-04T00:00:00.000"
-        end_t = "2019-07-12T00:00:00.000"
-        item_id = 0
-
-        fmts = [
-            "SENSOR_SAFEMODE_BOOT",
-            "SENSOR_MULTIPLE_OS_BOOT",
-            "SENSOR_VM_INSTALLED",
-            "SENSOR_SERVICECHANGE",
-            "SENSOR_HARDWARE_CHANGE"
-        ]
-
-
-        sensors = [
-            "WIN0001",
-            "WIN0002",
-            "WIN0004",
-            "WIN0005",
-            "WIN0006",
-            "WIN0008",
-            "WIN0011",
-            "WIN0012",
-            "WIN0013",
-            "WIN0014",
-            "WIN0015",
-            "WIN0016",
-            "WIN0017",
-            "WIN0018",
-            "WIN0019",
-            "WIN0020",
-            "WIN0021",
-            "WIN0022",
-            "WIN0023",
-            "WIN0024",
-            "WIN0025",
-            "WIN0026",
-            "WIN0027",
-            "WSR0001",
-            "WIN0010",
-            "WIN0003",
-            "WIN0009",
-            "WIN0007"
-        ]
-
-        datas, legend_names, category_names = self.making_data(begin_t, end_t, fmts, sensors, chart_typ="line")
-
+        # 折线图
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=fmts)
         desc = (
             f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
-            f"包含日志类型: {legend_names},"
-            f"时间范围: {category_names[0]} 至 {category_names[-1]}"
+            f"包含日志类型: {line_ret['legend_names']},"
+            f"时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}"
         )
-
         self.report_draw_line(self.report_tpl_pg_num,
                               "section_operation_trend_line_chart",
-                              datas, legend_names, category_names,
+                              line_ret['datas'], line_ret['legend_names'], line_ret['category_names'],
                               True,
                               "section_desc2",
                               desc)
 
-        sensor_id_group_mapping = {
-            "WIN0001": "无分组",
-            "WIN0002": "无分组",
-            "WIN0004": "无分组",
-            "WIN0005": "无分组",
-            "WIN0006": "无分组",
-            "WIN0008": "无分组",
-            "WIN0011": "无分组",
-            "WIN0012": "无分组",
-            "WIN0013": "无分组",
-            "WIN0014": "无分组",
-            "WIN0015": "无分组",
-            "WIN0016": "无分组",
-            "WIN0017": "无分组",
-            "WIN0018": "无分组",
-            "WIN0019": "无分组",
-            "WIN0020": "无分组",
-            "WIN0021": "无分组",
-            "WIN0022": "无分组",
-            "WIN0023": "无分组",
-            "WIN0024": "无分组",
-            "WIN0025": "无分组",
-            "WIN0026": "无分组",
-            "WSR0001": "无分组",
-            "WIN0028": "无分组",
-            "WIN0010": "cnwang_laptop",
-            "WIN0003": "FAE",
-            "WIN0009": "demo",
-            "WIN0007": "hjn-demo",
+        # 饼图
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.all_fmts, item_id=1)
+        self.report_draw_pie(self.report_tpl_pg_num,
+                             "section_log_distribution_pie_chart",
+                             pie_ret["datas"], pie_ret["category_names"]
+                             )
 
-        }
-        self.indicate_sen_group_map(sensor_id_group_mapping)
+        # 柱状图（探针）
+        sensor_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=fmts, item_id=2)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "sensor_top_",
+            sensor_bar_ret
+        )
 
+        # 柱状图（探针组）
+        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=fmts, item_id=2,
+                                                grouping=True)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "sensor_group_top_",
+            sensor_group_bar_ret
+        )
 
 
 class ReportSenSafe(PDFReport):
     """
     探针安全日志
     """
+    # report_tpl_pg_num = 2
+    ALL_HOST_SAFE_FMTS = [
+        "SENSOR_ALARM_MSG"
+    ]
+    ALL_VIOLATION_DETAIL_FMTS = [
+        "SENSOR_SAFEMODE_BOOT",
+        "SENSOR_MULTIPLE_OS_BOOT",
+        "SENSOR_VM_INSTALLED",
+        "SENSOR_SERVICECHANGE",
+        "SENSOR_HARDWARE_CHANGE"
+    ]
+    ALL_VIOLATION_OTHER_FMTS = [
+        "SENSOR_AUTORUN",
+        "SENSOR_NET_SHARE"
+    ]
 
-    report_tpl_pg_num = 2
+    def __init__(self):
+        super(ReportSenSafe, self).__init__()
+        self.set_page_idx(2)
 
-    def draw_page(self):
-        begin_t = "2019-07-04T00:00:00.000"
-        end_t = "2019-07-12T00:00:00.000"
-        item_id = 0
-
-        fmts = [
-            "SENSOR_SAFEMODE_BOOT",
-            "SENSOR_MULTIPLE_OS_BOOT",
-            "SENSOR_VM_INSTALLED",
-            "SENSOR_SERVICECHANGE",
-            "SENSOR_HARDWARE_CHANGE"
-        ]
-
-
-        sensors = [
-            "WIN0001",
-            "WIN0002",
-            "WIN0004",
-            "WIN0005",
-            "WIN0006",
-            "WIN0008",
-            "WIN0011",
-            "WIN0012",
-            "WIN0013",
-            "WIN0014",
-            "WIN0015",
-            "WIN0016",
-            "WIN0017",
-            "WIN0018",
-            "WIN0019",
-            "WIN0020",
-            "WIN0021",
-            "WIN0022",
-            "WIN0023",
-            "WIN0024",
-            "WIN0025",
-            "WIN0026",
-            "WIN0027",
-            "WSR0001",
-            "WIN0010",
-            "WIN0003",
-            "WIN0009",
-            "WIN0007"
-        ]
-
-        datas, legend_names, category_names = self.making_data(begin_t, end_t, fmts, sensors, chart_typ="line")
-        self.report_draw_line(self.report_tpl_pg_num,
-                              "violation_triggered_trend_line_chart",
-                              datas, legend_names, category_names)
-
-        sensor_id_group_mapping = {
-            "WIN0001": "无分组",
-            "WIN0002": "无分组",
-            "WIN0004": "无分组",
-            "WIN0005": "无分组",
-            "WIN0006": "无分组",
-            "WIN0008": "无分组",
-            "WIN0011": "无分组",
-            "WIN0012": "无分组",
-            "WIN0013": "无分组",
-            "WIN0014": "无分组",
-            "WIN0015": "无分组",
-            "WIN0016": "无分组",
-            "WIN0017": "无分组",
-            "WIN0018": "无分组",
-            "WIN0019": "无分组",
-            "WIN0020": "无分组",
-            "WIN0021": "无分组",
-            "WIN0022": "无分组",
-            "WIN0023": "无分组",
-            "WIN0024": "无分组",
-            "WIN0025": "无分组",
-            "WIN0026": "无分组",
-            "WSR0001": "无分组",
-            "WIN0028": "无分组",
-            "WIN0010": "cnwang_laptop",
-            "WIN0003": "FAE",
-            "WIN0009": "demo",
-            "WIN0007": "hjn-demo",
-
-        }
+    def draw_page(self, begin_t, end_t, sensors, sensor_id_group_mapping, **kwargs):
+        """
+        :param begin_t: 日志起始时间
+        :param end_t:  日志截止时间
+        :param sensors: 目标探针
+        :param sensor_id_group_mapping: 探针与探针组映射关系
+        :param kwargs: 其他参数，如日志类型（fmts）
+        :return:
+        """
         self.indicate_sen_group_map(sensor_id_group_mapping)
 
+        violation_detail_fmts = kwargs["violation_detail_fmts"]
+        violation_other_fmts = kwargs["violation_other_fmts"]
+
+        # 违规定义日志
+        self.draw_violation_triggered(begin_t, end_t, sensors)
+        # 违规详情日志
+        self.draw_violation_detail(begin_t, end_t, sensors, violation_detail_fmts)
+        # 其他安全日志
+        self.draw_violation_other(begin_t, end_t, sensors, violation_other_fmts)
+
+    def draw_violation_triggered(self, begin_t, end_t, sensors):
+        # 违规定义日志-折线图
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=self.ALL_HOST_SAFE_FMTS)
+        self.report_draw_line(self.report_tpl_pg_num,
+                              "violation_triggered_trend_line_chart",
+                              line_ret['datas'],
+                              line_ret['legend_names'],
+                              line_ret['category_names'])
+
+        # 违规定义日志-饼图
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", item_id=2, page_name="violation_define")
+        self.report_draw_pie(self.report_tpl_pg_num,
+                             "violation_triggered_distrbution",
+                             pie_ret["datas"],
+                             pie_ret["category_names"]
+                             )
+
+        # 违规定义日志-柱图（探针）
+        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar",
+                                   fmts=self.ALL_HOST_SAFE_FMTS, item_id=3,
+                                   page_name="violation_define")
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "violation_triggered_sensor_top",
+            bar_ret
+        )
+
+        # 违规定义日志-柱图（探针组）
+        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar",
+                                   fmts=[self.ALL_HOST_SAFE_FMTS], item_id=3,
+                                   page_name="violation_define", grouping=True)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "violation_triggered_sensor_group_top",
+            bar_ret
+        )
+
+    def draw_violation_detail(self, begin_t, end_t, sensors, violation_detail_fmts):
+        # 违规详情日志运行趋势
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line",
+                                    fmts=violation_detail_fmts, item_id=0,
+                                    page_name="log_classify")
+        self.report_draw_line(self.report_tpl_pg_num,
+                              "violation_detail_trend_line_chart",
+                              line_ret['datas'],
+                              line_ret['legend_names'],
+                              line_ret['category_names'])
+
+        # 违规详情日志分布展示
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie",
+                                   fmts=self.ALL_VIOLATION_DETAIL_FMTS,
+                                   item_id=1, page_name="log_classify")
+        self.report_draw_pie(self.report_tpl_pg_num,
+                             "violation_detail_distrbution",
+                             pie_ret["datas"],
+                             pie_ret["category_names"]
+                             )
+
+        # 违规详情-探针组Top10
+        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_detail_fmts,
+                                                item_id=2,grouping=True)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "violation_detail_distrbution_sensor_group_top_",
+            sensor_group_bar_ret
+        )
+
+        # 违规详情-探针Top10
+        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_detail_fmts,
+                                                item_id=2)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "violation_detail_distrbution_sensor_top_",
+            sensor_group_bar_ret
+        )
+
+    def draw_violation_other(self, begin_t, end_t, sensors, violation_other_fmts):
+        # 其他安全日志分析图-主机安全趋势
+        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line",
+                                    fmts=violation_other_fmts, item_id=0,
+                                    page_name="log_classify")
+        self.report_draw_line(self.report_tpl_pg_num,
+                              "violation_others_trend_line_chart",
+                              line_ret['datas'],
+                              line_ret['legend_names'],
+                              line_ret['category_names'])
+
+        # 其他安全日志分析图-分布展示
+        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie",
+                                   fmts=self.ALL_VIOLATION_OTHER_FMTS,
+                                   item_id=1, page_name="log_classify")
+        self.report_draw_pie(self.report_tpl_pg_num,
+                             "violation_others_distrbution",
+                             pie_ret["datas"],
+                             pie_ret["category_names"]
+                             )
+
+        # 其他安全日志-探针组Top10
+        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_other_fmts,
+                                                item_id=2, grouping=True)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "violation_others_sensor_group_top_",
+            sensor_group_bar_ret
+        )
+
+        # 其他安全日志-探针Top10
+        sensor_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_other_fmts,
+                                                item_id=2)
+        self.report_draw_bar(
+            self.report_tpl_pg_num,
+            "violation_others_sensor_top_",
+            sensor_bar_ret
+        )
 
 
+def test_case():
+    sensor_id_group_mapping = {
+        "WIN0001": "无分组",
+        "WIN0002": "无分组",
+        "WIN0004": "无分组",
+        "WIN0005": "无分组",
+        "WIN0006": "无分组",
+        "WIN0008": "无分组",
+        "WIN0011": "无分组",
+        "WIN0012": "无分组",
+        "WIN0013": "无分组",
+        "WIN0014": "无分组",
+        "WIN0015": "无分组",
+        "WIN0016": "无分组",
+        "WIN0017": "无分组",
+        "WIN0018": "无分组",
+        "WIN0019": "无分组",
+        "WIN0020": "无分组",
+        "WIN0021": "无分组",
+        "WIN0022": "无分组",
+        "WIN0023": "无分组",
+        "WIN0024": "无分组",
+        "WIN0025": "无分组",
+        "WIN0026": "无分组",
+        "WSR0001": "无分组",
+        "WIN0028": "无分组",
+        "WIN0010": "cnwang_laptop",
+        "WIN0003": "FAE",
+        "WIN0009": "demo",
+        "WIN0007": "hjn-demo",
+        "WIN0027": "无分组",
+
+    }
+    sensors = [
+        "WIN0001",
+        "WIN0002",
+        "WIN0004",
+        "WIN0005",
+        "WIN0006",
+        "WIN0008",
+        "WIN0011",
+        "WIN0012",
+        "WIN0013",
+        "WIN0014",
+        "WIN0015",
+        "WIN0016",
+        "WIN0017",
+        "WIN0018",
+        "WIN0019",
+        "WIN0020",
+        "WIN0021",
+        "WIN0022",
+        "WIN0023",
+        "WIN0024",
+        "WIN0025",
+        "WIN0026",
+        "WIN0027",
+        "WSR0001",
+        "WIN0010",
+        "WIN0003",
+        "WIN0009",
+        "WIN0007"
+    ]
+
+    report_page_class_mapping = {
+        "log_search": ReportSenHost,
+        "violation_define": ReportSenSafe
+    }
+
+    case = {
+        "begin_t": "2019-06-01T00:00:00.000",
+        "end_t": "2019-07-17T00:00:00.000",
+        "sensor_id_group_mapping": sensor_id_group_mapping,
+        "report_pages": [
+                {
+                    "page_name": "log_search",
+                    "kwargs":{
+                        "fmts": [
+                            "SENSOR_SAFEMODE_BOOT",
+                            "SENSOR_MULTIPLE_OS_BOOT",
+                            "SENSOR_VM_INSTALLED",
+                            "SENSOR_SERVICECHANGE",
+                            "SENSOR_HARDWARE_CHANGE"
+                        ]
+                    }
+                },
+                {
+                    "page_name": "violation_define",
+                    "kwargs": {
+                        "violation_detail_fmts": [
+                            "SENSOR_IO",
+                            "SENSOR_RESOURCE_OVERLOAD",
+                            "SENSOR_SERVICE_FULL_LOAD",
+                            "SENSOR_TIME_ABNORMAL"
+                        ],
+                        "violation_other_fmts": [
+                            "SENSOR_AUTORUN",
+                            "SENSOR_NET_SHARE"
+                        ]
+                    }
+                }
+        ]
+    }
+
+    begin_t = case["begin_t"]
+    end_t = case["end_t"]
+    sensor_id_group_mapping = case["sensor_id_group_mapping"]
+
+    for report_page in case["report_pages"]:
+        try:
+            prt = report_page_class_mapping[report_page["page_name"]]()
+            prt.draw_page(begin_t, end_t, sensors, sensor_id_group_mapping, **report_page["kwargs"])
+        except Exception as e:
+            print(f"errmsg: {e}")
+            print(traceback.format_exc())
+
+    PDFReport().draw()
 
 
 if __name__ == "__main__":
 
-    prt = ReportSenHost()
-    prt.draw_page()
+    test_case()
 
-    prt1 = ReportSenSafe()
-    prt1.draw_page()
-
-    # final
-    PDFReport().draw()
+    # begin_time = "2019-07-04T00:00:00.000"
+    # end_time = "2019-07-12T00:00:00.000"
+    # sensor_id_group_map = {
+    #     "WIN0001": "无分组",
+    #     "WIN0002": "无分组",
+    #     "WIN0004": "无分组",
+    #     "WIN0005": "无分组",
+    #     "WIN0006": "无分组",
+    #     "WIN0008": "无分组",
+    #     "WIN0011": "无分组",
+    #     "WIN0012": "无分组",
+    #     "WIN0013": "无分组",
+    #     "WIN0014": "无分组",
+    #     "WIN0015": "无分组",
+    #     "WIN0016": "无分组",
+    #     "WIN0017": "无分组",
+    #     "WIN0018": "无分组",
+    #     "WIN0019": "无分组",
+    #     "WIN0020": "无分组",
+    #     "WIN0021": "无分组",
+    #     "WIN0022": "无分组",
+    #     "WIN0023": "无分组",
+    #     "WIN0024": "无分组",
+    #     "WIN0025": "无分组",
+    #     "WIN0026": "无分组",
+    #     "WSR0001": "无分组",
+    #     "WIN0028": "无分组",
+    #     "WIN0010": "cnwang_laptop",
+    #     "WIN0003": "FAE",
+    #     "WIN0009": "demo",
+    #     "WIN0007": "hjn-demo",
+    #
+    # }
+    #
+    # report_page_class_mapping = {
+    #     "log_search": ReportSenHost,
+    #     "violation_define": ReportSenSafe
+    # }
+    #
+    # test_case = {
+    #     "begin_t": "2019-07-04T00:00:00.000",
+    #     "end_t": "2019-07-12T00:00:00.000",
+    #     "sensor_id_group_map": sensor_id_group_map
+    #     "report_pages": [
+    #         "log_search",
+    #         "violation_define",
+    #     ]
+    # }
+    #
+    #
+    #
+    # prt = ReportSenHost(begin_time, end_time, sensor_id_group_map)
+    # prt.draw_page()
+    #
+    # prt1 = ReportSenSafe(begin_time, end_time, sensor_id_group_map)
+    # prt1.draw_page()
+    #
+    # # final
+    # PDFReport().draw()
