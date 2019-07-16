@@ -22,10 +22,11 @@ class DummyOb(object):
     """
 
     ruleng_url = "http://192.168.8.60:8002"
+    sensor_group_map = {}
 
     def __init__(self):
-        # 探针& 探针组关系表
-        self.sensor_group_map = {}
+        pass
+
 
     def indicate_sen_group_map(self, sensor_group_map):
         """
@@ -254,27 +255,36 @@ class DummyOb(object):
         return json.loads(content)
 
 
+template_path = os.path.join(os.getcwd(), "templates", "template_charts.xml")
+assert os.path.exists(template_path) == True
+report_template = PDFTemplate.read_template(template_path)
+
 class PDFReport(DummyOb):
     """
     generate report class.
     making pdf and translate data
     """
 
-    def __init__(self, payloads: dict, template_path: str,
+    report_tpl = report_template
+
+    def __init__(self, template_path: str,
                  sensor_id_group_mapping: dict):
+        """
+        init
+        :param template_path:  reportlib pdf模板路径
+        :param sensor_id_group_mapping: sensor_id & sensor_group_id 对应表
+        """
 
         super(PDFReport, self).__init__()
         if not os.path.exists(template_path):
             raise ValueError(f"reportlib template not found. {template_path}")
 
-        self.report_tpl = PDFTemplate.read_template(template_path)
         self.report_tpl_pgs = self.report_tpl["pages"]
         self.report_tpl_pg_num = 0
 
-        #
         self.indicate_sen_group_map(sensor_id_group_mapping)
 
-
+        # self.report_tpl = PDFTemplate.read_template(template_path)
         # self.payloads = payloads
         # self.template_path = template_path
         # self.sensor_id_group_mapping = sensor_id_group_mapping
@@ -305,7 +315,7 @@ class PDFReport(DummyOb):
                                   content)
 
 
-    def making_data(self, begin_t, end_t,
+    def making_data(self, begin_t:str, end_t:str,
                   fmts, sids, chart_typ,
                   page_name="log_classify", item_id=0, rule_id="00", search_index="log*"):
         """
@@ -459,9 +469,19 @@ class PDFReport(DummyOb):
                 legend_names=legend_names
             )
 
-
-    def main(self):
+    def draw(self):
         PDFTemplate.draw(self.report_tpl)
+
+
+class ReportSenHost(PDFReport):
+    """
+    探针主机日志生成
+    """
+
+    def __int__(self):
+        self.report_tpl_pg_num = 1
+
+
 
 
 def test_case():
@@ -646,7 +666,6 @@ def test_case():
         "WIN0003": "FAE",
         "WIN0009": "demo",
         "WIN0007": "hjn-demo",
-
     }
 
     template_path = os.path.join(os.getcwd(), "templates", "template_charts.xml")
