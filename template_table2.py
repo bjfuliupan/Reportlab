@@ -27,7 +27,6 @@ class DummyOb(object):
     def __init__(self):
         pass
 
-
     def indicate_sen_group_map(self, sensor_group_map):
         """
         设置探针与探针组之间的关系表
@@ -36,7 +35,7 @@ class DummyOb(object):
         """
         self.sensor_group_map = sensor_group_map
 
-    def cook_line_data(self, payload:dict):
+    def cook_line_data(self, payload: dict):
         """
         translate es return data to pdflib line chart data
         :param payload:
@@ -96,7 +95,7 @@ class DummyOb(object):
         ]
         return datas, legend_names, category_names
 
-    def cook_pie_data(self, payload:dict):
+    def cook_pie_data(self, payload: dict):
         # 通过payload及时间参数，获取ES日志，并清洗
         # 返回饼图日志类别、日志数量
         data = json.dumps(payload)
@@ -164,7 +163,7 @@ class DummyOb(object):
                     collections.OrderedDict(data_for_draw_with_sensor_ordered)
 
             # 获取柱状图横坐标（如探针）
-            category_names = list(data_for_draw_with_sensor.keys())
+            category_names = list(data_for_draw_with_sensor.keys())[:limit]
 
             # 获取柱状图纵坐标
             data = [
@@ -184,8 +183,7 @@ class DummyOb(object):
             }
         return ret
 
-
-    def cook_group_bar_data(self, payload:dict, sort=True, limit=10):
+    def cook_group_bar_data(self, payload: dict, sort=True, limit=10):
         """
         通过payload获取日志，进行清洗并返回
         :param payload: payload的FORMAT缺省，使用log_formats字段顺序填充
@@ -228,7 +226,7 @@ class DummyOb(object):
                     collections.OrderedDict(data_for_draw_with_group_ordered)
 
             # 获取柱状图横坐标（如探针组）
-            category_names = list(data_for_draw_with_group.keys())
+            category_names = list(data_for_draw_with_group.keys())[:limit]
 
             # 获取柱状图纵坐标
             datas = [
@@ -251,13 +249,14 @@ class DummyOb(object):
         status_code = ret.status_code
         content = ret.content
         assert status_code == 200, \
-            RuntimeError(f"request mrule: {payload} fail, errcode: {status_code}, reason: {content}")
+            RuntimeError(f"request mrule: {data} fail, errcode: {status_code}, reason: {content}")
         return json.loads(content)
 
 
 template_path = os.path.join(os.getcwd(), "templates", "template_charts.xml")
-assert os.path.exists(template_path) == True
+assert os.path.exists(template_path) is True
 report_template = PDFTemplate.read_template(template_path)
+
 
 class PDFReport(DummyOb):
     """
@@ -295,7 +294,8 @@ class PDFReport(DummyOb):
         设置标题, must
         :return:
         """
-        PDFTemplate.set_text_data(self.report_tpl_pgs, page_idx,
+        PDFTemplate.set_text_data(self.report_tpl_pgs,
+                                  page_idx,
                                   element_name,
                                   content)
 
@@ -304,14 +304,13 @@ class PDFReport(DummyOb):
         设置文章内容描述
         :return:
         """
-        PDFTemplate.set_text_data(self.report_tpl_pgs, page_idx,
+        PDFTemplate.set_text_data(self.report_tpl_pgs,
+                                  page_idx,
                                   element_name,
                                   content)
 
-
-    def making_data(self, begin_t:str, end_t:str,
-                  fmts, sids, chart_typ,
-                  page_name="log_classify", item_id=0, rule_id="00", search_index="log*"):
+    def making_data(self, begin_t: str, end_t: str, fmts, sids, chart_typ,
+                    page_name="log_classify", item_id=0, rule_id="00", search_index="log*"):
         """
         生成数据并进行翻译
         :param begin_t: 查询开始时间
@@ -356,7 +355,7 @@ class PDFReport(DummyOb):
 
     def report_draw_line(self, page_idx, elname, datas, legend_names,
                          category_names, has_description=False, description_elname="",
-                         descritpion_intro=""):
+                         description_intro=""):
         """
         自定义报告画线图
         :param page_idx: 当前操作页面的page index
@@ -376,7 +375,7 @@ class PDFReport(DummyOb):
                 self.report_tpl_pgs,
                 page_idx,
                 description_elname,
-                descritpion_intro
+                description_intro
             )
 
         PDFTemplate.set_line_chart_data(
@@ -390,7 +389,7 @@ class PDFReport(DummyOb):
 
     def report_draw_pie(self, page_idx, elname, datas, category_names,
                         has_description=False, description_elname="",
-                        desccription_inro=""):
+                        description_intro=""):
         """
         自定义报告饼图
         :param page_idx: 当前操作页面的page index
@@ -408,7 +407,7 @@ class PDFReport(DummyOb):
                 self.report_tpl_pgs,
                 page_idx,
                 description_elname,
-                desccription_inro
+                description_intro
             )
 
         PDFTemplate.set_pie_chart_data(
@@ -657,6 +656,7 @@ class ReportSenSafe(PDFReport):
 
 
 if __name__ == "__main__":
+
     prt = ReportSenHost()
     prt.draw_page()
 
