@@ -344,6 +344,12 @@ class PDFTemplate(object):
             y_desc = None
             if "y_desc" in format_json and isString(format_json['y_desc']) is True:
                 y_desc = format_json['y_desc']
+            cat_label_all = False
+            if "cat_label_all" in format_json:
+                cat_label_all = format_json['cat_label_all']
+            cat_label_angle = 30
+            if "cat_label_angle" in format_json and isNumber(format_json['cat_label_angle']) is True:
+                cat_label_angle = format_json['cat_label_angle']
 
             bar_chart = None
             if bar_style == "horizontal":
@@ -354,7 +360,8 @@ class PDFTemplate(object):
                     legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,
                     main_title=main_title, main_title_font_name=main_title_font_name,
                     main_title_font_size=main_title_font_size,
-                    main_title_font_color=main_title_font_color, x_desc=x_desc, y_desc=y_desc)
+                    main_title_font_color=main_title_font_color, x_desc=x_desc, y_desc=y_desc,
+                    cat_label_angle=cat_label_angle, cat_label_all=cat_label_all)
             elif bar_style == "vertical":
                 bar_chart = ReportLabVerticalBarChart(
                     0, 0, width, height, cat_names, data, style=style,
@@ -363,7 +370,8 @@ class PDFTemplate(object):
                     legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,
                     main_title=main_title, main_title_font_name=main_title_font_name,
                     main_title_font_size=main_title_font_size,
-                    main_title_font_color=main_title_font_color, x_desc=x_desc, y_desc=y_desc)
+                    main_title_font_color=main_title_font_color, x_desc=x_desc, y_desc=y_desc,
+                    cat_label_angle=cat_label_angle, cat_label_all=cat_label_all)
             if bar_chart is not None:
                 d.add(bar_chart)
 
