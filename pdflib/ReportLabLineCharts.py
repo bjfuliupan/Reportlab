@@ -141,9 +141,13 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
 
                 legend.positionType = self.legendPositionType
                 if self.legendPositionType != "null":
-                    legend.backgroundRect = \
-                        Rect(self.x, self.y + legend.bottom_gap - self.labels_height - 15 - ((i+1) * legend.fontSize),
-                             self.width, self.height)
+                    if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
+                        legend.backgroundRect = \
+                            Rect(self.x, self.y + legend.bottom_gap - self.labels_height - 15 - ((i+1) * legend.fontSize),
+                                 self.width, self.height)
+                    else:
+                        legend.backgroundRect = Rect(self.x, self.y - (i * legend.fontSize * 1.2),
+                                                     self.width, self.height)
 
                 legend.adjustX = self.legendAdjustX
                 legend.adjustY = self.legendAdjustY
