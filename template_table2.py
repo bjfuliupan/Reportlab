@@ -355,7 +355,8 @@ class PDFReport(DummyOb):
         return ret
 
     def report_draw_line(self, page_idx, elname, datas, legend_names,
-                         category_names, has_description=False, description_elname=""):
+                         category_names, has_description=False, description_elname="",
+                         descritpion_intro=""):
         """
         自定义报告画线图
         :param page_idx: 当前操作页面的page index
@@ -365,21 +366,17 @@ class PDFReport(DummyOb):
         :param category_names: 线图的分类名称
         :param has_description: 该图是否有描述？
         :param description_elname: 描述对应template的element name
+        :param description_intro: 图描述
         :return:
         """
 
         if has_description:
             # 设置描述说明
-            desc = (
-                f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
-                f"包含日志类型: {legend_names},"
-                f"时间范围: {category_names[0]} 至 {category_names[-1]}"
-            )
             PDFTemplate.set_paragraph_data(
                 self.report_tpl_pgs,
                 page_idx,
                 description_elname,
-                desc
+                descritpion_intro
             )
 
         PDFTemplate.set_line_chart_data(
@@ -392,7 +389,8 @@ class PDFReport(DummyOb):
         )
 
     def report_draw_pie(self, page_idx, elname, datas, category_names,
-                        has_description=False, description_elname=""):
+                        has_description=False, description_elname="",
+                        desccription_inro=""):
         """
         自定义报告饼图
         :param page_idx: 当前操作页面的page index
@@ -401,20 +399,16 @@ class PDFReport(DummyOb):
         :param category_names: 图的分类名称
         :param has_description: 该图是否有描述
         :param description_elname: 描述对应template的element name
+        :param description_intro: 图描述
         :return:
         """
 
         if has_description:
-            description = (
-                f"运行日志分布展示图,"
-                f"包含日志类型: {category_names}"
-            )
-
             PDFTemplate.set_paragraph_data(
                 self.report_tpl_pgs,
                 page_idx,
                 description_elname,
-                description
+                desccription_inro
             )
 
         PDFTemplate.set_pie_chart_data(
@@ -426,7 +420,8 @@ class PDFReport(DummyOb):
         )
 
     def report_draw_bar(self, page_idx, elname_prefix:str, bar_infos:dict,
-                        has_description=False, description_elname=""):
+                        has_description=False, description_elname="",
+                        description_intro=""):
         """
 
         :param page_idx: page number
@@ -434,20 +429,17 @@ class PDFReport(DummyOb):
         :param bar_infos:
         :param has_description:
         :param description_elname:
+        :param description_intro: 图描述
         :return:
         """
 
         if has_description:
-            description = (
-                f"运行日志分布展示图,"
-                f"包含日志类型: {category_names}"
-            )
 
             PDFTemplate.set_paragraph_data(
                 self.report_tpl_pgs,
                 page_idx,
                 description_elname,
-                description
+                description_intro
             )
 
         for log_format, bar_chart_data in bar_infos.items():
@@ -521,11 +513,19 @@ class ReportSenHost(PDFReport):
         ]
 
         datas, legend_names, category_names = self.making_data(begin_t, end_t, fmts, sensors, chart_typ="line")
+
+        desc = (
+            f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
+            f"包含日志类型: {legend_names},"
+            f"时间范围: {category_names[0]} 至 {category_names[-1]}"
+        )
+
         self.report_draw_line(self.report_tpl_pg_num,
                               "section_operation_trend_line_chart",
                               datas, legend_names, category_names,
                               True,
-                              "section_desc2")
+                              "section_desc2",
+                              desc)
 
         sensor_id_group_mapping = {
             "WIN0001": "无分组",
@@ -560,10 +560,108 @@ class ReportSenHost(PDFReport):
         }
         self.indicate_sen_group_map(sensor_id_group_mapping)
 
-        self.draw()
+
+
+class ReportSenSafe(PDFReport):
+    """
+    探针安全日志
+    """
+
+    report_tpl_pg_num = 2
+
+    def draw_page(self):
+        begin_t = "2019-07-04T00:00:00.000"
+        end_t = "2019-07-12T00:00:00.000"
+        item_id = 0
+
+        fmts = [
+            "SENSOR_SAFEMODE_BOOT",
+            "SENSOR_MULTIPLE_OS_BOOT",
+            "SENSOR_VM_INSTALLED",
+            "SENSOR_SERVICECHANGE",
+            "SENSOR_HARDWARE_CHANGE"
+        ]
+
+
+        sensors = [
+            "WIN0001",
+            "WIN0002",
+            "WIN0004",
+            "WIN0005",
+            "WIN0006",
+            "WIN0008",
+            "WIN0011",
+            "WIN0012",
+            "WIN0013",
+            "WIN0014",
+            "WIN0015",
+            "WIN0016",
+            "WIN0017",
+            "WIN0018",
+            "WIN0019",
+            "WIN0020",
+            "WIN0021",
+            "WIN0022",
+            "WIN0023",
+            "WIN0024",
+            "WIN0025",
+            "WIN0026",
+            "WIN0027",
+            "WSR0001",
+            "WIN0010",
+            "WIN0003",
+            "WIN0009",
+            "WIN0007"
+        ]
+
+        datas, legend_names, category_names = self.making_data(begin_t, end_t, fmts, sensors, chart_typ="line")
+        self.report_draw_line(self.report_tpl_pg_num,
+                              "violation_triggered_trend_line_chart",
+                              datas, legend_names, category_names)
+
+        sensor_id_group_mapping = {
+            "WIN0001": "无分组",
+            "WIN0002": "无分组",
+            "WIN0004": "无分组",
+            "WIN0005": "无分组",
+            "WIN0006": "无分组",
+            "WIN0008": "无分组",
+            "WIN0011": "无分组",
+            "WIN0012": "无分组",
+            "WIN0013": "无分组",
+            "WIN0014": "无分组",
+            "WIN0015": "无分组",
+            "WIN0016": "无分组",
+            "WIN0017": "无分组",
+            "WIN0018": "无分组",
+            "WIN0019": "无分组",
+            "WIN0020": "无分组",
+            "WIN0021": "无分组",
+            "WIN0022": "无分组",
+            "WIN0023": "无分组",
+            "WIN0024": "无分组",
+            "WIN0025": "无分组",
+            "WIN0026": "无分组",
+            "WSR0001": "无分组",
+            "WIN0028": "无分组",
+            "WIN0010": "cnwang_laptop",
+            "WIN0003": "FAE",
+            "WIN0009": "demo",
+            "WIN0007": "hjn-demo",
+
+        }
+        self.indicate_sen_group_map(sensor_id_group_mapping)
+
+
 
 
 
 if __name__ == "__main__":
     prt = ReportSenHost()
     prt.draw_page()
+
+    prt1 = ReportSenSafe()
+    prt1.draw_page()
+
+    # final
+    PDFReport().draw()
