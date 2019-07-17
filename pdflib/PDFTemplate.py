@@ -140,6 +140,23 @@ class PDFTemplate(object):
                         if "indent_flag" in it:
                             it["indent_flag"] = int(it["indent_flag"])
 
+                        if "margin-left" in it:
+                            it['margin-left'] = int(it['margin-left'])
+                        else:
+                            it['margin-left'] = 0
+                        if "margin-right" in it:
+                            it['margin-right'] = int(it['margin-right'])
+                        else:
+                            it['margin-right'] = 0
+                        if "margin-top" in it:
+                            it['margin-top'] = int(it['margin-top'])
+                        else:
+                            it['margin-top'] = 0
+                        if "margin-bottom" in it:
+                            it['margin-bottom'] = int(it['margin-bottom'])
+                        else:
+                            it['margin-bottom'] = 0
+
                         if it_type == "paragraph":
                             if "style" not in it:
                                 it['style'] = "BodyText"
@@ -703,7 +720,11 @@ class PDFTemplate(object):
         if align_type == "middle" or align_type == "right":
             items_width = (end_index - start_index - 1) * x_padding
             for i in range(end_index - start_index):
-                items_width += page['items'][start_index + i]['rect'][2]
+                item = page['items'][start_index + i]
+
+                margin_left = item['margin-left']
+                margin_right = item['margin-right']
+                items_width += item['rect'][2] + margin_left + margin_right
 
             start_pos = 0
             if align_type == "middle":
@@ -712,8 +733,12 @@ class PDFTemplate(object):
                 start_pos = page_width - items_width
 
             for i in range(end_index - start_index):
-                page['items'][start_index + i]['rect'][0] = start_pos
-                start_pos += page['items'][start_index + i]['rect'][2] + x_padding
+                item = page['items'][start_index + i]
+
+                margin_left = item['margin-left']
+                margin_right = item['margin-right']
+                item['rect'][0] = start_pos + margin_left
+                start_pos += item['rect'][2] + x_padding + margin_left + margin_right
         elif align_type == "left":
             pass
 
@@ -873,22 +898,28 @@ class PDFTemplate(object):
             item_width = item['rect'][2]
             item_height = item['rect'][3]
 
-            if cur_x != 0 and cur_x + item_width > page_width:
+            margin_left = item['margin-left']
+            margin_right = item['margin-right']
+            margin_top = item['margin-top']
+            margin_bottom = item['margin-bottom']
+
+            if cur_x != 0 and cur_x + item_width + margin_left + margin_right > page_width:
+                # 这一行放不下，需要换行
                 PDFTemplate._calc_positon_align(page, page_width, x_padding, row_start, index, align_type)
 
                 next_page_index = index
                 row_start = index
-                item['rect'][0] = 0
-                item['rect'][1] = next_y
-                cur_x = item_width + x_padding
+                item['rect'][0] = margin_left
+                item['rect'][1] = next_y + margin_top
+                cur_x = item_width + x_padding + margin_left + margin_right
                 cur_y = next_y
-                next_y = cur_y + item_height + y_padding
+                next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
             else:
-                item['rect'][0] = cur_x
-                item['rect'][1] = cur_y
-                cur_x += item_width + x_padding
-                if cur_y + item_height + y_padding > next_y:
-                    next_y = cur_y + item_height + y_padding
+                item['rect'][0] = cur_x + margin_left
+                item['rect'][1] = cur_y + margin_top
+                cur_x += item_width + x_padding + margin_left + margin_right
+                if cur_y + item_height + y_padding + margin_top + margin_bottom > next_y:
+                    next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
 
             if next_y > page_height:
                 if cur_y != 0 or item['type'] == "paragraph" or item['type'] == "table":
