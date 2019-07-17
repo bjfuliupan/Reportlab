@@ -21,7 +21,7 @@ class ReportLabPieChart(Pie):
         drawLegend=AttrMapValue(isBoolean, desc='If true draw legend.', advancedUsage=1),
         legendCategoryNames=AttrMapValue(isListOfStringsOrNone, desc='List of legend category names.'),
         legendPositionType=AttrMapValue(
-            OneOf("null", "top-left", "top-mid", "top-right", "bottom-left", "bottom-mid", "bottom-right"),
+            OneOf("null", "right"),
             desc="The position of LinLegend."),
         legendAdjustX=AttrMapValue(isNumber, desc='xxx.'),
         legendAdjustY=AttrMapValue(isNumber, desc='xxx.'),
@@ -31,7 +31,7 @@ class ReportLabPieChart(Pie):
 
     def __init__(self, x, y, width, height, cat_names, data,
                  main_title="", main_title_font_name=None, main_title_font_size=None, main_title_font_color=None,
-                 legend_position="top-right", legend_adjust_x=0, legend_adjust_y=0, draw_legend=False):
+                 legend_position="right", legend_adjust_x=0, legend_adjust_y=0, draw_legend=False):
         Pie.__init__(self)
 
         self.x = x
@@ -121,13 +121,7 @@ class ReportLabPieChart(Pie):
         for i in range(len(self.legendCategoryNames[0])):
             max_width.append(0)
 
-        max_legend_width = 0
         for i in range(cn_len):
-            tmp_width = ChartsLegend.calc_legend_width([(0, self.legendCategoryNames[i])], 10, 10, DefaultFontName,
-                                                       self.legendFontSize)
-            if tmp_width > max_legend_width:
-                max_legend_width = tmp_width
-
             for str_i in range(len(self.legendCategoryNames[i])):
                 tmp_width = stringWidth(self.legendCategoryNames[i][str_i],
                                         self.legendFontName, self.legendFontSize) + 2
@@ -140,8 +134,7 @@ class ReportLabPieChart(Pie):
             legend.positionType = self.legendPositionType
             if self.legendPositionType != "null":
                 legend.backgroundRect = \
-                    Rect(self.x + max_legend_width + 5, self.y - 60 - (i * int(self.legendFontSize * 1.5)),
-                         self.width + 60, self.height + 60)
+                    Rect(self.x + 5, self.y - (i * int(self.legendFontSize * 1.5)), self.width, self.height)
 
             legend.adjustX = self.legendAdjustX
             legend.adjustY = self.legendAdjustY
