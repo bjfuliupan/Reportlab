@@ -23,18 +23,44 @@ class DummyOb(object):
     """
 
     ruleng_url = "http://192.168.8.60:8002"
-    sensor_group_map = {}
+    # sensor_group_map = {}
+    # begin_t = None
+    # end_t = None
+    # sensors = []
 
     def __init__(self):
-        pass
+        self.sensor_group_map = {}
+        self.begin_t = None
+        self.end_t = None
+        self.sensors = []
 
-    def indicate_sen_group_map(self, sensor_group_map):
-        """
-        设置探针与探针组之间的关系表
-        :param sensor_group_map:
-        :return:
-        """
-        self.sensor_group_map = sensor_group_map
+    def indicate_parameters(self, **kwargs):
+        if kwargs.get("sensor_id_group_map"):
+            self.sensor_group_map = kwargs["sensor_id_group_map"]
+
+        if kwargs.get("begin_t"):
+            self.begin_t = kwargs["begin_t"]
+
+        if kwargs.get("end_t"):
+            self.end_t = kwargs["end_t"]
+
+        if kwargs.get("sensors"):
+            self.sensors = kwargs["sensors"]
+
+    # def indicate_sen_group_map(self, sensor_group_map: dict):
+    #     """
+    #     设置探针与探针组之间的关系表
+    #     :param sensor_group_map:
+    #     :return:
+    #     """
+    #     self.sensor_group_map = sensor_group_map
+
+    def indicate_date_scope(self, begin_t: str, end_t: str):
+        self.begin_t = begin_t
+        self.end_t = end_t
+
+    def indicate_sensors(self, sensors: list):
+        self.sensors = sensors
 
     def cook_line_data(self, payload: dict):
         """
@@ -45,6 +71,7 @@ class DummyOb(object):
         begin_t = util.payload_time_to_datetime(payload["start_time"])
         end_t = util.payload_time_to_datetime(payload["end_time"])
         interval = (end_t - begin_t).days
+        payload_log_format = payload["data_scope"]["FORMAT.raw"]
 
         # 通过payload及时间参数，获取ES日志，并清洗
         # 返回折线图横坐标、纵坐标、折线标签数据
@@ -69,7 +96,7 @@ class DummyOb(object):
             log_time_datetime = util.adjust_es_log_time_to_datetime(log_time)
             value_index = (log_time_datetime - begin_t).days
 
-            # 折线图 多条线， 每条线单独请求
+            # 违规定义日志折线图 多条线， 每条线单独请求
             if log_format is None:
                 log_format = "UNKNOW_FORMAT"
 
@@ -83,10 +110,13 @@ class DummyOb(object):
 
         # 获取折线标签
         legend_format_names = list(chart_datas.keys())
-        legend_names = [
-            constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
-            for _ in legend_format_names
-        ]
+        if payload_log_format == ["SENSOR_ALARM_MSG"]:
+            legend_names = legend_format_names
+        else:
+            legend_names = [
+                constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
+                for _ in legend_format_names
+            ]
 
         # 获取折线图纵坐标数据
         chart_data = [
@@ -102,12 +132,15 @@ class DummyOb(object):
 
         return ret
 
-    def cook_pie_data(self, payload: dict, page_name=None):
-        # 通过payload及时间参数，获取ES日志，并清洗
-        # 返回饼图日志类别、日志数量
+    def cook_pie_data(self, payload: dict):
+        """通过payload及时间参数，获取ES日志，并清洗,返回饼图日志类别、日志数量
+        :param payload:
+        :return:
+        """
+        payload_log_format = payload["data_scope"]["FORMAT.raw"]
+
         data = json.dumps(payload)
         es_log_data = self.ruleng_url_post(data)
-        # util.pretty_print(es_log_data)
 
         # 统计数据
         pie_data = util.init_data_for_pdf_with_default_int()
@@ -124,8 +157,8 @@ class DummyOb(object):
         # 获取饼图日志类型
         log_formats = list(pie_data.keys())
         # 违规定义日志的类型为'规则名称'
-        if page_name == "violation_define":
-            category_names = list(pie_data.keys())
+        if payload_log_format == ["SENSOR_ALARM_MSG"]:
+            category_names = log_formats
         else:
             category_names = [
                 constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
@@ -267,7 +300,6 @@ class DummyOb(object):
             # 获取柱状图日志类型
             legend_names = [constant.LogConstant.FORMAT_DETAIL_MAPPING[log_format]]
 
-            # print(groups, "\n", datas)
             ret[log_format] = {
                 "data": datas,
                 "category_names": category_names,
@@ -341,29 +373,32 @@ class PDFReport(DummyOb):
                                   element_name,
                                   content)
 
-    def making_data(self, begin_t: str, end_t: str, sids, chart_typ, fmts=None,
+    def making_data(self, chart_typ: str, fmts=None, resolved=None,
                     page_name="log_classify", item_id=0, rule_id="00", search_index="log*",
                     grouping=False):
         """
         生成数据并进行翻译
-        :param begin_t: 查询开始时间
-        :param end_t: 查询结束时间
-        :param fmts: array 查询功能列表
-        :param sids: array 查询探针列表
+        # :param begin_t: 查询开始时间
+        # :param end_t: 查询结束时间
+        # :param fmts: array 查询功能列表
+        # :param sids: array 查询探针列表
         :param chart_typ: 需要生成图例类型 pie 饼图 line 线图 bar 柱图，看是否根据图例进行内容清洗
         :param page_name: rule engine param *
+        :param resolved: 日志报警是否已解决，用于'违规定义日志'
         :param item_id: rule engine param *
         :param rule_id: rule engine param *
         :param search_index: rule engine param *
         :param grouping: 是否按探针组对数据进行分组
+        :param format_revert: 是否将获取数据的日志类型转化为detail，当获取'违规定义'数据时，其
+                                     format为规则名称，不需要转换
         :return: cooked data
         """
 
         ret = None
 
         content = {
-            "start_time": begin_t,
-            "end_time": end_t,
+            "start_time": self.begin_t,
+            "end_time": self.end_t,
             "page_name": page_name,
             "item_id": item_id,
             "rule_id": rule_id,
@@ -371,23 +406,26 @@ class PDFReport(DummyOb):
             "data_scope": {
                 # 探针安全日志-违规定义日志分布展示 不需要此参数
                 # "FORMAT.raw": fmts,
-                "SENSOR_ID.raw": sids
+                "SENSOR_ID.raw": self.sensors
             }
         }
 
         if fmts:
             content["data_scope"]["FORMAT.raw"] = fmts
+        if resolved:
+            content["data_scope"]["RESOLVED"] = resolved
 
         if chart_typ == "line":
             ret = self.cook_line_data(content)
         elif chart_typ == "bar":
             ret = self.cook_bar_data(content, grouping=grouping)
         elif chart_typ == "pie":
-            ret = self.cook_pie_data(content, page_name=page_name)
-        elif chart_typ == "group_bar":
-            ret = self.cook_group_bar_data(content)
+            ret = self.cook_pie_data(content)
+        # 合入 cook_bar_data
+        # elif chart_typ == "group_bar":
+        #     ret = self.cook_group_bar_data(content)
         else:
-            raise ValueError("chart type error, not in ['line', 'bar', 'pie', 'group_bar']")
+            raise ValueError("chart type error, not in ['line', 'bar', 'pie']")
 
         return ret
 
@@ -457,7 +495,7 @@ class PDFReport(DummyOb):
             category_names=category_names
         )
 
-    def report_draw_bar(self, page_idx, elname_prefix:str, bar_infos:dict,
+    def report_draw_bar(self, page_idx, elname_prefix:str, bar_infos:dict, elname=None,
                         has_description=False, description_elname="",
                         description_intro=""):
         """
@@ -504,7 +542,7 @@ class ReportSenHost(PDFReport):
     """
     探针主机日志生成
     """
-    # report_tpl_pg_num = 1
+    PG_NUM = 1
     ALL_FMTS = [
         "SENSOR_SAFEMODE_BOOT",
         "SENSOR_MULTIPLE_OS_BOOT",
@@ -515,57 +553,86 @@ class ReportSenHost(PDFReport):
 
     def __init__(self):
         super(ReportSenHost, self).__init__()
-        self.set_page_idx(1)
+        self.set_page_idx(self.PG_NUM)
+        self.items = {}
 
-    def draw_page(self, begin_t, end_t, sensors, sensor_id_group_mapping, **kwargs):
+    def add_items(self, items, **kwargs):
+        self.indicate_parameters(**kwargs)
+
+        self.items["pages"] = [
+            {
+                "page_name": "log_classify",
+                "rule_id": "00",
+                "search_index": "log*",
+                "fmts": items["kwargs"]["fmts"],
+                "all_fmts": self.ALL_FMTS,
+                "item_id": {
+                    "line": 0,
+                    "pie": 1,
+                    "bar": 2
+                },
+                "elname": {
+                    "line": "section_operation_trend_line_chart",
+                    "pie": "section_log_distribution_pie_chart",
+                    "bar": "sensor_top_",
+                    "bar_group": "sensor_group_top_"
+                },
+                "description_elname": {
+                    "line": "section_desc2"
+                }
+            },
+        ]
+
+    def draw_page(self):
         """
-        :param begin_t: 日志起始时间
-        :param end_t:  日志截止时间
-        :param sensors: 目标探针
-        :param sensor_id_group_mapping: 探针与探针组映射关系
-        :param kwargs: 其他参数，如日志类型（fmts）
-        :return:
         """
-        self.indicate_sen_group_map(sensor_id_group_mapping)
-        fmts = kwargs["fmts"]
+        for page in self.items["pages"]:
+            # 折线图
+            line_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
+                                        page_name=page["page_name"],
+                                        item_id=page["item_id"]["line"])
+            desc = (
+                f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
+                f"包含日志类型: {line_ret['legend_names']},"
+                f"时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}"
+            )
+            self.report_draw_line(self.report_tpl_pg_num,
+                                  page["elname"]["line"],
+                                  line_ret['datas'],
+                                  line_ret['legend_names'],
+                                  line_ret['category_names'],
+                                  has_description=True,
+                                  description_elname=page["description_elname"]["line"],
+                                  description_intro=desc)
 
-        # 折线图
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=fmts)
-        desc = (
-            f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
-            f"包含日志类型: {line_ret['legend_names']},"
-            f"时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}"
-        )
-        self.report_draw_line(self.report_tpl_pg_num,
-                              "section_operation_trend_line_chart",
-                              line_ret['datas'], line_ret['legend_names'], line_ret['category_names'],
-                              True,
-                              "section_desc2",
-                              desc)
+            # 饼图
+            pie_ret = self.making_data(chart_typ="pie", fmts=page["all_fmts"],
+                                       page_name=page["page_name"],
+                                       item_id=page["item_id"]["pie"])
+            self.report_draw_pie(self.report_tpl_pg_num,
+                                 "section_log_distribution_pie_chart",
+                                 pie_ret["datas"], pie_ret["category_names"]
+                                 )
 
-        # 饼图
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.ALL_FMTS, item_id=1)
-        self.report_draw_pie(self.report_tpl_pg_num,
-                             "section_log_distribution_pie_chart",
-                             pie_ret["datas"], pie_ret["category_names"]
-                             )
+            # 柱状图（探针）
+            sensor_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                              page_name=page["page_name"],
+                                              item_id=page["item_id"]["bar"])
+            self.report_draw_bar(
+                self.report_tpl_pg_num,
+                page["elname"]["bar"],
+                sensor_bar_ret
+            )
 
-        # 柱状图（探针）
-        sensor_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=fmts, item_id=2)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "sensor_top_",
-            sensor_bar_ret
-        )
-
-        # 柱状图（探针组）
-        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=fmts, item_id=2,
-                                                grouping=True)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "sensor_group_top_",
-            sensor_group_bar_ret
-        )
+            # 柱状图（探针组）
+            sensor_group_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                                    page_name=page["page_name"],
+                                                    item_id=page["item_id"]["bar"], grouping=True)
+            self.report_draw_bar(
+                self.report_tpl_pg_num,
+                page["elname"]["bar_group"],
+                sensor_group_bar_ret
+            )
 
 
 class ReportSenSafe(PDFReport):
@@ -590,137 +657,162 @@ class ReportSenSafe(PDFReport):
 
     def __init__(self):
         super(ReportSenSafe, self).__init__()
+        # 设置 page num
         self.set_page_idx(2)
+        self.items = {}
 
-    def draw_page(self, begin_t, end_t, sensors, sensor_id_group_mapping, **kwargs):
+    def add_items(self, items, **kwargs):
+        self.indicate_parameters(**kwargs)
+
+        self.items["pages"] = [
+            {
+                "page_name": "violation_define",
+                "rule_id": "00",
+                "search_index": "log*",
+                "all_fmts": self.ALL_VIOLATION_TRIGGERED_FMTS,
+                "fmts": self.ALL_VIOLATION_TRIGGERED_FMTS,
+                "item_id": {
+                    "line": 0,
+                    "line_with_resolved": 1,
+                    "pie": 2,
+                    "bar": 3
+                },
+                "elname": {
+                    "line": "violation_triggered_trend_line_chart",
+                    "pie": "violation_triggered_distrbution",
+                    "bar": "violation_triggered_sensor_top",
+                    "bar_group": "violation_triggered_sensor_group_top"
+                },
+            },
+            {
+                "page_name": "log_classify",
+                "rule_id": "00",
+                "search_index": "log*",
+                "all_fmts": self.ALL_VIOLATION_DETAIL_FMTS,
+                "fmts": items["kwargs"]["violation_detail_fmts"],
+                "item_id": {
+                    "line": 0,
+                    "pie": 1,
+                    "bar": 2
+                },
+                "elname": {
+                    "line": "violation_detail_trend_line_chart",
+                    "pie": "violation_detail_distrbution",
+                    "bar": "violation_detail_distrbution_sensor_top_",
+                    "bar_group": "violation_detail_distrbution_sensor_group_top_"
+                }
+            },
+            {
+                "page_name": "log_classify",
+                "rule_id": "00",
+                "search_index": "log*",
+                "all_fmts": self.ALL_VIOLATION_OTHER_FMTS,
+                "fmts": items["kwargs"]["violation_other_fmts"],
+                "item_id": {
+                    "line": 0,
+                    "pie": 1,
+                    "bar": 2
+                },
+                "elname": {
+                    "line": "violation_others_trend_line_chart",
+                    "pie": "violation_others_distrbution",
+                    "bar": "violation_others_sensor_top_",
+                    "bar_group": "violation_others_sensor_group_top_"
+                }
+            }
+        ]
+
+    def draw_page(self):
         """
-        :param begin_t: 日志起始时间
-        :param end_t:  日志截止时间
-        :param sensors: 目标探针
-        :param sensor_id_group_mapping: 探针与探针组映射关系
-        :param kwargs: 其他参数，如日志类型（fmts）
-        :return:
+        遍历item，获取数据并生成图
         """
-        self.indicate_sen_group_map(sensor_id_group_mapping)
+        for page in self.items["pages"]:
+            # 折线图
+            if page["page_name"] == "violation_define":
+                self.draw_violation_define_line_chart(page)
+                # 违规定义日志-折线图
+            else:
+                # page_name 为 违规详情日志、其他安全日志
+                # self.draw_line_chart()
+                line_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
+                                            item_id=page["item_id"]["line"],
+                                            page_name=page["page_name"])
+                self.report_draw_line(
+                    self.report_tpl_pg_num,
+                    page["elname"]["line"],
+                    line_ret["datas"],
+                    line_ret["legend_names"],
+                    line_ret["category_names"]
+                )
 
-        violation_detail_fmts = kwargs["violation_detail_fmts"]
-        violation_other_fmts = kwargs["violation_other_fmts"]
+            # 饼图
+            pie_ret = self.making_data(chart_typ="pie", fmts=page["all_fmts"],
+                                       item_id=page["item_id"]["pie"],
+                                       page_name=page["page_name"])
+            self.report_draw_pie(
+                self.report_tpl_pg_num,
+                elname=page["elname"]["pie"],
+                datas=pie_ret["datas"],
+                category_names=pie_ret["category_names"]
+            )
 
-        # 违规定义日志
-        self.draw_violation_triggered(begin_t, end_t, sensors)
-        # 违规详情日志
-        self.draw_violation_detail(begin_t, end_t, sensors, violation_detail_fmts)
-        # 其他安全日志
-        self.draw_violation_other(begin_t, end_t, sensors, violation_other_fmts)
+            # 柱状图(探针组)
+            bar_group_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                             item_id=page["item_id"]["bar"],
+                                             page_name=page["page_name"], grouping=True)
+            self.report_draw_bar(
+                self.report_tpl_pg_num,
+                page["elname"]["bar_group"],
+                bar_infos=bar_group_ret,
+                elname=page["elname"]["bar_group"]
+            )
 
-    def draw_violation_triggered(self, begin_t, end_t, sensors):
-        # 违规定义日志-折线图
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=self.ALL_VIOLATION_TRIGGERED_FMTS)
+            # 柱状图(探针)
+            bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                       item_id=page["item_id"]["bar"],
+                                       page_name=page["page_name"])
+            self.report_draw_bar(
+                self.report_tpl_pg_num,
+                page["elname"]["bar"],
+                bar_infos=bar_ret,
+                elname=page["elname"]["bar"]
+            )
+
+    def draw_line_chart(self):
+        pass
+
+    def draw_violation_define_line_chart(self, page):
+        """添加探针安全日志-违规定义日志 折线图，
+        该图需要请求四次ES，分别获取未解决、已解决日志和违规定义触发次数、触发员工次数
+        """
+        datas = []
+        legend_names = []
+
+        line_triggered_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
+                                              item_id=page["item_id"]["line"],
+                                              page_name=page["page_name"])
+        category_names = line_triggered_ret["category_names"]
+        datas.append(line_triggered_ret["datas"][0])
+        legend_names.append("触发员工次数")
+
+        for resolved in ["0", "1", None]:
+            line_with_resolved_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
+                                                      resolved=resolved,
+                                                      page_name=page["page_name"],
+                                                      item_id=page["item_id"]["line_with_resolved"])
+            datas.append(line_with_resolved_ret["datas"][0])
+            if resolved == "0":
+                legend_names.append("未解决")
+            elif resolved == "1":
+                legend_names.append("已解决")
+            else:
+                legend_names.append("违规定义触发次数")
+
         self.report_draw_line(self.report_tpl_pg_num,
-                              "violation_triggered_trend_line_chart",
-                              line_ret['datas'],
-                              line_ret['legend_names'],
-                              line_ret['category_names'])
-
-        # 违规定义日志-饼图
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", item_id=2, page_name="violation_define")
-        self.report_draw_pie(self.report_tpl_pg_num,
-                             "violation_triggered_distrbution",
-                             pie_ret["datas"],
-                             pie_ret["category_names"]
-                             )
-
-        # 违规定义日志-柱图（探针）
-        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=self.ALL_VIOLATION_TRIGGERED_FMTS,
-                                   item_id=3, page_name="violation_define")
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "violation_triggered_sensor_top",
-            bar_ret
-        )
-
-        # 违规定义日志-柱图（探针组）
-        bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=self.ALL_VIOLATION_TRIGGERED_FMTS,
-                                   item_id=3, page_name="violation_define", grouping=True)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "violation_triggered_sensor_group_top",
-            bar_ret
-        )
-
-    def draw_violation_detail(self, begin_t, end_t, sensors, violation_detail_fmts):
-        # 违规详情日志运行趋势
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=violation_detail_fmts, item_id=0,
-                                    page_name="log_classify")
-        self.report_draw_line(self.report_tpl_pg_num,
-                              "violation_detail_trend_line_chart",
-                              line_ret['datas'],
-                              line_ret['legend_names'],
-                              line_ret['category_names'])
-
-        # 违规详情日志分布展示
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.ALL_VIOLATION_DETAIL_FMTS,
-                                   item_id=1, page_name="log_classify")
-        self.report_draw_pie(self.report_tpl_pg_num,
-                             "violation_detail_distrbution",
-                             pie_ret["datas"],
-                             pie_ret["category_names"]
-                             )
-
-        # 违规详情-探针组Top10
-        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_detail_fmts,
-                                                item_id=2,grouping=True)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "violation_detail_distrbution_sensor_group_top_",
-            sensor_group_bar_ret
-        )
-
-        # 违规详情-探针Top10
-        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_detail_fmts,
-                                                item_id=2)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "violation_detail_distrbution_sensor_top_",
-            sensor_group_bar_ret
-        )
-
-    def draw_violation_other(self, begin_t, end_t, sensors, violation_other_fmts):
-        # 其他安全日志分析图-主机安全趋势
-        line_ret = self.making_data(begin_t, end_t, sensors, chart_typ="line", fmts=violation_other_fmts, item_id=0,
-                                    page_name="log_classify")
-        self.report_draw_line(self.report_tpl_pg_num,
-                              "violation_others_trend_line_chart",
-                              line_ret['datas'],
-                              line_ret['legend_names'],
-                              line_ret['category_names'])
-
-        # 其他安全日志分析图-分布展示
-        pie_ret = self.making_data(begin_t, end_t, sensors, chart_typ="pie", fmts=self.ALL_VIOLATION_OTHER_FMTS,
-                                   item_id=1, page_name="log_classify")
-        self.report_draw_pie(self.report_tpl_pg_num,
-                             "violation_others_distrbution",
-                             pie_ret["datas"],
-                             pie_ret["category_names"]
-                             )
-
-        # 其他安全日志-探针组Top10
-        sensor_group_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_other_fmts,
-                                                item_id=2, grouping=True)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "violation_others_sensor_group_top_",
-            sensor_group_bar_ret
-        )
-
-        # 其他安全日志-探针Top10
-        sensor_bar_ret = self.making_data(begin_t, end_t, sensors, chart_typ="bar", fmts=violation_other_fmts,
-                                          item_id=2)
-        self.report_draw_bar(
-            self.report_tpl_pg_num,
-            "violation_others_sensor_top_",
-            sensor_bar_ret
-        )
+                              page["elname"]["line"],
+                              datas,
+                              legend_names,
+                              category_names)
 
 
 def test_case():
@@ -795,7 +887,6 @@ def test_case():
     case = {
         "begin_t": "2019-06-01T00:00:00.000",
         "end_t": "2019-07-17T00:00:00.000",
-        "sensor_id_group_mapping": sensor_id_group_mapping,
         "report_pages": [
                 {
                     "page_name": "log_search",
@@ -829,12 +920,19 @@ def test_case():
 
     begin_t = case["begin_t"]
     end_t = case["end_t"]
-    sensor_id_group_mapping = case["sensor_id_group_mapping"]
+
+    kwargs = {
+        "sensor_id_group_map": sensor_id_group_mapping,
+        "begin_t": begin_t,
+        "end_t": end_t,
+        "sensors": sensors
+    }
 
     for report_page in case["report_pages"]:
         try:
             prt = report_page_class_mapping[report_page["page_name"]]()
-            prt.draw_page(begin_t, end_t, sensors, sensor_id_group_mapping, **report_page["kwargs"])
+            prt.add_items(report_page, **kwargs)
+            prt.draw_page()
         except Exception as e:
             print(f"errmsg: {e}")
             print(traceback.format_exc())
