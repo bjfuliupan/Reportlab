@@ -232,7 +232,7 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
         self.categoryAxis.labels.boxAnchor = 'ne'
         self.categoryAxis.labels.dx = 0
         self.categoryAxis.labels.angle = cat_label_angle
-        self.categoryAxis.labels.boxFillColor = colors.Color(1, 0, 0, 1)
+        # self.categoryAxis.labels.boxFillColor = colors.Color(1, 0, 0, 1)
 
     def get_limit_value(self, step_count):
         min_value = 0xffffffff

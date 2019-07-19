@@ -63,7 +63,7 @@ class ReportLabBarChart(BarChart):
         # self.categoryAxis.labels.dx = 0
         # self.categoryAxis.labels.dy = 0
         self.categoryAxis.labels.angle = cat_label_angle
-        self.categoryAxis.labels.boxFillColor = colors.Color(1, 0, 0, 1)
+        # self.categoryAxis.labels.boxFillColor = colors.Color(1, 0, 0, 1)
 
         if cat_label_all is False:
             cat_names_num = len(cat_names)
