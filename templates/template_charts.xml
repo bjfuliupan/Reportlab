@@ -608,5 +608,151 @@
 
             </items>
         </page2>
+        <page3>
+             <!--探针主机网络管控页分为三大块分别为 访问管控策略日志 流量管控日志 平均流量统计-->
+             <rect>[90, 80, 450, 731]</rect>
+             <auto_position>True</auto_position>
+             <x-padding>10</x-padding>
+             <y-padding>10</y-padding>
+             <align-type>middle</align-type>
+             <items>
+                 <network_violation_heading>
+                    <!--违规定义日志-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <indent_flag>0</indent_flag>
+                </network_violation_heading>
+
+                <network_violation_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <!--必填项-->
+                    <indent_flag>1</indent_flag>
+                </network_violation_desc>
+
+                <network_violation_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>访问管控策略日志运行趋势</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                </network_violation_trend_line_chart>
+
+                 <network_violation_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>访问管控策略违规探针组Top10</main_title>
+                 </network_violation_sensor_group_top10>
+
+                 <network_violation_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>访问管控策略违规探针Top10</main_title>
+                 </network_violation_sensor_top10>
+
+                 <network_violation_dest_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>访问管控策略违规目的Top10</main_title>
+                 </network_violation_dest_top10>
+
+                 <network_violation_rule_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>访问管控策略违规规则Top10</main_title>
+                 </network_violation_rule_top10>
+
+                 <!--流量管控策略日志-->
+
+                 <netflow_violation_heading>
+                      <!--违规定义日志-->
+                      <!--必填项-->
+                      <type>paragraph</type>
+                      <style>Heading2</style>
+                      <rect>[0, 0, 450, 0]</rect>
+                      <content> </content>
+                      <!--必填项-->
+                      <indent_flag>0</indent_flag>
+                 </netflow_violation_heading>
+
+                 <netflow_violation_desc>
+                      <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                      <!--必填项-->
+                      <type>paragraph</type>
+                      <rect>[0, 0, 450, 0]</rect>
+                    <!--必填项-->
+                    <indent_flag>1</indent_flag>
+                 </netflow_violation_desc>
+
+                 <netflow_violation_trend_line_chart>
+                     <!--必填项-->
+                     <type>line_chart</type>
+                     <rect>[0, 0, 450, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>访问管控策略日志运行趋势</main_title>
+                     <main_title_font_size>10</main_title_font_size>
+                 </netflow_violation_trend_line_chart>
+
+                  <netflow_violation_sensor_group_top10>
+                      <type>bar_chart</type>
+                      <rect>[0, 0, 200, 200]</rect>
+                      <bar_style>vertical</bar_style>
+                      <data> </data>
+                      <!--必填项-->
+                      <main_title>访问管控策略违规探针组Top10</main_title>
+                  </netflow_violation_sensor_group_top10>
+
+                  <netflow_violation_sensor_top10>
+                      <type>bar_chart</type>
+                      <rect>[0, 0, 200, 200]</rect>
+                      <bar_style>vertical</bar_style>
+                      <data> </data>
+                      <!--必填项-->
+                      <main_title>访问管控策略违规探针Top10</main_title>
+                  </netflow_violation_sensor_top10>
+
+                  <netflow_violation_dest_top10>
+                      <type>bar_chart</type>
+                      <rect>[0, 0, 200, 200]</rect>
+                      <bar_style>vertical</bar_style>
+                      <data> </data>
+                      <!--必填项-->
+                      <main_title>访问管控策略违规目的Top10</main_title>
+                  </netflow_violation_dest_top10>
+
+                  <netflow_violation_rule_top10>
+                      <type>bar_chart</type>
+                      <rect>[0, 0, 200, 200]</rect>
+                      <bar_style>vertical</bar_style>
+                      <data> </data>
+                      <!--必填项-->
+                      <main_title>访问管控策略违规规则Top10</main_title>
+                  </netflow_violation_rule_top10>
+
+             </items>
+        </page3>
     </pages>
 </pdf>

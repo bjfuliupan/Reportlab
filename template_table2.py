@@ -62,7 +62,7 @@ class DummyOb(object):
     def indicate_sensors(self, sensors: list):
         self.sensors = sensors
 
-    def cook_line_data(self, payload: dict):
+    def cook_line_data(self, payload: dict, grouping=False):
         """
         translate es return data to pdflib line chart data
         :param payload:
@@ -71,7 +71,7 @@ class DummyOb(object):
         begin_t = util.payload_time_to_datetime(payload["start_time"])
         end_t = util.payload_time_to_datetime(payload["end_time"])
         interval = (end_t - begin_t).days
-        payload_log_format = payload["data_scope"]["FORMAT.raw"]
+        payload_log_format = payload["data_scope"].get("FORMAT.raw")
 
         # 通过payload及时间参数，获取ES日志，并清洗
         # 返回折线图横坐标、纵坐标、折线标签数据
@@ -80,12 +80,14 @@ class DummyOb(object):
 
         chart_datas = util.init_data_for_pdf_with_interval(interval)
         for key_list, value, *_ in es_log_data["result"]:
-            log_format, log_time = None, None
+            log_format, log_time, sensor_id = None, None, None
             for key_dict in key_list:
                 if key_dict.get("FORMAT.raw"):
                     log_format = key_dict["FORMAT.raw"]
                 elif key_dict.get("TIME"):
                     log_time = key_dict["TIME"]
+                elif key_dict.get("SENSOR_ID.raw"):
+                    sensor_id = key_dict["SENSOR_ID.raw"]
                 else:
                     continue
 
@@ -99,8 +101,10 @@ class DummyOb(object):
             # 违规定义日志折线图 多条线， 每条线单独请求
             if log_format is None:
                 log_format = "UNKNOW_FORMAT"
-
-            chart_datas[log_format][value_index] += value
+            if sensor_id:
+                chart_datas[sensor_id][value_index] += int(value)
+            else:
+                chart_datas[log_format][value_index] += int(value)
 
         # 获取折线图横坐标数据
         category_names = [
@@ -109,20 +113,29 @@ class DummyOb(object):
         ]
 
         # 获取折线标签
-        legend_format_names = list(chart_datas.keys())
-        if payload_log_format == ["SENSOR_ALARM_MSG"]:
-            legend_names = legend_format_names
+        if grouping:
+            chart_datas_tmp = util.init_data_for_pdf_with_interval(interval)
+            for key, value_list in chart_datas.items():
+                for index in range(len(value_list)):
+                    chart_datas_tmp[self.sensor_group_map[key]][index] += value_list[index]
+            chart_datas = chart_datas_tmp
+
+            legend_names = list(chart_datas.keys())
         else:
-            legend_names = [
-                constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
-                for _ in legend_format_names
-            ]
+            legend_names = payload_log_format if payload_log_format == ["SENSOR_ALARM_MSG"] \
+                else [constant.LogConstant.FORMAT_DETAIL_MAPPING[_] for _ in payload_log_format]
 
         # 获取折线图纵坐标数据
-        chart_data = [
-            chart_datas[_]
-            for _ in legend_format_names
-        ]
+        if grouping:
+            chart_data = [
+                chart_datas[_]
+                for _ in legend_names
+            ]
+        else:
+            chart_data = [
+                chart_datas[_]
+                for _ in payload_log_format
+            ]
 
         ret = {
             "datas": chart_data,
@@ -157,18 +170,13 @@ class DummyOb(object):
         # 获取饼图日志类型
         log_formats = list(pie_data.keys())
         # 违规定义日志的类型为'规则名称'
-        if payload_log_format == ["SENSOR_ALARM_MSG"]:
-            category_names = log_formats
-        else:
-            category_names = [
-                constant.LogConstant.FORMAT_DETAIL_MAPPING[_]
-                for _ in log_formats
-            ]
+        category_names = payload_log_format if payload_log_format == ["SENSOR_ALARM_MSG"] \
+            else [constant.LogConstant.FORMAT_DETAIL_MAPPING[_] for _ in payload_log_format]
 
         # 获取饼图日志数量
         datas = [
             pie_data[_]
-            for _ in log_formats
+            for _ in payload_log_format
         ]
 
         ret = {
@@ -194,21 +202,30 @@ class DummyOb(object):
 
         for log_format in formats:
             # 生成payload
+            # if log_format == "SENSOR_NETWORK_ABNORMAL":
+            #     del payload["data_scope"]["FORMAT.raw"]
+            # else:
             payload["data_scope"]["FORMAT.raw"] = [log_format]
 
             # 获取数据
             raw_data = json.dumps(payload)
             es_log_data = self.ruleng_url_post(raw_data)
-            # util.pretty_print(es_log_data)
             # 请求结果为空
             if not es_log_data["result"]:
                 continue
 
             # 数据统计
             data_for_draw = util.init_data_for_pdf_with_default_int()
-            for sensor_id_dict, value, *_ in es_log_data["result"]:
-                sensor_id = sensor_id_dict[0]["SENSOR_ID.raw"]
-                data_for_draw[sensor_id] += value
+            for key_dict, value, *_ in es_log_data["result"]:
+                if key_dict[0].get("SENSOR_ID.raw"):
+                    key = key_dict[0]["SENSOR_ID.raw"]
+                elif key_dict[0].get("TARGET_NAME.raw"):
+                    key = key_dict[0]["TARGET_NAME.raw"]
+                elif key_dict[0].get("RULENAME.raw"):
+                    key = key_dict[0]["RULENAME.raw"]
+                else:
+                    continue
+                data_for_draw[key] += int(value)
 
             if grouping:
                 data_for_draw_tmp = util.init_data_for_pdf_with_default_int()
@@ -270,7 +287,6 @@ class DummyOb(object):
             # 请求结果为空
             if not es_log_data["result"]:
                 continue
-            # util.pretty_print(es_log_data)
 
             # 数据统计
             data_for_draw_with_group = util.init_data_for_pdf_with_default_int()
@@ -375,7 +391,7 @@ class PDFReport(DummyOb):
 
     def making_data(self, chart_typ: str, fmts=None, resolved=None,
                     page_name="log_classify", item_id=0, rule_id="00", search_index="log*",
-                    grouping=False):
+                    grouping=False, opt1=None):
         """
         生成数据并进行翻译
         # :param begin_t: 查询开始时间
@@ -389,8 +405,7 @@ class PDFReport(DummyOb):
         :param rule_id: rule engine param *
         :param search_index: rule engine param *
         :param grouping: 是否按探针组对数据进行分组
-        :param format_revert: 是否将获取数据的日志类型转化为detail，当获取'违规定义'数据时，其
-                                     format为规则名称，不需要转换
+        :param opt1: 主机网络管控payload关键字
         :return: cooked data
         """
 
@@ -415,8 +430,11 @@ class PDFReport(DummyOb):
         if resolved:
             content["data_scope"]["RESOLVED"] = resolved
 
+        if opt1:
+            content["opt1"] = opt1
+
         if chart_typ == "line":
-            ret = self.cook_line_data(content)
+            ret = self.cook_line_data(content, grouping=grouping)
         elif chart_typ == "bar":
             ret = self.cook_bar_data(content, grouping=grouping)
         elif chart_typ == "pie":
@@ -517,12 +535,14 @@ class PDFReport(DummyOb):
                 description_elname,
                 description_intro
             )
-
         for log_format, bar_chart_data in bar_infos.items():
             category_names = bar_chart_data["category_names"]
             legend_names = bar_chart_data["legend_names"]
             # 触发隔离违规定义TOP10 不需要后缀
-            item_name = elname_prefix if log_format == "SENSOR_ALARM_MSG" \
+            item_name = elname_prefix \
+                if log_format in ["SENSOR_ALARM_MSG",
+                                  "SENSOR_NETWORK_ABNORMAL",
+                                  "SENSOR_NETWORK_FLOW"] \
                 else f"{elname_prefix}{log_format}"
 
             PDFTemplate.set_bar_chart_data(
@@ -592,7 +612,7 @@ class ReportSenHost(PDFReport):
                                         page_name=page["page_name"],
                                         item_id=page["item_id"]["line"])
             desc = (
-                f"探针主机日志报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
+                f"探针主机网络管控报告报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
                 f"包含日志类型: {line_ret['legend_names']},"
                 f"时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}"
             )
@@ -628,11 +648,12 @@ class ReportSenHost(PDFReport):
             sensor_group_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
                                                     page_name=page["page_name"],
                                                     item_id=page["item_id"]["bar"], grouping=True)
-            self.report_draw_bar(
-                self.report_tpl_pg_num,
-                page["elname"]["bar_group"],
-                sensor_group_bar_ret
-            )
+            if sensor_group_bar_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar_group"],
+                    sensor_group_bar_ret
+                )
 
 
 class ReportSenSafe(PDFReport):
@@ -760,23 +781,25 @@ class ReportSenSafe(PDFReport):
             bar_group_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
                                              item_id=page["item_id"]["bar"],
                                              page_name=page["page_name"], grouping=True)
-            self.report_draw_bar(
-                self.report_tpl_pg_num,
-                page["elname"]["bar_group"],
-                bar_infos=bar_group_ret,
-                elname=page["elname"]["bar_group"]
-            )
+            if bar_group_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar_group"],
+                    bar_infos=bar_group_ret,
+                    elname=page["elname"]["bar_group"]
+                )
 
             # 柱状图(探针)
             bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
                                        item_id=page["item_id"]["bar"],
                                        page_name=page["page_name"])
-            self.report_draw_bar(
-                self.report_tpl_pg_num,
-                page["elname"]["bar"],
-                bar_infos=bar_ret,
-                elname=page["elname"]["bar"]
-            )
+            if bar_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar"],
+                    bar_infos=bar_ret,
+                    elname=page["elname"]["bar"]
+                )
 
     def draw_line_chart(self):
         pass
@@ -813,6 +836,158 @@ class ReportSenSafe(PDFReport):
                               datas,
                               legend_names,
                               category_names)
+
+
+class ReportSenNetwork(PDFReport):
+    """
+    探针主机日志生成
+    """
+    PG_NUM = 3
+
+    def __init__(self):
+        super(ReportSenNetwork, self).__init__()
+        self.set_page_idx(self.PG_NUM)
+        self.items = {}
+
+    def add_items(self, items, **kwargs):
+        self.indicate_parameters(**kwargs)
+
+        self.items["pages"] = [
+            {
+                "page_name": "network_violation",
+                "rule_id": "00",
+                "search_index": "datamap_precompute*",
+                "fmts": items["kwargs"]["network_violation_fmts"],
+                "item_id": {
+                    "line": 0,
+                    "bar": 1,
+                    "bar_group": 1,
+                    "bar_dest": 2,
+                    "bar_rule": 3
+                },
+                "elname": {
+                    "line": "network_violation_trend_line_chart",
+                    "bar_group": "network_violation_sensor_group_top10",
+                    "bar_sensor": "network_violation_sensor_top10",
+                    "bar_dest": "network_violation_dest_top10",
+                    "bar_rule": "network_violation_rule_top10",
+                },
+                "description_elname": {
+                    "line": "network_violation_desc",
+                },
+                "opt1": {
+                    "line_user": 0,
+                    "line_sensor": 1,
+                    "bar_user": 0,
+                    "bar_sensor": 1,
+                }
+            },
+            {
+                "page_name": "netflow_violation",
+                "rule_id": "00",
+                "search_index": "log*",
+                "fmts": items["kwargs"]["netflow_violation_fmts"],
+                "item_id": {
+                    "line": 0,
+                    "bar": 1,
+                    "bar_group": 1,
+                    "bar_dest": 2,
+                    "bar_rule": 3
+                },
+                "elname": {
+                    "line": "netflow_violation_trend_line_chart",
+                    "bar_group": "netflow_violation_sensor_group_top10",
+                    "bar_sensor": "netflow_violation_sensor_top10",
+                    "bar_dest": "netflow_violation_dest_top10",
+                    "bar_rule": "netflow_violation_rule_top10",
+                },
+                "description_elname": {
+                    "line": "netflow_violation_desc",
+                },
+                "opt1": {
+                    "line_user": 0,
+                    "line_sensor": 1,
+                    "bar_user": 0,
+                    "bar_sensor": 1,
+                }
+            },
+        ]
+
+    def draw_page(self):
+        """
+        """
+        for page in self.items["pages"]:
+            # 折线图
+            line_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
+                                        page_name=page["page_name"],
+                                        item_id=page["item_id"]["line"],
+                                        search_index=page["search_index"],
+                                        opt1=page["opt1"]["line_sensor"],
+                                        grouping=True)
+            desc = (
+                f"探针主机网络管控报告，包含：访问管控策略日志、流量管控日志、平均流量统计"
+                f"包含日志类型: {line_ret['legend_names']},"
+                f"时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}"
+            )
+            self.report_draw_line(self.report_tpl_pg_num,
+                                  page["elname"]["line"],
+                                  line_ret['datas'],
+                                  line_ret['legend_names'],
+                                  line_ret['category_names'],
+                                  has_description=True,
+                                  description_elname=page["description_elname"]["line"],
+                                  description_intro=desc)
+
+            # 柱状图（探针组）
+            sensor_group_bar_ret = self.making_data(chart_typ="bar",
+                                                    fmts=page["fmts"],
+                                                    page_name=page["page_name"],
+                                                    item_id=page["item_id"]["bar_group"],
+                                                    search_index=page["search_index"],
+                                                    grouping=True, opt1=page["opt1"]["bar_sensor"])
+            if sensor_group_bar_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar_group"],
+                    sensor_group_bar_ret
+                )
+
+            # 柱状图(探针)
+            sensor_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                              page_name=page["page_name"],
+                                              item_id=page["item_id"]["bar"],
+                                              search_index=page["search_index"],
+                                              opt1=page["opt1"]["bar_sensor"])
+            if sensor_bar_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar_sensor"],
+                    sensor_bar_ret
+                )
+
+            # 柱状图(目的地)
+            dest_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                            page_name=page["page_name"],
+                                            item_id=page["item_id"]["bar_dest"],
+                                            search_index=page["search_index"])
+            if dest_bar_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar_dest"],
+                    dest_bar_ret
+                )
+
+            # 柱状图(违规规则)
+            rule_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
+                                            page_name=page["page_name"],
+                                            item_id=page["item_id"]["bar_rule"],
+                                            search_index=page["search_index"])
+            if rule_bar_ret:
+                self.report_draw_bar(
+                    self.report_tpl_pg_num,
+                    page["elname"]["bar_rule"],
+                    rule_bar_ret
+                )
 
 
 def test_case():
@@ -881,12 +1056,13 @@ def test_case():
 
     report_page_class_mapping = {
         "log_search": ReportSenHost,
-        "violation_define": ReportSenSafe
+        "violation_define": ReportSenSafe,
+        "network_violation": ReportSenNetwork,
     }
 
     case = {
         "begin_t": "2019-06-01T00:00:00.000",
-        "end_t": "2019-07-17T00:00:00.000",
+        "end_t": "2019-07-18T00:00:00.000",
         "report_pages": [
                 {
                     "page_name": "log_search",
@@ -914,7 +1090,18 @@ def test_case():
                             "SENSOR_NET_SHARE"
                         ]
                     }
+                },
+            {
+                "page_name": "network_violation",
+                "kwargs": {
+                    "network_violation_fmts": [
+                        "SENSOR_NETWORK_ABNORMAL"
+                    ],
+                    "netflow_violation_fmts": [
+                        "SENSOR_NETWORK_FLOW"
+                    ],
                 }
+            }
         ]
     }
 
