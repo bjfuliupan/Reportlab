@@ -259,10 +259,12 @@ class ReportLabVerticalBarChart(ReportLabBarChart):
             if tmp_width > max_width:
                 max_width = tmp_width
 
-            self.categoryAxis.labels[index].dx = \
-                int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
-                int(self.categoryAxis.labels.fontSize * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
-                    / 2)
+            if self.categoryAxis.labels[index].angle % 90 == 0:
+                self.categoryAxis.labels[index].dx = \
+                    int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
+                    int(self.categoryAxis.labels.fontSize *
+                        math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
+                        / 2)
             index += 1
 
         self.x_labels_height = \
@@ -295,7 +297,7 @@ class ReportLabHorizontalBarChart(ReportLabBarChart):
     def __init__(self, *args, **kwargs):
         ReportLabBarChart.__init__(self, *args, **kwargs)
 
-        self.categoryAxis.labels.labelPosFrac = 0.5
+        # self.categoryAxis.labels.labelPosFrac = 0
 
     def _calc_labels_size(self):
         max_width = 0
@@ -305,11 +307,16 @@ class ReportLabHorizontalBarChart(ReportLabBarChart):
             if tmp_width > max_width:
                 max_width = tmp_width
 
-            # if self.categoryAxis.labels[index].angle == 0:
-            self.categoryAxis.labels[index].dy = \
-                int(tmp_width * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) +  \
-                int(self.categoryAxis.labels.fontSize * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi)
-                    / 2)
+            if self.categoryAxis.labels[index].angle % 90 == 0:
+                self.categoryAxis.labels[index].dy = \
+                    int(tmp_width * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) +  \
+                    int(self.categoryAxis.labels.fontSize *
+                        math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi)
+                        / 2)
+            else:
+                self.categoryAxis.labels[index].dy = \
+                    int(self.categoryAxis.labels.fontSize *
+                        math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi))
             self.categoryAxis.labels[index].dx += \
                 -self.categoryAxis.labels.fontSize * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
             index += 1

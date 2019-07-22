@@ -101,10 +101,12 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
             if tmp_width > max_width:
                 max_width = tmp_width
 
-            self.categoryAxis.labels[index].dx = \
-                int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
-                int(self.categoryAxis.labels.fontSize * math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
-                    / 2)
+            if self.categoryAxis.labels[index].angle % 90 == 0:
+                self.categoryAxis.labels[index].dx = \
+                    int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
+                    int(self.categoryAxis.labels.fontSize *
+                        math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
+                        / 2)
             index += 1
 
         self.labels_height = \
