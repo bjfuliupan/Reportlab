@@ -23,6 +23,9 @@ from abc import ABC, abstractmethod
 
 
 class PDFTemplateItem(ABC):
+    """
+    Item基类
+    """
 
     def __init__(self, item_content):
         self.item_content = deepcopy(item_content)
@@ -90,6 +93,10 @@ class PDFTemplateItem(ABC):
         pass
 
     @staticmethod
+    def split_by_height(items, index, page_height):
+        return False
+
+    @staticmethod
     def _draw_item_rect(d, x, y, width, height, format_json):
         r = Rect(x, y, width, height, fillColor=Color(0.95, 0.95, 0.95, 1))
         d.add(r)
@@ -130,12 +137,20 @@ class PDFTemplateItem(ABC):
 
 
 class PDFTemplateLineChart(PDFTemplateItem):
+    """
+    折线图
+    """
 
     def __init__(self, item_content):
         PDFTemplateItem.__init__(self, item_content)
 
     @staticmethod
     def format_content(item_content):
+        """
+        格式化相关数据
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.format_content(item_content)
 
         if "main_title_font_size" in item_content:
@@ -154,10 +169,20 @@ class PDFTemplateLineChart(PDFTemplateItem):
 
     @staticmethod
     def args_check(item_content):
+        """
+        相关参数校验
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.args_check(item_content)
 
     @staticmethod
     def _draw_line_chart(format_json):
+        """
+        生成折线图对象
+        :param format_json:
+        :return:
+        """
         width = format_json['rect'][2]
         height = format_json['rect'][3]
 
@@ -222,6 +247,12 @@ class PDFTemplateLineChart(PDFTemplateItem):
         return d
 
     def draw(self, cv, show_border=False):
+        """
+        画折线图
+        :param cv:
+        :param show_border:
+        :return:
+        """
         PDFTemplateItem.draw(self, cv, show_border)
 
         d = self._draw_line_chart(self.item_content)
@@ -231,12 +262,20 @@ class PDFTemplateLineChart(PDFTemplateItem):
 
 
 class PDFTemplateBarChart(PDFTemplateItem):
+    """
+    柱状图
+    """
 
     def __init__(self, item_content):
         PDFTemplateItem.__init__(self, item_content)
 
     @staticmethod
     def format_content(item_content):
+        """
+        格式化相关数据
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.format_content(item_content)
 
         if "main_title_font_size" in item_content:
@@ -255,10 +294,20 @@ class PDFTemplateBarChart(PDFTemplateItem):
 
     @staticmethod
     def args_check(item_content):
+        """
+        相关参数校验
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.args_check(item_content)
 
     @staticmethod
     def _draw_bar_chart(format_json):
+        """
+        生成柱状图对象
+        :param format_json:
+        :return:
+        """
         width = format_json['rect'][2]
         height = format_json['rect'][3]
 
@@ -344,6 +393,12 @@ class PDFTemplateBarChart(PDFTemplateItem):
         return d
 
     def draw(self, cv, show_border=False):
+        """
+        画柱状图
+        :param cv:
+        :param show_border:
+        :return:
+        """
         PDFTemplateItem.draw(self, cv, show_border)
 
         d = self._draw_bar_chart(self.item_content)
@@ -353,12 +408,20 @@ class PDFTemplateBarChart(PDFTemplateItem):
 
 
 class PDFTemplatePieChart(PDFTemplateItem):
+    """
+    饼图
+    """
 
     def __init__(self, item_content):
         PDFTemplateItem.__init__(self, item_content)
 
     @staticmethod
     def format_content(item_content):
+        """
+        格式化相关数据
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.format_content(item_content)
 
         if "main_title_font_size" in item_content:
@@ -370,10 +433,20 @@ class PDFTemplatePieChart(PDFTemplateItem):
 
     @staticmethod
     def args_check(item_content):
+        """
+        相关参数校验
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.args_check(item_content)
 
     @staticmethod
     def _draw_pie_chart(format_json):
+        """
+        生成饼图对象
+        :param format_json:
+        :return:
+        """
         width = format_json['rect'][2]
         height = format_json['rect'][3]
 
@@ -408,6 +481,12 @@ class PDFTemplatePieChart(PDFTemplateItem):
         return d
 
     def draw(self, cv, show_border=False):
+        """
+        画饼图
+        :param cv:
+        :param show_border:
+        :return:
+        """
         PDFTemplateItem.draw(self, cv, show_border)
 
         d = self._draw_pie_chart(self.item_content)
@@ -417,6 +496,9 @@ class PDFTemplatePieChart(PDFTemplateItem):
 
 
 class PDFTemplateParagraph(PDFTemplateItem):
+    """
+    文字段落
+    """
 
     paragraph_leading = 1.5
 
@@ -425,6 +507,11 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
     @staticmethod
     def format_content(item_content):
+        """
+        格式化相关数据
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.format_content(item_content)
 
         if "content" not in item_content:
@@ -440,10 +527,20 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
     @staticmethod
     def args_check(item_content):
+        """
+        相关参数校验
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.args_check(item_content)
 
     @staticmethod
     def _draw_paragraph(format_json):
+        """
+        生成段落对象
+        :param format_json:
+        :return:
+        """
         content = format_json['content']
         style_name = format_json['style']
         font_name = DefaultFontName
@@ -478,6 +575,11 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
     @staticmethod
     def _calc_paragraph_height(item):
+        """
+        获取段落高度
+        :param item:
+        :return:
+        """
         p = PDFTemplateParagraph._draw_paragraph(item)
         _, h = p.wrap(item['rect'][2], 0)
         del p
@@ -485,10 +587,21 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
     @staticmethod
     def auto_set_height(item):
+        """
+        自动设置高度
+        :param item:
+        :return:
+        """
         item['rect'][3] = PDFTemplateParagraph._calc_paragraph_height(item)
 
     @staticmethod
     def _split_paragraph_text_by_height(item, split_height):
+        """
+        按照高度切分出段落文字
+        :param item:
+        :param split_height:
+        :return:
+        """
         content = item['content']
         str_len = len(content)
         content_height = PDFTemplateParagraph._calc_paragraph_height(item)
@@ -527,7 +640,14 @@ class PDFTemplateParagraph(PDFTemplateItem):
         return split_index
 
     @staticmethod
-    def split_paragraph(items, index, page_height):
+    def split_by_height(items, index, page_height):
+        """
+        按照高度进行分割
+        :param items:
+        :param index:
+        :param page_height:
+        :return:
+        """
         item = items[index]
         if item['type'] != "paragraph":
             return False
@@ -552,6 +672,12 @@ class PDFTemplateParagraph(PDFTemplateItem):
         return True
 
     def draw(self, cv, show_border=False):
+        """
+        画段落
+        :param cv:
+        :param show_border:
+        :return:
+        """
         PDFTemplateItem.draw(self, cv, show_border)
 
         d = self._draw_paragraph(self.item_content)
@@ -561,12 +687,20 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
 
 class PDFTemplateText(PDFTemplateItem):
+    """
+    文字Text
+    """
 
     def __init__(self, item_content):
         PDFTemplateItem.__init__(self, item_content)
 
     @staticmethod
     def format_content(item_content):
+        """
+        格式化相关数据
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.format_content(item_content)
 
         if "font_size" in item_content:
@@ -576,10 +710,21 @@ class PDFTemplateText(PDFTemplateItem):
 
     @staticmethod
     def args_check(item_content):
+        """
+        相关参数校验
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.args_check(item_content)
 
     @staticmethod
     def _draw_text(format_json, auto_calc=True):
+        """
+        生成Text对象
+        :param format_json:
+        :param auto_calc:
+        :return:
+        """
         width = format_json['rect'][2]
         height = format_json['rect'][3]
 
@@ -619,6 +764,12 @@ class PDFTemplateText(PDFTemplateItem):
         return d
 
     def draw(self, cv, show_border=False):
+        """
+        画Text
+        :param cv:
+        :param show_border:
+        :return:
+        """
         PDFTemplateItem.draw(self, cv, show_border)
 
         d = self._draw_text(self.item_content)
@@ -628,12 +779,20 @@ class PDFTemplateText(PDFTemplateItem):
 
 
 class PDFTemplateTable(PDFTemplateItem):
+    """
+    表格
+    """
 
     def __init__(self, item_content):
         PDFTemplateItem.__init__(self, item_content)
 
     @staticmethod
     def format_content(item_content):
+        """
+        格式化相关数据
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.format_content(item_content)
 
         stylesheet = getSampleStyleSheet()
@@ -648,10 +807,20 @@ class PDFTemplateTable(PDFTemplateItem):
 
     @staticmethod
     def args_check(item_content):
+        """
+        相关参数校验
+        :param item_content:
+        :return:
+        """
         PDFTemplateItem.args_check(item_content)
 
     @staticmethod
     def _calc_table_height(item):
+        """
+        获取表格高度
+        :param item:
+        :return:
+        """
         t = PDFTemplateTable._draw_table(item)
         _, h = t.wrap(1, 0)
         del t
@@ -659,10 +828,21 @@ class PDFTemplateTable(PDFTemplateItem):
 
     @staticmethod
     def auto_set_height(item):
+        """
+        自动计算表格高度
+        :param item:
+        :return:
+        """
         item['rect'][3] = PDFTemplateTable._calc_table_height(item)
 
     @staticmethod
     def _cut_table_rows(item, split_height):
+        """
+        计算分割的行数
+        :param item:
+        :param split_height:
+        :return:
+        """
         ret = 0
         t = PDFTemplateTable._draw_table(item)
         t.wrap(1, 0)
@@ -678,7 +858,14 @@ class PDFTemplateTable(PDFTemplateItem):
         return ret - 1
 
     @staticmethod
-    def split_table(items, index, page_height):
+    def split_by_height(items, index, page_height):
+        """
+        按照高度进行分割
+        :param items:
+        :param index:
+        :param page_height:
+        :return:
+        """
         item = items[index]
 
         item_height = item['rect'][3]
@@ -702,6 +889,7 @@ class PDFTemplateTable(PDFTemplateItem):
     @staticmethod
     def _draw_table(format_json):
         """
+        生成表格对象
         :param format_json:
         :return:
         """
@@ -748,6 +936,12 @@ class PDFTemplateTable(PDFTemplateItem):
         return table
 
     def draw(self, cv, show_border=False):
+        """
+        画表格
+        :param cv:
+        :param show_border:
+        :return:
+        """
         PDFTemplateItem.draw(self, cv, show_border)
 
         d = self._draw_table(self.item_content)
@@ -757,7 +951,11 @@ class PDFTemplateTable(PDFTemplateItem):
 
 
 class PDFTemplatePage(object):
+    """
+    此类负责组织Page中的各Item。
+    """
 
+    # 各Item对应的类
     ItemClass = {
         "line_chart": PDFTemplateLineChart,
         "bar_chart": PDFTemplateBarChart,
@@ -769,7 +967,7 @@ class PDFTemplatePage(object):
 
     def __init__(self, page_content, page_num, page_size, **kw):
         self.items = []
-        self.page_content = page_content
+        self.page_content = deepcopy(page_content)
         if not isinstance(page_num, int):
             raise ValueError("page number is not int.")
         self.page_num = page_num
@@ -808,6 +1006,11 @@ class PDFTemplatePage(object):
 
     @staticmethod
     def format_content(page_content):
+        """
+        格式化Page数据
+        :param page_content:
+        :return:
+        """
         if "rect" in page_content and isinstance(page_content['rect'], str):
             page_content['rect'] = json.loads(page_content['rect'])
 
@@ -844,6 +1047,7 @@ class PDFTemplatePage(object):
             else:
                 page_content['invalid'] = False
 
+        # 格式化各Item数据
         if "items" in page_content:
             for item in page_content['items']:
                 if not isinstance(item, dict):
@@ -854,6 +1058,11 @@ class PDFTemplatePage(object):
 
     @staticmethod
     def args_check(page_content):
+        """
+        Page数据合法性校验
+        :param page_content:
+        :return:
+        """
         if "rect" not in page_content:
             raise ValueError("page no rect.")
 
@@ -863,6 +1072,7 @@ class PDFTemplatePage(object):
         if "items" not in page_content:
             raise ValueError("page no items.")
 
+        # 各Item数据合法性校验
         for item in page_content['items']:
             if not isinstance(item, dict):
                 item = page_content['items'][item]
@@ -871,17 +1081,34 @@ class PDFTemplatePage(object):
             PDFTemplatePage.ItemClass[item_type].args_check(item)
 
     def add_item(self, item_content):
+        """
+        往当前页中添加Item
+        :param item_content:
+        :return:
+        """
         if not isinstance(item_content, dict):
             raise ValueError("item format is error.")
         if "type" not in item_content:
             raise ValueError("item has not property: type.")
 
+        # 生成Item实例化对象
         item_ins = self.ItemClass[item_content['type']](item_content)
         self.items.append(item_ins)
 
     @staticmethod
     def _calc_position_align(page, page_width, x_padding, start_index, end_index, align_type):
+        """
+        对每一行的所有Item进行对齐
+        :param page:
+        :param page_width:
+        :param x_padding:
+        :param start_index:
+        :param end_index:
+        :param align_type:
+        :return:
+        """
         if align_type == "middle" or align_type == "right":
+            # 居中、右对齐
             items_width = (end_index - start_index - 1) * x_padding
             for i in range(end_index - start_index):
                 item = page['items'][start_index + i]
@@ -904,10 +1131,16 @@ class PDFTemplatePage(object):
                 item['rect'][0] = start_pos + margin_left
                 start_pos += item['rect'][2] + x_padding + margin_left + margin_right
         elif align_type == "left":
+            # 默认是左对齐，不用处理
             pass
 
     @staticmethod
-    def calc_position(page):
+    def _calc_position(page):
+        """
+        自动计算page中的所有Item的位置
+        :param page:
+        :return:
+        """
         next_page = deepcopy(page)
         next_page['items'] = []
 
@@ -926,14 +1159,10 @@ class PDFTemplatePage(object):
         row_start = 0
 
         for item in page['items']:
-            if item['type'] == "paragraph":
-                PDFTemplateParagraph.auto_set_height(item)
-            elif item['type'] == 'table':
-                PDFTemplateTable.auto_set_height(item)
+            item_type = item['type']
 
-                table_width = item['rect'][2]
-                if table_width > page_width:
-                    raise ValueError("table width too long")
+            # 自动计算Item的高度
+            PDFTemplatePage.ItemClass[item_type].auto_set_height(item)
 
             item_width = item['rect'][2]
             item_height = item['rect'][3]
@@ -944,7 +1173,9 @@ class PDFTemplatePage(object):
             margin_bottom = item['margin-bottom']
 
             if cur_x != 0 and cur_x + item_width + margin_left + margin_right > page_width:
-                # 这一行放不下，需要换行
+                # 需要换行显示
+
+                # 对本行中的Item进行对齐
                 PDFTemplatePage._calc_position_align(page, page_width, x_padding, row_start, index, align_type)
 
                 next_page_index = index
@@ -955,6 +1186,7 @@ class PDFTemplatePage(object):
                 cur_y = next_y
                 next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
             else:
+                # 从左到右依次存放
                 item['rect'][0] = cur_x + margin_left
                 item['rect'][1] = cur_y + margin_top
                 cur_x += item_width + x_padding + margin_left + margin_right
@@ -962,25 +1194,25 @@ class PDFTemplatePage(object):
                     next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
 
             if next_y > page_height:
-                if cur_y != 0 or item['type'] == "paragraph" or item['type'] == "table":
-                    split_flag = False
-                    if item['type'] == "paragraph":
-                        split_flag = PDFTemplateParagraph.split_paragraph(page['items'], index, page_height)
-                    elif item['type'] == "table":
-                        # split table to next page
-                        split_flag = PDFTemplateTable.split_table(page['items'], index, page_height)
+                # 需要分页显示
 
-                    if split_flag:
-                        next_page_index += 1
-                        index += 1
-
+                # 尝试对当前Item进行拆分
+                split_flag = PDFTemplatePage.ItemClass[item_type].split_by_height(page['items'], index, page_height)
+                if split_flag:
+                    # 拆分成功
+                    next_page_index += 1
+                    index += 1
+                if split_flag or cur_y != 0:
+                    # 拆分成功，或者当前Item不是当前页中的第一个，则跳出循环，剩下的Item移到下一页处理
                     next_page_flag = True
                     break
 
             index += 1
+        # 处理最后一行的对齐
         PDFTemplatePage._calc_position_align(page, page_width, x_padding, row_start, index, align_type)
 
         if next_page_flag:
+            # 取出需要放到下一页的Item，并返回
             next_page['items'] = page['items'][next_page_index:]
             page['items'] = page['items'][:next_page_index]
             return next_page
@@ -988,6 +1220,10 @@ class PDFTemplatePage(object):
         return None
 
     def _compute_coord(self):
+        """
+        坐标计算（转换）
+        :return:
+        """
         for item_ins in self.items:
             x, y, _, h = item_ins.get_rect()
             x = x + self.rect[0]
@@ -998,6 +1234,11 @@ class PDFTemplatePage(object):
             item_ins.set_rect(x=x, y=y)
 
     def _draw_header(self, cv):
+        """
+        画页眉
+        :param cv:
+        :return:
+        """
         start_x = int(self.page_size[0] / 10)
 
         width = self.page_size[0]
@@ -1022,6 +1263,11 @@ class PDFTemplatePage(object):
         d.drawOn(cv, 0, self.page_size[1] - height)
 
     def _draw_feet(self, cv):
+        """
+        画页脚
+        :param cv:
+        :return:
+        """
         start_x = int(self.page_size[0] / 10)
 
         width = self.page_size[0]
@@ -1046,20 +1292,31 @@ class PDFTemplatePage(object):
         d.drawOn(cv, 0, 0)
 
     def draw(self, cv, show_border=False):
+        """
+        画Page
+        :param cv:
+        :param show_border:
+        :return:
+        """
         self._compute_coord()
 
         self._draw_header(cv)
         self._draw_feet(cv)
 
+        # 画Page中的各Item
         for item_ins in self.items:
             item_ins.draw(cv, show_border)
 
+        # 画Page边界
         if show_border:
             PDFTemplateItem._draw_border(cv, self.rect[0], self.rect[1], self.rect[2], self.rect[3],
                                          Color(0, 0, 1, 1), 2)
 
 
 class PDFTemplateR(object):
+    """
+    此类负责处理读取模板文件，组织文件中的各Page。
+    """
 
     def __init__(self, template_file):
         self.template_file = template_file
@@ -1079,6 +1336,10 @@ class PDFTemplateR(object):
         self._read_template_file()
 
     def _read_template_file(self):
+        """
+        读取模板文件，并对内容进行格式化，以及参数校验。
+        :return:
+        """
         try:
             with open(self.template_file, "r", encoding='UTF-8') as f:
                 template = f.read()
@@ -1096,7 +1357,9 @@ class PDFTemplateR(object):
 
             for page in template['pages']:
                 page = template['pages'][page]
+                # 格式化Page数据
                 PDFTemplatePage.format_content(page)
+                # 各参数合法性校验
                 PDFTemplatePage.args_check(page)
         except Exception as err_info:
             import traceback
@@ -1121,6 +1384,13 @@ class PDFTemplateR(object):
             self.show_border = self.template_content['show_border']
 
     def set_item_data(self, page_num, item_name, **kwargs):
+        """
+        设置各Item的相关数据
+        :param page_num: page编号
+        :param item_name: item名称
+        :param kwargs: 相关参数Key-Value对
+        :return:
+        """
         item = self.pages['page%d' % page_num]['items'][item_name]
 
         for k, v in kwargs.items():
@@ -1128,12 +1398,20 @@ class PDFTemplateR(object):
         item['invalid'] = False
 
     def _set_pdf_info(self):
+        """
+        设置PDF文件的相关属性
+        :return:
+        """
         if self.author is not None:
             self.cv.setAuthor(self.author)
         if self.title is not None:
             self.cv.setTitle(self.title)
 
     def _get_valid_pages(self):
+        """
+        从模板文件中筛选出有效的Page
+        :return:
+        """
         max_page_num = 0
         valid_count = []
 
@@ -1174,17 +1452,24 @@ class PDFTemplateR(object):
 
     @staticmethod
     def _auto_calc_position(pages):
+        """
+        自动计算各Page中Item的位置（自动排版）
+        :param pages:
+        :return:
+        """
         add_count = 0
 
         _pages = {}
         for page_num in pages:
             page = pages[page_num]
             if page['auto_position'] is True:
-                next_page = PDFTemplatePage.calc_position(page)
+                # 需要自动排版
+                next_page = PDFTemplatePage._calc_position(page)
                 _pages[page_num + add_count] = deepcopy(page)
                 while next_page:
+                    # 需要分页
                     add_count += 1
-                    _next_page = PDFTemplatePage.calc_position(next_page)
+                    _next_page = PDFTemplatePage._calc_position(next_page)
                     _pages[page_num + add_count] = deepcopy(next_page)
 
                     if _next_page:
@@ -1192,6 +1477,7 @@ class PDFTemplateR(object):
                     else:
                         next_page = None
             else:
+                # 不需要自动排版
                 _pages[page_num + add_count] = deepcopy(pages[page_num])
         pages = deepcopy(_pages)
         del _pages
@@ -1199,6 +1485,11 @@ class PDFTemplateR(object):
         return pages
 
     def _create_page_object(self, pages):
+        """
+        创建各Page的实例化对象
+        :param pages:
+        :return:
+        """
         self.valid_pages = []
         for page_num in pages:
             page = pages[page_num]
@@ -1209,6 +1500,10 @@ class PDFTemplateR(object):
             self.valid_pages.append(page_ins)
 
     def draw(self):
+        """
+        生成PDF文件
+        :return:
+        """
         self.cv = canvas.Canvas(self.pdf_file, pagesize=self.page_size, bottomup=1)
 
         self._set_pdf_info()
@@ -1220,10 +1515,12 @@ class PDFTemplateR(object):
         first_page = True
         for page_ins in self.valid_pages:
             if first_page is False:
+                # 新开一页
                 self.cv.showPage()
             if first_page is True:
                 first_page = False
 
+            # 画当前页
             page_ins.draw(self.cv, self.show_border)
 
         self.cv.save()
