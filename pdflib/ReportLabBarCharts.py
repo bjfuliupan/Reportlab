@@ -33,7 +33,7 @@ class ReportLabBarChart(BarChart):
         titleMainFontColor=AttrMapValue(isColor, desc='main title font color.'),
         legendFontSize=AttrMapValue(isNumberInRange(0, 100), desc='legend text font size.'),
         x_labels_height=AttrMapValue(isNumberInRange(0, 100), desc='the max height in x-labels.'),
-        y_labels_height=AttrMapValue(isNumberInRange(0, 100), desc='the max height in y-labels.')
+        y_labels_height=AttrMapValue(isNumberInRange(0, 50), desc='the max height in y-labels.')
     )
 
     def __init__(self, x, y, width, height, cat_names, data, step_count=4, style="parallel", label_format=None,
@@ -322,7 +322,8 @@ class ReportLabHorizontalBarChart(ReportLabBarChart):
             index += 1
 
         self.x_labels_height = 5
-        self.y_labels_height = int(max_width * math.cos(self.categoryAxis.labels.angle / 180 * math.pi))
+        y_tmp = int(max_width * math.cos(self.categoryAxis.labels.angle / 180 * math.pi))
+        self.y_labels_height = 50 if y_tmp > 50 else y_tmp
 
         return self.x_labels_height, self.y_labels_height
 
