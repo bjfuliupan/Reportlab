@@ -64,8 +64,8 @@ pdf:
                     y_desc                     y轴的描述信息。默认为空
                     legend_names               legend的名称。和data一一对应，格式：[数据集1的名称, 数据集2的名称, …]。默认为空
                     legend_position            legend的位置。取值：top-left、top-middle、top-right、bottom-left、bottom-middle、bottom-right。默认为top-right
-                    legend_adjust_x	           调整legend在X轴方向的位置。取值：整数。默认为0
-                    legend_adjust_y	           调整legend在Y轴方向的位置。取值：整数。默认为0
+                    legend_adjust_x            调整legend在X轴方向的位置。取值：整数。默认为0
+                    legend_adjust_y            调整legend在Y轴方向的位置。取值：整数。默认为0
                     step_count                 Y轴的数值格数。取值：正整数。默认为4
                     cat_label_all              category lable是否全部显示。取值：True、False。默认为False
                     cat_label_angle            category lable的显示倾斜度。取值：[0, 90]。默认为30
@@ -89,8 +89,8 @@ pdf:
                     y_desc                     y轴的描述信息。默认为空
                     legend_names               legend的名称。和data一一对应，格式：[数据集1的名称, 数据集2的名称, …]。默认为空
                     legend_position            legend的位置。取值：top-left、top-middle、top-right、bottom-left、bottom-middle、bottom-right。默认为top-right
-                    legend_adjust_x	           调整legend在X轴方向的位置。取值：整数。默认为0
-                    legend_adjust_y	           调整legend在Y轴方向的位置。取值：整数。默认为0
+                    legend_adjust_x            调整legend在X轴方向的位置。取值：整数。默认为0
+                    legend_adjust_y            调整legend在Y轴方向的位置。取值：整数。默认为0
                     step_count                 Value轴的数值格数。取值：正整数。默认为4
                     cat_label_all              category lable是否全部显示。取值：True、False。默认为False
                     cat_label_angle            category lable的显示倾斜度。取值：[0, 90]。默认为30
@@ -117,7 +117,23 @@ pdf:
                     margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
-                /[item_name5]									
+                /[item_name5]
+                
+                [item_name6]:
+                    type                       table。该item为表格。必填项
+                    rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
+                    columns                    表头。格式：["第一列", "第二列", "第三列"...]。如invalid为False，则为必填项
+                    col_widths                 各列的宽度。格式：[10, 20, "30%"...]，支持百分比。默认计算平均宽度
+                    content                    表格内容。格式：[(第一行), (第二行)...]。默认为空
+                    font_name                  字体名称。未设置style时，默认为SimSun
+                    font_color                 字体颜色。格式：Color(r, g, b, a)，r、g、b和a的取值范围：[0, 1]。未设置style时，默认为黑色Color(0, 0, 0, 1)
+                    font_size                  字体大小。未设置style时，默认为10
+                    margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
+                /[item_name6]
             /items										
         /page0											
         page1:											

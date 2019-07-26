@@ -322,3 +322,44 @@ class YValueAxisWithDesc(YValueAxis):
             g.add(desc_text)
 
         return g
+
+
+def list_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str[0] != '[' or list_str[-1] != ']':
+        raise ValueError("not list format.")
+
+    return eval(list_str)
+
+
+def tuple_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str[0] != '(' or list_str[-1] != ')':
+        raise ValueError("not tuple format.")
+
+    return eval(list_str)
+
+
+def dict_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str[0] != '{' or list_str[-1] != '}':
+        raise ValueError("not dict format.")
+
+    return eval(list_str)
+
+
+def color_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str.find("Color(") != 0 or list_str[-1] != ')':
+        raise ValueError("not dict format.")
+
+    _list_str = list_str.replace("Color", "colors.Color")
+    return eval(_list_str)

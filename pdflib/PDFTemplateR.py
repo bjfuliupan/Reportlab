@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import xmltodict
 from copy import deepcopy
 from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
@@ -12,12 +11,12 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.colors import Color
 from reportlab.pdfbase.pdfmetrics import stringWidth
+from reportlab.platypus import Table, TableStyle
 
 from pdflib.ReportLabLineCharts import ReportLabHorizontalLineChart
 from pdflib.ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVerticalBarChart
 from pdflib.ReportLabPieCharts import ReportLabPieChart
-from pdflib.ReportLabLib import DefaultFontName
-from reportlab.platypus import Table, TableStyle
+from pdflib.ReportLabLib import DefaultFontName, list_eval, color_eval
 
 from abc import ABC, abstractmethod
 
@@ -36,7 +35,7 @@ class PDFTemplateItem(ABC):
     @staticmethod
     def format_content(item_content):
         if "rect" in item_content and isinstance(item_content["rect"], str):
-            item_content["rect"] = json.loads(item_content["rect"])
+            item_content["rect"] = list_eval(item_content["rect"])
 
         if "margin-left" in item_content:
             item_content['margin-left'] = int(item_content['margin-left'])
@@ -156,9 +155,9 @@ class PDFTemplateLineChart(PDFTemplateItem):
         if "main_title_font_size" in item_content:
             item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
         if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
-            item_content["main_title_font_color"] = eval(item_content["main_title_font_color"])
+            item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
         if "category_names" in item_content and type(item_content['category_names']) is str:
-            item_content['category_names'] = json.loads(item_content['category_names'])
+            item_content['category_names'] = list_eval(item_content['category_names'])
         if "cat_label_angle" in item_content:
             item_content['cat_label_angle'] = int(item_content['cat_label_angle'])
         if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
@@ -166,6 +165,8 @@ class PDFTemplateLineChart(PDFTemplateItem):
                 item_content['cat_label_all'] = True
             elif item_content['cat_label_all'] == "False":
                 item_content['cat_label_all'] = False
+        if "data" in item_content and isinstance(item_content['data'], str):
+            item_content['data'] = list_eval(item_content['data'])
 
     @staticmethod
     def args_check(item_content):
@@ -281,9 +282,9 @@ class PDFTemplateBarChart(PDFTemplateItem):
         if "main_title_font_size" in item_content:
             item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
         if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
-            item_content["main_title_font_color"] = eval(item_content["main_title_font_color"])
+            item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
         if "category_names" in item_content and type(item_content['category_names']) is str:
-            item_content['category_names'] = json.loads(item_content['category_names'])
+            item_content['category_names'] = list_eval(item_content['category_names'])
         if "cat_label_angle" in item_content:
             item_content['cat_label_angle'] = int(item_content['cat_label_angle'])
         if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
@@ -291,6 +292,8 @@ class PDFTemplateBarChart(PDFTemplateItem):
                 item_content['cat_label_all'] = True
             elif item_content['cat_label_all'] == "False":
                 item_content['cat_label_all'] = False
+        if "data" in item_content and isinstance(item_content['data'], str):
+            item_content['data'] = list_eval(item_content['data'])
 
     @staticmethod
     def args_check(item_content):
@@ -427,9 +430,11 @@ class PDFTemplatePieChart(PDFTemplateItem):
         if "main_title_font_size" in item_content:
             item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
         if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
-            item_content["main_title_font_color"] = eval(item_content["main_title_font_color"])
+            item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
         if "category_names" in item_content and type(item_content['category_names']) is str:
-            item_content['category_names'] = json.loads(item_content['category_names'])
+            item_content['category_names'] = list_eval(item_content['category_names'])
+        if "data" in item_content and isinstance(item_content['data'], str):
+            item_content['data'] = list_eval(item_content['data'])
 
     @staticmethod
     def args_check(item_content):
@@ -523,7 +528,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
         if "indent_flag" in item_content:
             item_content["indent_flag"] = int(item_content["indent_flag"])
         if "font_color" in item_content and isinstance(item_content["font_color"], str):
-            item_content["font_color"] = eval(item_content["font_color"])
+            item_content["font_color"] = color_eval(item_content["font_color"])
 
     @staticmethod
     def args_check(item_content):
@@ -706,7 +711,7 @@ class PDFTemplateText(PDFTemplateItem):
         if "font_size" in item_content:
             item_content["font_size"] = int(item_content["font_size"])
         if "font_color" in item_content and isinstance(item_content["font_color"], str):
-            item_content["font_color"] = eval(item_content["font_color"])
+            item_content["font_color"] = color_eval(item_content["font_color"])
 
     @staticmethod
     def args_check(item_content):
@@ -795,15 +800,28 @@ class PDFTemplateTable(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        stylesheet = getSampleStyleSheet()
-        ss = stylesheet['BodyText']
-        ss.fontName = DefaultFontName
+        if "columns" not in item_content:
+            item_content['columns'] = []
+        elif isinstance(item_content['columns'], str):
+            item_content['columns'] = list_eval(item_content['columns'])
 
-        # convert data to paragraph
-        temp = []
-        for d in item_content['content']:
-            temp.append(tuple([Paragraph(str(i), ss) for i in d]))
-        item_content['content'] = temp
+        if "content" not in item_content:
+            item_content['content'] = []
+        elif isinstance(item_content['content'], str):
+            item_content['content'] = list_eval(item_content['content'])
+
+        if "font_size" in item_content:
+            item_content['font_size'] = int(item_content['font_size'])
+        if "font_color" in item_content:
+            item_content['font_color'] = color_eval(item_content['font_color'])
+
+        if isinstance(item_content['col_widths'], str):
+            item_content['col_widths'] = list_eval(item_content['col_widths'])
+            for i in range(len(item_content['col_widths'])):
+                if isinstance(item_content['col_widths'][i], str) and item_content['col_widths'][i].find("%") > 0:
+                    item_content['col_widths'][i] = int(item_content['col_widths'][i].replace("%", ""))
+                    item_content['col_widths'][i] = \
+                        int(item_content['col_widths'][i] / 100 * item_content['rect'][2])
 
     @staticmethod
     def args_check(item_content):
@@ -813,6 +831,19 @@ class PDFTemplateTable(PDFTemplateItem):
         :return:
         """
         PDFTemplateItem.args_check(item_content)
+
+        if "columns" not in item_content:
+            raise ValueError("don't have any columns information.")
+        if "content" not in item_content:
+            raise ValueError("don't have any content information.")
+
+        if item_content['columns'] and isListOfStrings(item_content['columns']) is False:
+            raise ValueError("table columns format error.")
+        if not isinstance(item_content['content'], list):
+            raise ValueError("table content format error.")
+
+        if "col_widths" in item_content and isListOfNumbers(item_content['col_widths']) is False:
+            raise ValueError("table col_widths format error.")
 
     @staticmethod
     def _calc_table_height(item):
@@ -893,6 +924,9 @@ class PDFTemplateTable(PDFTemplateItem):
         :param format_json:
         :return:
         """
+        cols = format_json["columns"]
+        content = format_json["content"]
+        table_width = format_json["rect"][2]
 
         font_name = DefaultFontName
         if "font_name" in format_json:
@@ -904,20 +938,27 @@ class PDFTemplateTable(PDFTemplateItem):
         if "font_color" in format_json:
             font_color = format_json['font_color']
 
+        col_widths = [int(table_width / len(cols)) for _ in cols]
+        if "col_widths" in format_json:
+            col_widths = format_json['col_widths']
+
         stylesheet = getSampleStyleSheet()
         ss = stylesheet['BodyText']
         ss.fontName = font_name
+        ss.fontColor = font_color
         ss.fontSize = font_size
-        ss.fillColor = font_color
+
+        # convert data to paragraph
+        temp = []
+        for d in content:
+            temp.append(tuple([Paragraph(str(i), ss) for i in d]))
+        content = temp
 
         if "columns" not in format_json:
             raise ValueError("don't have any columns infomation. ")
 
-        cols = format_json["columns"]
-
-        # columns names
-        _cols = cols.items()
-        data = [tuple([v for _, v in cols.items()])]
+        data = [tuple(cols)]
+        data.extend(content)
 
         # generate table style
         ts = TableStyle([
@@ -926,11 +967,9 @@ class PDFTemplateTable(PDFTemplateItem):
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
             ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
         ])
-        content = format_json["content"]
 
         # merage data
-        data.extend(content)
-        table = Table(data)
+        table = Table(data, colWidths=col_widths)
         table.setStyle(ts)
 
         return table
@@ -1012,7 +1051,7 @@ class PDFTemplatePage(object):
         :return:
         """
         if "rect" in page_content and isinstance(page_content['rect'], str):
-            page_content['rect'] = json.loads(page_content['rect'])
+            page_content['rect'] = list_eval(page_content['rect'])
 
         if "auto_position" not in page_content:
             page_content['auto_position'] = False
@@ -1186,7 +1225,8 @@ class PDFTemplatePage(object):
                 cur_y = next_y
                 next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
             else:
-                # 从左到右依次存放
+                # 不需要换行，从左到右依次放置
+
                 item['rect'][0] = cur_x + margin_left
                 item['rect'][1] = cur_y + margin_top
                 cur_x += item_width + x_padding + margin_left + margin_right
@@ -1300,7 +1340,9 @@ class PDFTemplatePage(object):
         """
         self._compute_coord()
 
+        # 画页眉
         self._draw_header(cv)
+        # 画页脚
         self._draw_feet(cv)
 
         # 画Page中的各Item
@@ -1353,7 +1395,7 @@ class PDFTemplateR(object):
             if "page_size" not in template:
                 raise ValueError("template no page_size.")
 
-            template['page_size'] = json.loads(template['page_size'])
+            template['page_size'] = list_eval(template['page_size'])
 
             for page in template['pages']:
                 page = template['pages'][page]
@@ -1491,6 +1533,7 @@ class PDFTemplateR(object):
         :return:
         """
         self.valid_pages = []
+
         for page_num in pages:
             page = pages[page_num]
 

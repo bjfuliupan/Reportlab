@@ -36,6 +36,15 @@
                     <font_size>12</font_size>
                     <indent_flag>1</indent_flag>
                 </description>
+                <table>
+                    <type>table</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <font_size>12</font_size>
+                    <h-align>center</h-align>
+                    <v-align>middle</v-align>
+                    <columns>["t1", "t2", "t3", "t4", "t5"]</columns>
+                    <col_widths>["10%", "20%", "20%", "30%", "20%"]</col_widths>
+                </table>
                 <line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
@@ -48,13 +57,17 @@
                     <x_desc>月份</x_desc>
                     <y_desc>数量</y_desc>
                     <invalid>True</invalid>
-                    <legend_position>bottom-mid</legend_position>
+                    <legend_position>top-right</legend_position>
+                    <cat_label_all>False</cat_label_all>
+                    <cat_label_angle>60</cat_label_angle>
+                    <margin-right>-10</margin-right>
+                    <margin-bottom>-10</margin-bottom>
                 </line_chart>
                 <bar_chart>
                     <!--必填项-->
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
-                    <bar_style>vertical</bar_style>
+                    <bar_style>horizontal</bar_style>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针组身体状况示意图</main_title>
@@ -62,6 +75,10 @@
                     <x_desc>姓名</x_desc>
                     <y_desc>身高/体重</y_desc>
                     <legend_position>bottom-mid</legend_position>
+                    <cat_label_all>False</cat_label_all>
+                    <cat_label_angle>60</cat_label_angle>
+                    <style>stacked</style>
+                    <label_format>%s</label_format>
                 </bar_chart>
                 <line_chart2>
                     <!--必填项-->

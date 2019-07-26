@@ -130,6 +130,16 @@ def test_pdf():
                        )
         pdf.set_item_data(0, "description", content=description)
 
+        data = [
+            (11, 22, 33, 4444444444444444444444444444444444, 55),
+            (11, 22, 33, 4444444444444444444444444444444444, 55),
+            (11, 22, 33, 4444444444444444444444444444444444, 55),
+            (11, 22, 33, 4444444444444444444444444444444444, 55),
+        ]
+        for i in range(90):
+            data.append((11, 22, 33, 44, 55))
+        pdf.set_item_data(0, "table", content=data)
+
         # 设置折线图的数据
         pdf.set_item_data(0, "line_chart",
                           data=
