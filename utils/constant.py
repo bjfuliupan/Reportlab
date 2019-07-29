@@ -51,6 +51,10 @@ class LogConstant:
         # "SENSOR_FILEPARSE_LOG": "关键文件分析日志",
         # "SENSOR_FILESYSYTEM_MERGE": "文件合并日志",
         # "SENSOR_POLICY_UPDATE_DAILY": "探针策略更新日志",
+        "USB_IN": "U盘拷入",
+        "USB_OUT": "U盘拷出",
+        "SEC_USB_IN": "安全U盘拷入",
+        "SEC_USB_OUT": "安全U盘拷出"
     }
 
     CATAEGORY_TIME_FORMAT = "%Y-%m-%d"

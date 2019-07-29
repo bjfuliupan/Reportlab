@@ -22,7 +22,7 @@ class DummyOb(object):
     process original data class
     """
 
-    ruleng_url = "http://192.168.8.60:8002"
+    ruleng_url = "http://192.168.11.200:8002"
     # sensor_group_map = {}
     # begin_t = None
     # end_t = None
@@ -62,6 +62,17 @@ class DummyOb(object):
     def indicate_sensors(self, sensors: list):
         self.sensors = sensors
 
+    def indicate_groups(self, group: dict):
+        self.sensor_group_map = group
+
+    def init_group_data(self) -> collections.defaultdict:
+        # 初始化图数据，默认value为 int， default 0
+        _default = {}
+        for k, v in self.sensor_group_map.items():
+            _default[v] = 0
+
+        return _default
+
     def cook_line_data(self, payload: dict, grouping=False):
         """
         translate es return data to pdflib line chart data
@@ -71,7 +82,14 @@ class DummyOb(object):
         begin_t = util.payload_time_to_datetime(payload["start_time"])
         end_t = util.payload_time_to_datetime(payload["end_time"])
         interval = (end_t - begin_t).days
+
         payload_log_format = payload["data_scope"].get("FORMAT.raw")
+
+        if payload["page_name"] == "file_operate":
+            payload_log_format = payload["data_scope"].get("ACCESS_FORMAT.raw")
+
+        if payload_log_format is None:
+            payload_log_format = [""]
 
         # 通过payload及时间参数，获取ES日志，并清洗
         # 返回折线图横坐标、纵坐标、折线标签数据
@@ -84,8 +102,14 @@ class DummyOb(object):
             for key_dict in key_list:
                 if key_dict.get("FORMAT.raw"):
                     log_format = key_dict["FORMAT.raw"]
+                elif key_dict.get("ACCESS_FORMAT.raw"):
+                    log_format = key_dict["ACCESS_FORMAT.raw"]
+
                 elif key_dict.get("TIME"):
                     log_time = key_dict["TIME"]
+                elif key_dict.get("DAY_TIME"):
+                    log_time = key_dict["DAY_TIME"]
+
                 elif key_dict.get("SENSOR_ID.raw"):
                     sensor_id = key_dict["SENSOR_ID.raw"]
                 else:
@@ -197,7 +221,12 @@ class DummyOb(object):
         """
         ret = {}
 
-        _fmt = payload["data_scope"]["FORMAT.raw"]
+        data_access = "FORMAT.raw"
+        if payload["page_name"] == "file_operate":
+            data_access = "ACCESS_FORMAT.raw"
+
+        _fmt = payload["data_scope"][data_access]
+
         formats = copy.deepcopy(_fmt)
 
         for log_format in formats:
@@ -205,7 +234,7 @@ class DummyOb(object):
             # if log_format == "SENSOR_NETWORK_ABNORMAL":
             #     del payload["data_scope"]["FORMAT.raw"]
             # else:
-            payload["data_scope"]["FORMAT.raw"] = [log_format]
+            payload["data_scope"][data_access] = [log_format]
 
             # 获取数据
             raw_data = json.dumps(payload)
@@ -228,9 +257,11 @@ class DummyOb(object):
                 data_for_draw[key] += int(value)
 
             if grouping:
-                data_for_draw_tmp = util.init_data_for_pdf_with_default_int()
+                # data_for_draw_tmp = util.init_data_for_pdf_with_default_int()
+                data_for_draw_tmp = self.init_group_data()
                 for sensor_id, value in data_for_draw.items():
-                    data_for_draw_tmp[self.sensor_group_map[sensor_id]] += value
+                    _id = self.sensor_group_map[sensor_id]
+                    data_for_draw_tmp[_id] += value
                 data_for_draw = data_for_draw_tmp
 
             if sort:
@@ -389,9 +420,9 @@ class PDFReport(DummyOb):
                                   element_name,
                                   content)
 
-    def making_data(self, chart_typ: str, fmts=None, resolved=None,
+    def making_data(self, chart_typ: str, fmts=None, resolved=None, access_fmts=None,
                     page_name="log_classify", item_id=0, rule_id="00", search_index="log*",
-                    grouping=False, opt1=None):
+                    grouping=False, opt1=None, **kwargs):
         """
         生成数据并进行翻译
         # :param begin_t: 查询开始时间
@@ -429,6 +460,8 @@ class PDFReport(DummyOb):
             content["data_scope"]["FORMAT.raw"] = fmts
         if resolved:
             content["data_scope"]["RESOLVED"] = resolved
+        if access_fmts:
+            content["data_scope"]["ACCESS_FORMAT.raw"] = access_fmts
 
         if opt1:
             content["opt1"] = opt1
@@ -553,6 +586,158 @@ class PDFReport(DummyOb):
                 category_names=category_names,
                 legend_names=legend_names
             )
+
+    def report_draw_bar1(self, page_idx, elname_prefix=None, bar_infos=None, elname=None,
+                        has_description=False, description_elname="",
+                        description_intro="", group_bar=False):
+        """
+        draw group bar
+
+        :param page_idx: page number
+        :param elname_prefix: 生成柱图会通过组批量产生，提供前缀
+        :param bar_infos:
+        :param has_description:
+        :param description_elname:
+        :param description_intro: 图描述
+        :return:
+        """
+
+        if has_description:
+
+            PDFTemplate.set_paragraph_data(
+                self.report_tpl_pgs,
+                page_idx,
+                description_elname,
+                description_intro
+            )
+        # barinfo不同类，可能存在category datas不相同的状况
+        # 算出category_names的并集
+
+        max_c = set()
+        for _, value in bar_infos.items():
+            _ax = value["category_names"]
+            max_c = max_c.union(set(_ax))
+
+
+        # 准备工作完成，开始数据补全
+        for key, value in bar_infos.items():
+            _max_c = list(max_c)
+            for i in range(len(_max_c)):
+                _ik = _max_c[i]
+                if _ik not in value["category_names"]:
+                    value["category_names"].append(_ik)
+                    value["datas"][0].append(0)
+
+
+        # max_k = "" # 数据最多的key
+        # max_c = [] # 数据最多的category
+        # max_v = [] # 数据最多的value
+        # max_l = 0
+        # p_same = True
+        # for key, value in bar_infos.items():
+        #     if max_l == 0:
+        #         max_l = len(value["category_names"])
+        #         max_k = key
+        #     elif max_l < len(value["category_names"]):
+        #         max_l = len(value["category_names"])
+        #         max_k = key
+        #
+        #     if max_l != len(value["category_names"]):
+        #         p_same = False
+        #
+        # # 此处表示barinfo中有数据格式不对齐
+        # # 处理数据时需要使用最大的category对齐数据，没有的补0
+        # if not p_same:
+        #     print(f"{p_same}:{max_k}: {bar_infos[max_k]}")
+        #
+        # # 如果最大category为0，这个返回结果无法使用直接返回
+        # if max_l == 0:
+        #     return
+        #
+        # max_c = bar_infos[max_k]["category_names"]
+        # max_v = bar_infos[max_k]["datas"][0]
+        #
+        # # 准备工作完成，开始数据补全
+        # for key, value in bar_infos.items():
+        #     if key == max_k:
+        #         continue
+        #
+        #     if max_k != value["category_names"]:
+        #         for i in range(len(max_c)):
+        #             _ik, _iv = max_c[i], max_v[i]
+        #             if _ik not in value["category_names"]:
+        #                 value["category_names"].append(_ik)
+        #                 value["datas"][0].append(0)
+
+
+        if not group_bar:
+            for log_format, bar_chart_data in bar_infos.items():
+                category_names = bar_chart_data["category_names"]
+                legend_names = bar_chart_data["legend_names"]
+
+                if elname_prefix is not None:
+                    # 触发隔离违规定义TOP10 不需要后缀
+                    item_name = elname_prefix \
+                        if log_format in ["SENSOR_ALARM_MSG",
+                                          "SENSOR_NETWORK_ABNORMAL",
+                                          "SENSOR_NETWORK_FLOW"] \
+                        else f"{elname_prefix}{log_format}"
+                elif elname is not None:
+                    item_name = elname
+                else:
+                    raise ValueError("template element name prefix or name must be set.")
+
+                PDFTemplate.set_bar_chart_data(
+                    self.report_tpl_pgs,
+                    page_idx,
+                    item_name,
+                    data=bar_chart_data["datas"],
+                    category_names=category_names,
+                    legend_names=legend_names
+                )
+        else:
+            # 设置多bar的柱图
+            datas = []
+            category_names = []
+
+            legend_names = []
+
+            if elname_prefix:
+                """不支持前缀element name"""
+                raise NotImplemented
+
+            for log_format, bar_chart_data in bar_infos.items():
+                c = bar_chart_data["category_names"]
+                l = bar_chart_data["legend_names"]
+
+
+                _catelog = dict(zip(c, bar_chart_data["datas"][0]))
+                _category = sorted(_catelog)
+                _temp_arr = []
+
+                for i in _category:
+                    _temp_arr.append(_catelog[i])
+
+                # fill data
+                # tp = tuple(bar_chart_data["datas"][0])
+                datas.append(tuple(_temp_arr))
+
+                # legend names
+                legend_names.extend(l)
+
+                # category
+                category_names = _category
+
+
+            PDFTemplate.set_bar_chart_data(
+                self.report_tpl_pgs,
+                page_idx,
+                elname,
+                data=datas,
+                category_names=category_names,
+                legend_names=legend_names
+            )
+
 
     def draw(self):
         PDFTemplate.draw(self.report_tpl)
@@ -990,6 +1175,162 @@ class ReportSenNetwork(PDFReport):
                 )
 
 
+class ReportFileOperation(PDFReport):
+    """
+    文件出入日志
+    """
+
+    PG_NUM = 4
+
+    def __init__(self):
+        super(ReportFileOperation, self).__init__()
+        self.set_page_idx(self.PG_NUM)
+        self.items = {}
+
+    def add_items(self, items, **kwargs):
+        self.indicate_parameters(**kwargs)
+
+        self.items["pages"] = [
+            {
+                "page_name": "file_operate",
+                "rule_id": "00",
+                "search_index": "datamap_precompute*",
+                "fmts": [],
+                "item_id": {
+                    "line": 0,          # 文件出入日志 - 统计数量
+                    "bar_sensors": 2,   # 文件出入日志 - 出入数量top10
+                    "bar_groups": 3,    # 文件出入日志 - 出入流量top10
+                },
+                "elname": {
+                    "file_operate_num_line_chart_USB": {
+                        "chart_type": "line",
+                        "item_id": 0,
+                        "access_format": ["USB_OUT","USB_IN",
+                                          "SEC_USB_IN","SEC_USB_OUT"],
+                    },
+                    "file_operate_flow_line_chart_USB": {
+                        "chart_type": "line",
+                        "item_id": 1,
+                        "access_format": ["USB_OUT","USB_IN",
+                                          "SEC_USB_IN","SEC_USB_OUT"],
+                    },
+                    "file_operate_sensor_group_num_top_USB": {
+                        "chart_type": "bar",
+                        "item_id": 2,
+                        "access_format": [["SEC_USB_IN", "USB_IN"],
+                                          ["SEC_USB_OUT", "USB_OUT"]],
+                        "group": True,
+                        "split_request": True,
+                    },
+                    "file_operate_sensor_group_flow_top_USB": {
+                        "chart_type": "bar",
+                        "item_id": 3,
+                        "access_format": [["SEC_USB_IN", "USB_IN"],
+                                          ["SEC_USB_OUT", "USB_OUT"]],
+                        "group": True,
+                        "split_request": True,
+                    },
+                    "file_operate_sensor_num_top_USB":{
+                        "chart_type": "bar",
+                        "item_id": 2,
+                        "access_format": [["SEC_USB_IN", "USB_IN"],
+                                          ["SEC_USB_OUT", "USB_OUT"]],
+                        "split_request": True,
+                    },
+                    "file_operate_sensor_flow_top_USB":{
+                        "chart_type": "bar",
+                        "item_id": 3,
+                        "access_format": [["SEC_USB_IN", "USB_IN"],
+                                          ["SEC_USB_OUT", "USB_OUT"]],
+                        "split_request": True,
+                    },
+
+                },
+                "description_elname": {
+                    "line": "network_violation_desc",
+                },
+                "opt1": {
+                    "line_user": 0,
+                    "line_sensor": 1,
+                    "bar_user": 0,
+                    "bar_sensor": 1,
+                }
+            },
+        ]
+
+    def draw_page(self):
+        """
+        draw 文件出入
+        :return:
+        """
+
+        for page in self.items["pages"]:
+            # Todo: init title or description
+            elements = page["elname"]
+
+            for element_name, v in elements.items():
+                # Todo: indentify chart type.
+
+                merged_data = {}
+
+                _group = True if v.get("group") else False
+
+                if v.get("split_request") is not None and \
+                    v.get("split_request") is True:
+                    for _af in v["access_format"]:
+
+                        _fmts = v.get("fmts")
+                        _resovled = v.get("resolved")
+                        _item_id = v.get("item_id")
+                        _chart_typ = v.get("chart_type")
+
+                        r = self.making_data(_chart_typ, fmts=_fmts, resolved=_resovled,
+                                             access_fmts=_af,
+                                             item_id=_item_id,
+                                             page_name=page["page_name"],
+                                             search_index=page["search_index"],
+                                             grouping=_group)
+                        # merge data
+                        merged_data.update(r)
+                else:
+
+                    _fmts = v.get("fmts")
+                    _resovled = v.get("resolved")
+                    _access_fmt = v.get("access_format")
+                    _item_id = v.get("item_id")
+                    _chart_typ = v.get("chart_type")
+
+                    r = self.making_data(_chart_typ, fmts=_fmts, resolved=_resovled,
+                                         access_fmts=_access_fmt,
+                                         item_id=_item_id,
+                                         page_name=page["page_name"],
+                                         search_index=page["search_index"],
+                                         grouping=_group)
+                    merged_data = r
+
+
+                if v["chart_type"] == "line":
+                    # drawline
+                    datas, legend_names, category_names = r['datas'], r['legend_names'], r['category_names']
+                    self.report_draw_line(self.report_tpl_pg_num, element_name, datas,
+                                          legend_names=legend_names,
+                                          category_names=category_names)
+                elif v["chart_type"] == "bar":
+                    # drawbar
+
+                    _group = True if len(merged_data.keys()) > 1 else False
+                    self.report_draw_bar1(self.report_tpl_pg_num,
+                                          elname=element_name,
+                                          bar_infos=merged_data,
+                                          group_bar=_group)
+
+                elif v["chart_type"] == "pie":
+                    # drawpie
+                    raise NotImplemented
+                else:
+                    raise ValueError("chart type not in [line, bar, pie].")
+
+
 def test_case():
     sensor_id_group_mapping = {
         "WIN0001": "无分组",
@@ -1055,44 +1396,42 @@ def test_case():
     ]
 
     report_page_class_mapping = {
-        "log_search": ReportSenHost,
-        "violation_define": ReportSenSafe,
-        "network_violation": ReportSenNetwork,
+        # "log_search": ReportSenHost,
+        # "violation_define": ReportSenSafe,
+        # "network_violation": ReportSenNetwork,
+        "file_operate": ReportFileOperation
     }
 
     case = {
         "begin_t": "2019-06-01T00:00:00.000",
         "end_t": "2019-07-18T00:00:00.000",
-        "report_pages": [
-                {
-                    "page_name": "log_search",
-                    "kwargs":{
-                        "fmts": [
-                            "SENSOR_SAFEMODE_BOOT",
-                            "SENSOR_MULTIPLE_OS_BOOT",
-                            "SENSOR_VM_INSTALLED",
-                            "SENSOR_SERVICECHANGE",
-                            "SENSOR_HARDWARE_CHANGE"
-                        ]
-                    }
-                },
-                {
-                    "page_name": "violation_define",
-                    "kwargs": {
-                        "violation_detail_fmts": [
-                            "SENSOR_IO",
-                            "SENSOR_RESOURCE_OVERLOAD",
-                            "SENSOR_SERVICE_FULL_LOAD",
-                            "SENSOR_TIME_ABNORMAL"
-                        ],
-                        "violation_other_fmts": [
-                            "SENSOR_AUTORUN",
-                            "SENSOR_NET_SHARE"
-                        ]
-                    }
-                },
-            {
-                "page_name": "network_violation",
+        "report_pages": {
+            "log_search": {
+                "kwargs": {
+                    "fmts": [
+                        "SENSOR_SAFEMODE_BOOT",
+                        "SENSOR_MULTIPLE_OS_BOOT",
+                        "SENSOR_VM_INSTALLED",
+                        "SENSOR_SERVICECHANGE",
+                        "SENSOR_HARDWARE_CHANGE"
+                    ]
+                }
+            },
+            "violation_define": {
+                "kwargs": {
+                    "violation_detail_fmts": [
+                        "SENSOR_IO",
+                        "SENSOR_RESOURCE_OVERLOAD",
+                        "SENSOR_SERVICE_FULL_LOAD",
+                        "SENSOR_TIME_ABNORMAL"
+                    ],
+                    "violation_other_fmts": [
+                        "SENSOR_AUTORUN",
+                        "SENSOR_NET_SHARE"
+                    ]
+                }
+            },
+            "network_violation": {
                 "kwargs": {
                     "network_violation_fmts": [
                         "SENSOR_NETWORK_ABNORMAL"
@@ -1101,8 +1440,14 @@ def test_case():
                         "SENSOR_NETWORK_FLOW"
                     ],
                 }
+            },
+            "file_operate": {
+                "kwargs": {
+
+                }
             }
-        ]
+        }
+
     }
 
     begin_t = case["begin_t"]
@@ -1115,21 +1460,44 @@ def test_case():
         "sensors": sensors
     }
 
-    for report_page in case["report_pages"]:
+    # for report_page in case["report_pages"]:
+    #     try:
+    #         prt = report_page_class_mapping[report_page["page_name"]]()
+    #         prt.add_items(report_page, **kwargs)
+    #         prt.draw_page()
+    #     except Exception as e:
+    #         print(f"errmsg: {e}")
+    #         print(traceback.format_exc())
+
+    for pgname, cls in report_page_class_mapping.items():
+        _cls = cls()
+
         try:
-            prt = report_page_class_mapping[report_page["page_name"]]()
-            prt.add_items(report_page, **kwargs)
-            prt.draw_page()
+            _begin_t = case["begin_t"]
+            _end_t = case["end_t"]
+            args = case["report_pages"][pgname]
+            _cls.indicate_groups(sensor_id_group_mapping)
+            _cls.indicate_sensors(sensors)
+            _cls.indicate_date_scope(_begin_t, _end_t)
+            _cls.add_items(args)
+            _cls.draw_page()
+
         except Exception as e:
-            print(f"errmsg: {e}")
-            print(traceback.format_exc())
+            traceback.print_exc()
+
+
+
 
     PDFReport().draw()
 
 
 if __name__ == "__main__":
 
+    import time
+
+    pf1 = time.perf_counter()
     test_case()
+    print(time.perf_counter() - pf1)
 
     # begin_time = "2019-07-04T00:00:00.000"
     # end_time = "2019-07-12T00:00:00.000"
