@@ -96,6 +96,52 @@ class PDFTemplateItem(ABC):
         return False
 
     @staticmethod
+    def _draw_text(format_json, auto_calc=True):
+        """
+        生成Text对象
+        :param format_json:
+        :param auto_calc:
+        :return:
+        """
+        width = format_json['rect'][2]
+        height = format_json['rect'][3]
+
+        d = Drawing(width, height, vAlign="TOP")
+
+        content = format_json['content']
+        position = format_json['position']
+        x = 0
+        y = 0
+
+        font_size = STATE_DEFAULTS['fontSize']
+        if "font_size" in format_json:
+            font_size = format_json['font_size']
+
+        if auto_calc:
+            if position == "middle":
+                x = int(width / 2)
+                y = int(height / 2) - int(font_size / 2)
+            elif position == "start":
+                y = height
+        else:
+            x = format_json['rect'][0]
+            y = format_json['rect'][1]
+
+        text = String(x, y, content)
+
+        text.fontName = DefaultFontName
+        if "font_name" in format_json:
+            text.fontName = format_json['font_name']
+        text.fontSize = font_size
+        if "font_color" in format_json:
+            text.fillColor = format_json['font_color']
+        text.textAnchor = position
+
+        d.add(text)
+
+        return d
+
+    @staticmethod
     def _draw_item_rect(d, x, y, width, height, format_json):
         r = Rect(x, y, width, height, fillColor=Color(0.95, 0.95, 0.95, 1))
         d.add(r)
@@ -105,7 +151,7 @@ class PDFTemplateItem(ABC):
         text_format = {"rect": [int(width / 2), int(height / 2), width, height],
                        "content": "暂无数据", "position": "middle",
                        "font_name": DefaultFontName, "font_size": 30, "font_color": Color(0.5, 0.5, 0.5, 1)}
-        t = PDFTemplateText._draw_text(text_format)
+        t = PDFTemplateItem._draw_text(text_format)
         d.add(t)
 
         if "main_title" in format_json:
@@ -118,7 +164,7 @@ class PDFTemplateItem(ABC):
                 text_format['font_size'] = format_json['main_title_font_size']
             if "main_title_font_color" in format_json:
                 text_format['font_color'] = format_json['main_title_font_color']
-            main_title = PDFTemplateText._draw_text(text_format)
+            main_title = PDFTemplateItem._draw_text(text_format)
             d.add(main_title)
 
     @staticmethod
@@ -721,52 +767,6 @@ class PDFTemplateText(PDFTemplateItem):
         :return:
         """
         PDFTemplateItem.args_check(item_content)
-
-    @staticmethod
-    def _draw_text(format_json, auto_calc=True):
-        """
-        生成Text对象
-        :param format_json:
-        :param auto_calc:
-        :return:
-        """
-        width = format_json['rect'][2]
-        height = format_json['rect'][3]
-
-        d = Drawing(width, height, vAlign="TOP")
-
-        content = format_json['content']
-        position = format_json['position']
-        x = 0
-        y = 0
-
-        font_size = STATE_DEFAULTS['fontSize']
-        if "font_size" in format_json:
-            font_size = format_json['font_size']
-
-        if auto_calc:
-            if position == "middle":
-                x = int(width / 2)
-                y = int(height / 2) - int(font_size / 2)
-            elif position == "start":
-                y = height
-        else:
-            x = format_json['rect'][0]
-            y = format_json['rect'][1]
-
-        text = String(x, y, content)
-
-        text.fontName = DefaultFontName
-        if "font_name" in format_json:
-            text.fontName = format_json['font_name']
-        text.fontSize = font_size
-        if "font_color" in format_json:
-            text.fillColor = format_json['font_color']
-        text.textAnchor = position
-
-        d.add(text)
-
-        return d
 
     def draw(self, cv, show_border=False):
         """
