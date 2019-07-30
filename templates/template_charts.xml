@@ -659,28 +659,34 @@
                  <network_violation_sensor_top10>
                      <type>bar_chart</type>
                      <rect>[0, 0, 200, 200]</rect>
-                     <bar_style>vertical</bar_style>
+                     <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略违规探针Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                  </network_violation_sensor_top10>
 
                  <network_violation_dest_top10>
                      <type>bar_chart</type>
                      <rect>[0, 0, 200, 200]</rect>
-                     <bar_style>vertical</bar_style>
+                     <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略违规目的Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                  </network_violation_dest_top10>
 
                  <network_violation_rule_top10>
                      <type>bar_chart</type>
                      <rect>[0, 0, 200, 200]</rect>
-                     <bar_style>vertical</bar_style>
+                     <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略违规规则Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                  </network_violation_rule_top10>
 
                  <!--流量管控策略日志-->
@@ -712,51 +718,446 @@
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
-                     <main_title>访问管控策略日志运行趋势</main_title>
+                     <main_title>流量管控策略日志运行趋势</main_title>
                      <main_title_font_size>10</main_title_font_size>
                  </netflow_violation_trend_line_chart>
 
                   <netflow_violation_sensor_group_top10>
                       <type>bar_chart</type>
                       <rect>[0, 0, 200, 200]</rect>
-                      <bar_style>vertical</bar_style>
+                      <bar_style>horizontal</bar_style>
                       <data> </data>
                       <!--必填项-->
-                      <main_title>访问管控策略违规探针组Top10</main_title>
+                      <main_title>流量管控策略违规探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                   </netflow_violation_sensor_group_top10>
 
                   <netflow_violation_sensor_top10>
                       <type>bar_chart</type>
                       <rect>[0, 0, 200, 200]</rect>
-                      <bar_style>vertical</bar_style>
+                      <bar_style>horizontal</bar_style>
                       <data> </data>
                       <!--必填项-->
-                      <main_title>访问管控策略违规探针Top10</main_title>
+                      <main_title>流量管控策略违规探针Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                   </netflow_violation_sensor_top10>
 
                   <netflow_violation_dest_top10>
                       <type>bar_chart</type>
                       <rect>[0, 0, 200, 200]</rect>
-                      <bar_style>vertical</bar_style>
+                      <bar_style>horizontal</bar_style>
                       <data> </data>
                       <!--必填项-->
-                      <main_title>访问管控策略违规目的Top10</main_title>
+                      <main_title>流量管控策略违规目的Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                   </netflow_violation_dest_top10>
 
                   <netflow_violation_rule_top10>
                       <type>bar_chart</type>
                       <rect>[0, 0, 200, 200]</rect>
-                      <bar_style>vertical</bar_style>
+                      <bar_style>horizontal</bar_style>
                       <data> </data>
                       <!--必填项-->
-                      <main_title>访问管控策略违规规则Top10</main_title>
+                      <main_title>流量管控策略违规规则Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
                   </netflow_violation_rule_top10>
+
+                  <sensor_netio_aver_upload_flow_line_chart>
+                     <!--必填项-->
+                     <type>line_chart</type>
+                     <rect>[0, 0, 450, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>流量管控日志分析图-平均上行流量统计趋势</main_title>
+                     <main_title_font_size>10</main_title_font_size>
+                     <x_desc>日期</x_desc>
+                     <y_desc>(MB)</y_desc>
+                 </sensor_netio_aver_upload_flow_line_chart>
+
+                 <sensor_netio_aver_download_flow_line_chart>
+                     <!--必填项-->
+                     <type>line_chart</type>
+                     <rect>[0, 0, 450, 200]</rect>
+                     <bar_style>vertical</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>流量管控日志分析图-平均下行流量统计趋势</main_title>
+                     <main_title_font_size>10</main_title_font_size>
+                     <x_desc>日期</x_desc>
+                     <y_desc>(MB)</y_desc>
+                 </sensor_netio_aver_download_flow_line_chart>
+
              </items>
         </page3>
-
-
         <page4>
+             <!--端口开放管理日志分析图页-端口开放管理日志分析图-->
+             <rect>[90, 80, 450, 731]</rect>
+             <auto_position>True</auto_position>
+             <x-padding>10</x-padding>
+             <y-padding>10</y-padding>
+             <align-type>middle</align-type>
+             <items>
+                 <open_port_heading>
+                    <!--端口开放管理日志-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <indent_flag>0</indent_flag>
+                </open_port_heading>
 
+                <open_port_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <!--必填项-->
+                    <indent_flag>1</indent_flag>
+                </open_port_desc>
+
+                 <open_port_deny_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>端口开放管理日志趋势图-阻止趋势</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                    <x_desc>日期</x_desc>
+                    <y_desc>次</y_desc>
+                 </open_port_deny_trend_line_chart>
+
+                 <open_port_alarm_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>端口开放管理日志趋势图-预警趋势</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                    <x_desc>日期</x_desc>
+                    <y_desc>次</y_desc>
+                 </open_port_alarm_trend_line_chart>
+
+                 <open_port_deny_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>阻止次数探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </open_port_deny_sensor_group_top10>
+
+                 <open_port_alarm_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>预警数量探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </open_port_alarm_sensor_group_top10>
+
+                 <open_port_deny_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>阻止次数探针Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </open_port_deny_sensor_top10>
+
+                 <open_port_alarm_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>预警数量探针Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </open_port_alarm_sensor_top10>
+
+             </items>
+        </page4>
+        <page5>
+             <!--应用安全基线日志分析图页-->
+             <rect>[90, 80, 450, 731]</rect>
+             <auto_position>True</auto_position>
+             <x-padding>10</x-padding>
+             <y-padding>10</y-padding>
+             <align-type>middle</align-type>
+             <items>
+                 <trust_base_heading>
+                    <!--应用安全基线日志-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <indent_flag>0</indent_flag>
+                </trust_base_heading>
+
+                <trust_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <!--必填项-->
+                    <indent_flag>1</indent_flag>
+                </trust_desc>
+
+                 <trust_deny_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>应用安全基线日志趋势图-阻止趋势</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                    <x_desc>日期</x_desc>
+                    <y_desc>次</y_desc>
+                 </trust_deny_trend_line_chart>
+
+                 <trust_alarm_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>应用安全基线日志趋势图-预警趋势</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                    <x_desc>日期</x_desc>
+                    <y_desc>次</y_desc>
+                 </trust_alarm_trend_line_chart>
+
+                 <trust_deny_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>阻止次数探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </trust_deny_sensor_group_top10>
+
+                 <trust_alarm_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>预警数量探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </trust_alarm_sensor_group_top10>
+
+                 <trust_deny_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>阻止次数探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </trust_deny_sensor_top10>
+
+                 <trust_alarm_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>预警数量探针Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </trust_alarm_sensor_top10>
+
+                 <trust_app_deny_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>阻止次数可信应用Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </trust_app_deny_sensor_top10>
+
+                 <trust_app_alarm_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>预警数量可信应用Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </trust_app_alarm_sensor_top10>
+
+             </items>
+        </page5>
+
+        <page6>
+             <!--关键文件分析日志分析图页-->
+             <rect>[90, 80, 450, 731]</rect>
+             <auto_position>True</auto_position>
+             <x-padding>10</x-padding>
+             <y-padding>10</y-padding>
+             <align-type>middle</align-type>
+             <items>
+                 <key_file_base_heading>
+                    <!--关键文件分析日志-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <indent_flag>0</indent_flag>
+                </key_file_base_heading>
+
+                <key_file_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <!--必填项-->
+                    <indent_flag>1</indent_flag>
+                </key_file_desc>
+
+
+
+                 <key_file_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>关键文件分析日志趋势图</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                    <x_desc>日期</x_desc>
+                    <y_desc>次</y_desc>
+                 </key_file_trend_line_chart>
+
+
+                 <file_name_top5>
+                     <type>table</type>
+                     <rect>[0, 0, 450, 0]</rect>
+                     <position>middle</position>
+                     <font_size>12</font_size>
+                     <!--<content>文件名称Top5</content>-->
+                     <columns>
+                         <col1>t1</col1>
+                         <col2>t2</col2>
+                         <col3>t3</col3>
+                         <col4>t4</col4>
+                         <col5>t5</col5>
+                     </columns>
+                     <!--必填项-->
+                     <!--<main_title>文件名称Top5</main_title>-->
+                 </file_name_top5>
+
+                 <!--<file_content_key_heat_top5>-->
+                     <!--<type>table</type>-->
+                     <!--<rect>[0, 0, 450, 0]</rect>-->
+                     <!--<position>middle</position>-->
+                     <!--<font_size>12</font_size>-->
+                     <!--<columns>-->
+                         <!--<col1>t1</col1>-->
+                         <!--<col2>t2</col2>-->
+                         <!--<col3>t3</col3>-->
+                         <!--<col4>t4</col4>-->
+                         <!--<col5>t5</col5>-->
+                         <!--<col6>t5</col6>-->
+                         <!--<col7>t5</col7>-->
+                         <!--<col8>t5</col8>-->
+                         <!--<col9>t5</col9>-->
+                         <!--<col10>t5</col10>-->
+                     <!--</columns>-->
+                     <!--&lt;!&ndash;必填项&ndash;&gt;-->
+                     <!--&lt;!&ndash;<main_title>文件名称Top5</main_title>&ndash;&gt;-->
+                 <!--</file_content_key_heat_top5>-->
+
+                 <key_file_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>使用关键文件探针组Top5</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </key_file_sensor_group_top10>
+
+                 <key_file_sensor_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>使用关键文件探针Top5</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </key_file_sensor_top10>
+
+                 <!--<trust_alarm_sensor_top10>-->
+                     <!--<type>bar_chart</type>-->
+                     <!--<rect>[0, 0, 200, 200]</rect>-->
+                     <!--<bar_style>horizontal</bar_style>-->
+                     <!--<data> </data>-->
+                     <!--&lt;!&ndash;必填项&ndash;&gt;-->
+                     <!--<main_title>预警数量探针Top10</main_title>-->
+                     <!--<cat_label_all>True</cat_label_all>-->
+                     <!--<cat_label_angle>0</cat_label_angle>-->
+                 <!--</trust_alarm_sensor_top10>-->
+
+                 <!--<trust_app_deny_sensor_top10>-->
+                     <!--<type>bar_chart</type>-->
+                     <!--<rect>[0, 0, 200, 200]</rect>-->
+                     <!--<bar_style>horizontal</bar_style>-->
+                     <!--<data> </data>-->
+                     <!--&lt;!&ndash;必填项&ndash;&gt;-->
+                     <!--<main_title>阻止次数可信应用Top10</main_title>-->
+                     <!--<cat_label_all>True</cat_label_all>-->
+                     <!--<cat_label_angle>0</cat_label_angle>-->
+                 <!--</trust_app_deny_sensor_top10>-->
+
+                 <!--<trust_app_alarm_sensor_top10>-->
+                     <!--<type>bar_chart</type>-->
+                     <!--<rect>[0, 0, 200, 200]</rect>-->
+                     <!--<bar_style>horizontal</bar_style>-->
+                     <!--<data> </data>-->
+                     <!--&lt;!&ndash;必填项&ndash;&gt;-->
+                     <!--<main_title>预警数量可信应用Top10</main_title>-->
+                     <!--<cat_label_all>True</cat_label_all>-->
+                     <!--<cat_label_angle>0</cat_label_angle>-->
+                 <!--</trust_app_alarm_sensor_top10>-->
+
+             </items>
+        </page6>
+
+        <page7>
             <!-- 文件出入日志 -->
             <rect>[90, 80, 450, 731]</rect>
             <auto_position>True</auto_position>
@@ -1105,6 +1506,7 @@
 
             </items>
 
-        </page4>
+        </page7>
+
     </pages>
 </pdf>

@@ -6,6 +6,10 @@ import json
 import requests
 from utils import constant
 from datetime import timedelta
+import functools
+import time
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 
 def datetime_to_str(dt: datetime) -> str:
@@ -77,9 +81,37 @@ def cal_time_interval(base_time: datetime, target_time, target_time_format=None)
 
 
 def post_mrule(payload: dict, url="http://192.168.8.60:8002") -> dict:
-    response = requests.post(url, data=json.dumps(payload))
+    response = requests.post(url, data=json.dumps(payload), timeout=1000)
     status_code = response.status_code
     content = response.content
     assert status_code == 200, \
         RuntimeError(f"request mrule: {payload} fail, errcode: {status_code}, reason: {content}")
     return json.loads(content)
+
+
+def trans_bit_to_mb(bit_value):
+    return int(bit_value / 1024 / 1024)
+
+
+def timeit(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        st = time.time()
+        func_ret = func(*args, **kwargs)
+        cost = time.time() - st
+        print(f"POST cost {cost:.2f} seconds")
+        if cost > 20:
+            print(args, kwargs)
+        return func_ret
+
+    return wrapper
+
+
+def parse_url(url) -> tuple:
+    """解析url，获取路径及参数
+    :param url:
+    :return:
+    """
+    up = urlparse(url)
+    query_params = parse_qs(up.query)
+    return up.path, query_params
