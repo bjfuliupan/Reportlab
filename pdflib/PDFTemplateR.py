@@ -53,6 +53,7 @@ class PDFTemplateItem(ABC):
             item_content['margin-bottom'] = int(item_content['margin-bottom'])
         else:
             item_content['margin-bottom'] = 0
+
         if "invalid" not in item_content:
             item_content['invalid'] = False
         elif not isinstance(item_content['invalid'], bool):
@@ -68,10 +69,38 @@ class PDFTemplateItem(ABC):
         if not isinstance(item_content, dict):
             raise ValueError("item content is not dict json.")
 
+        if "type" not in item_content:
+            raise ValueError("no type.")
+
         if "rect" not in item_content or \
                 not isListOfNumbers(item_content["rect"]) or \
                 len(item_content["rect"]) != 4:
             raise ValueError("item rect format error.")
+
+        if "invalid" not in item_content:
+            raise ValueError("no invalid.")
+        if not isinstance(item_content['invalid'], bool):
+            raise ValueError("the type of invalid is not bool.")
+
+        if "margin-left" not in item_content:
+            raise ValueError("no margin-left.")
+        if not isinstance(item_content['margin-left'], int):
+            raise ValueError("the type of margin-left is not int.")
+
+        if "margin-right" not in item_content:
+            raise ValueError("no margin-right.")
+        if not isinstance(item_content['margin-right'], int):
+            raise ValueError("the type of margin-right is not int.")
+
+        if "margin-top" not in item_content:
+            raise ValueError("no margin-top.")
+        if not isinstance(item_content['margin-top'], int):
+            raise ValueError("the type of margin-top is not int.")
+
+        if "margin-bottom" not in item_content:
+            raise ValueError("no margin-bottom.")
+        if not isinstance(item_content['margin-bottom'], int):
+            raise ValueError("the type of margin-bottom is not int.")
 
     def get_rect(self):
         return self.item_content['rect'][0], self.item_content['rect'][1], \
@@ -198,6 +227,8 @@ class PDFTemplateLineChart(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
+        if "data" in item_content and isinstance(item_content['data'], str):
+            item_content['data'] = list_eval(item_content['data'])
         if "main_title_font_size" in item_content:
             item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
         if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
@@ -211,8 +242,14 @@ class PDFTemplateLineChart(PDFTemplateItem):
                 item_content['cat_label_all'] = True
             elif item_content['cat_label_all'] == "False":
                 item_content['cat_label_all'] = False
-        if "data" in item_content and isinstance(item_content['data'], str):
-            item_content['data'] = list_eval(item_content['data'])
+        if "legend_names" in item_content and isinstance(item_content['legend_names'], str):
+            item_content['legend_names'] = list_eval(item_content['legend_names'])
+        if "legend_adjust_x" in item_content:
+            item_content['legend_adjust_x'] = int(item_content['legend_adjust_x'])
+        if "legend_adjust_y" in item_content:
+            item_content['legend_adjust_y'] = int(item_content['legend_adjust_y'])
+        if "step_count" in item_content:
+            item_content['step_count'] = int(item_content['step_count'])
 
     @staticmethod
     def args_check(item_content):
@@ -222,6 +259,36 @@ class PDFTemplateLineChart(PDFTemplateItem):
         :return:
         """
         PDFTemplateItem.args_check(item_content)
+
+        if "data" not in item_content:
+            raise ValueError("line chart no data.")
+        if item_content['data'] and not isinstance(item_content['data'], list):
+            raise ValueError("line chart data format error.")
+        if "main_title_font_size" in item_content and \
+                not isinstance(item_content['main_title_font_size'], int):
+            raise ValueError("line chart main_title_font_size format error.")
+        if "main_title_font_color" in item_content and \
+                not isinstance(item_content["main_title_font_color"], Color):
+            raise ValueError("line chart main_title_font_color format error.")
+        if "category_names" in item_content and \
+                not isinstance(item_content["category_names"], list):
+            raise ValueError("line chart category_names format error.")
+        if "cat_label_angle" in item_content and \
+                not isinstance(item_content['cat_label_angle'], int):
+            raise ValueError("line chart cat_label_angle format error.")
+        if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
+            raise ValueError("line chart cat_label_all format error.")
+        if "legend_names" in item_content and not isinstance(item_content['legend_names'], list):
+            raise ValueError("line chart legend_names format error.")
+        if "legend_adjust_x" in item_content and \
+                not isinstance(item_content['legend_adjust_x'], int):
+            raise ValueError("line chart legend_adjust_x format error.")
+        if "legend_adjust_y" in item_content and \
+                not isinstance(item_content['legend_adjust_y'], int):
+            raise ValueError("line chart legend_adjust_y format error.")
+        if "step_count" in item_content and \
+                not isinstance(item_content['step_count'], int):
+            raise ValueError("line chart step_count format error.")
 
     @staticmethod
     def _draw_line_chart(format_json):
@@ -325,6 +392,8 @@ class PDFTemplateBarChart(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
+        if "data" in item_content and isinstance(item_content['data'], str):
+            item_content['data'] = list_eval(item_content['data'])
         if "main_title_font_size" in item_content:
             item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
         if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
@@ -338,8 +407,14 @@ class PDFTemplateBarChart(PDFTemplateItem):
                 item_content['cat_label_all'] = True
             elif item_content['cat_label_all'] == "False":
                 item_content['cat_label_all'] = False
-        if "data" in item_content and isinstance(item_content['data'], str):
-            item_content['data'] = list_eval(item_content['data'])
+        if "legend_names" in item_content and isinstance(item_content['legend_names'], str):
+            item_content['legend_names'] = list_eval(item_content['legend_names'])
+        if "legend_adjust_x" in item_content:
+            item_content['legend_adjust_x'] = int(item_content['legend_adjust_x'])
+        if "legend_adjust_y" in item_content:
+            item_content['legend_adjust_y'] = int(item_content['legend_adjust_y'])
+        if "step_count" in item_content:
+            item_content['step_count'] = int(item_content['step_count'])
 
     @staticmethod
     def args_check(item_content):
@@ -349,6 +424,36 @@ class PDFTemplateBarChart(PDFTemplateItem):
         :return:
         """
         PDFTemplateItem.args_check(item_content)
+
+        if "data" not in item_content:
+            raise ValueError("bar chart no data.")
+        if item_content['data'] and not isinstance(item_content['data'], list):
+            raise ValueError("bar chart data format error.")
+        if "main_title_font_size" in item_content and \
+                not isinstance(item_content['main_title_font_size'], int):
+            raise ValueError("bar chart main_title_font_size format error.")
+        if "main_title_font_color" in item_content and \
+                not isinstance(item_content["main_title_font_color"], Color):
+            raise ValueError("bar chart main_title_font_color format error.")
+        if "category_names" in item_content and \
+                not isinstance(item_content["category_names"], list):
+            raise ValueError("bar chart category_names format error.")
+        if "cat_label_angle" in item_content and \
+                not isinstance(item_content['cat_label_angle'], int):
+            raise ValueError("bar chart cat_label_angle format error.")
+        if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
+            raise ValueError("bar chart cat_label_all format error.")
+        if "legend_names" in item_content and not isinstance(item_content['legend_names'], list):
+            raise ValueError("bar chart legend_names format error.")
+        if "legend_adjust_x" in item_content and \
+                not isinstance(item_content['legend_adjust_x'], int):
+            raise ValueError("bar chart legend_adjust_x format error.")
+        if "legend_adjust_y" in item_content and \
+                not isinstance(item_content['legend_adjust_y'], int):
+            raise ValueError("bar chart legend_adjust_y format error.")
+        if "step_count" in item_content and \
+                not isinstance(item_content['step_count'], int):
+            raise ValueError("bar chart step_count format error.")
 
     @staticmethod
     def _draw_bar_chart(format_json):
@@ -473,14 +578,14 @@ class PDFTemplatePieChart(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
+        if "data" in item_content and isinstance(item_content['data'], str):
+            item_content['data'] = list_eval(item_content['data'])
         if "main_title_font_size" in item_content:
             item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
         if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
             item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
-        if "category_names" in item_content and type(item_content['category_names']) is str:
-            item_content['category_names'] = list_eval(item_content['category_names'])
-        if "data" in item_content and isinstance(item_content['data'], str):
-            item_content['data'] = list_eval(item_content['data'])
+        if "legend_names" in item_content and type(item_content['legend_names']) is str:
+            item_content['legend_names'] = list_eval(item_content['legend_names'])
 
     @staticmethod
     def args_check(item_content):
@@ -490,6 +595,19 @@ class PDFTemplatePieChart(PDFTemplateItem):
         :return:
         """
         PDFTemplateItem.args_check(item_content)
+
+        if "data" not in item_content:
+            raise ValueError("pie chart no data.")
+        if item_content['data'] and not isinstance(item_content['data'], list):
+            raise ValueError("pie chart data format error.")
+        if "main_title_font_size" in item_content and \
+                not isinstance(item_content['main_title_font_size'], int):
+            raise ValueError("pie chart main_title_font_size format error.")
+        if "main_title_font_color" in item_content and \
+                not isinstance(item_content["main_title_font_color"], Color):
+            raise ValueError("pie chart main_title_font_color format error.")
+        if "legend_names" in item_content and not isinstance(item_content['legend_names'], list):
+            raise ValueError("pie chart legend_names format error.")
 
     @staticmethod
     def _draw_pie_chart(format_json):
@@ -565,16 +683,14 @@ class PDFTemplateParagraph(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "content" not in item_content:
-            item_content["content"] = ""
         if "style" not in item_content:
             item_content["style"] = "BodyText"
         if "font_size" in item_content:
             item_content["font_size"] = int(item_content["font_size"])
-        if "indent_flag" in item_content:
-            item_content["indent_flag"] = int(item_content["indent_flag"])
         if "font_color" in item_content and isinstance(item_content["font_color"], str):
             item_content["font_color"] = color_eval(item_content["font_color"])
+        if "indent_flag" in item_content:
+            item_content["indent_flag"] = int(item_content["indent_flag"])
 
     @staticmethod
     def args_check(item_content):
@@ -584,6 +700,15 @@ class PDFTemplateParagraph(PDFTemplateItem):
         :return:
         """
         PDFTemplateItem.args_check(item_content)
+
+        if "content" not in item_content:
+            raise ValueError("paragraph no content.")
+        if "font_size" in item_content and not isinstance(item_content['font_size'], int):
+            raise ValueError("paragraph font_size format error.")
+        if "font_color" in item_content and not isinstance(item_content["font_color"], Color):
+            raise ValueError("paragraph font_color format error.")
+        if "indent_flag" in item_content and not isinstance(item_content["indent_flag"], int):
+            raise ValueError("paragraph indent_flag format error.")
 
     @staticmethod
     def _draw_paragraph(format_json):
@@ -597,23 +722,25 @@ class PDFTemplateParagraph(PDFTemplateItem):
         font_name = DefaultFontName
         if "font_name" in format_json:
             font_name = format_json['font_name']
+        font_color = None
+        if "font_color" in format_json:
+            font_color = format_json['font_color']
+        font_size = None
+        if "font_size" in format_json:
+            font_size = format_json['font_size']
+        indent_flag = 0
+        if "indent_flag" in format_json:
+            indent_flag = format_json['indent_flag']
 
         stylesheet = getSampleStyleSheet()
         ss = stylesheet[style_name]
         ss.fontName = font_name
-
-        if "font_size" in format_json:
-            ss.fontSize = format_json['font_size']
-
-        if "font_color" in format_json:
-            ss.fillColor = format_json['font_color']
-
-        word_width = stringWidth(" ", font_name, ss.fontSize) * 2
+        if font_size:
+            ss.fontSize = font_size
+        if font_color:
+            ss.fillColor = font_color
+        word_width = stringWidth(" ", ss.fontName, ss.fontSize) * 2
         ss.leading = word_width * PDFTemplateParagraph.paragraph_leading
-
-        indent_flag = 0
-        if "indent_flag" in format_json:
-            indent_flag = format_json['indent_flag']
         if indent_flag:
             ss.firstLineIndent = word_width * 2
 
@@ -661,7 +788,6 @@ class PDFTemplateParagraph(PDFTemplateItem):
         tmp_item = deepcopy(item)
         tmp_item['content'] = content[:split_index]
         content_height = PDFTemplateParagraph._calc_paragraph_height(tmp_item)
-        del tmp_item
 
         if content_height > split_height:
             flag = 0
@@ -674,10 +800,8 @@ class PDFTemplateParagraph(PDFTemplateItem):
             else:
                 split_index += 1
 
-            tmp_item = deepcopy(item)
             tmp_item['content'] = content[:split_index]
             tmp_height = PDFTemplateParagraph._calc_paragraph_height(tmp_item)
-            del tmp_item
 
             if flag == 0:
                 if tmp_height <= split_height:
@@ -687,6 +811,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
                 if tmp_height >= split_height:
                     split_index -= 1
                     break
+        del tmp_item
 
         return split_index
 
@@ -768,6 +893,13 @@ class PDFTemplateText(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
+        if "content" not in item_content:
+            raise ValueError("text no content.")
+        if "font_size" in item_content and not isinstance(item_content['font_size'], int):
+            raise ValueError("text font_size format error.")
+        if "font_color" in item_content and not isinstance(item_content["font_color"], Color):
+            raise ValueError("text font_color format error.")
+
     def draw(self, cv, show_border=False):
         """
         画Text
@@ -833,9 +965,9 @@ class PDFTemplateTable(PDFTemplateItem):
         PDFTemplateItem.args_check(item_content)
 
         if "columns" not in item_content:
-            raise ValueError("don't have any columns information.")
+            raise ValueError("don't have columns information.")
         if "content" not in item_content:
-            raise ValueError("don't have any content information.")
+            raise ValueError("don't have content information.")
 
         if item_content['columns'] and isListOfStrings(item_content['columns']) is False:
             raise ValueError("table columns format error.")

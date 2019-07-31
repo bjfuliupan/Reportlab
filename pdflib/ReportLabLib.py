@@ -328,6 +328,9 @@ def list_eval(list_str):
     if not isinstance(list_str, str):
         raise ValueError("not str.")
 
+    if list_str == "None":
+        return None
+
     if list_str[0] != '[' or list_str[-1] != ']':
         raise ValueError("not list format.")
 
@@ -338,6 +341,9 @@ def tuple_eval(list_str):
     if not isinstance(list_str, str):
         raise ValueError("not str.")
 
+    if list_str == "None":
+        return None
+
     if list_str[0] != '(' or list_str[-1] != ')':
         raise ValueError("not tuple format.")
 
@@ -347,6 +353,9 @@ def tuple_eval(list_str):
 def dict_eval(list_str):
     if not isinstance(list_str, str):
         raise ValueError("not str.")
+
+    if list_str == "None":
+        return None
 
     if list_str[0] != '{' or list_str[-1] != '}':
         raise ValueError("not dict format.")
