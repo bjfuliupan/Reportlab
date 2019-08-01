@@ -151,6 +151,24 @@ class ReportLabPieChart(Pie):
 
             g.add(legend)
 
+    def makeAngles(self):
+        flag = True
+        tmp_data = []
+        for d in self.data:
+            if d != 0:
+                flag = False
+        if flag:
+            tmp_data = self.data[:]
+            for i in range(len(self.data)):
+                self.data[i] = 1
+
+        _A = Pie.makeAngles(self)
+
+        self.data = tmp_data[:]
+        del tmp_data
+
+        return _A
+
     def draw(self):
         self.set_bar_color()
 
