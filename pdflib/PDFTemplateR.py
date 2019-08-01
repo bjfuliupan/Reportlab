@@ -683,6 +683,8 @@ class PDFTemplateParagraph(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
+        if "content" in item_content and item_content['content'] is None:
+            item_content['content'] = ""
         if "style" not in item_content:
             item_content["style"] = "BodyText"
         if "font_size" in item_content:
@@ -947,13 +949,19 @@ class PDFTemplateTable(PDFTemplateItem):
         if "font_color" in item_content:
             item_content['font_color'] = color_eval(item_content['font_color'])
 
-        if isinstance(item_content['col_widths'], str):
-            item_content['col_widths'] = list_eval(item_content['col_widths'])
-            for i in range(len(item_content['col_widths'])):
-                if isinstance(item_content['col_widths'][i], str) and item_content['col_widths'][i].find("%") > 0:
-                    item_content['col_widths'][i] = int(item_content['col_widths'][i].replace("%", ""))
-                    item_content['col_widths'][i] = \
-                        int(item_content['col_widths'][i] / 100 * item_content['rect'][2])
+        if "col_widths" in item_content:
+            if isinstance(item_content['col_widths'], str):
+                item_content['col_widths'] = list_eval(item_content['col_widths'])
+                for i in range(len(item_content['col_widths'])):
+                    if isinstance(item_content['col_widths'][i], str) and item_content['col_widths'][i].find("%") > 0:
+                        item_content['col_widths'][i] = int(item_content['col_widths'][i].replace("%", ""))
+                        item_content['col_widths'][i] = \
+                            int(item_content['col_widths'][i] / 100 * item_content['rect'][2])
+        else:
+            item_content['col_widths'] = []
+            col_count = len(item_content['columns'])
+            for i in range(col_count):
+                item_content['col_widths'].append(int(item_content['rect'][2] / col_count))
 
     @staticmethod
     def args_check(item_content):
@@ -985,7 +993,7 @@ class PDFTemplateTable(PDFTemplateItem):
         :return:
         """
         t = PDFTemplateTable._draw_table(item)
-        _, h = t.wrap(1, 0)
+        _, h = t.wrap(1, 1)
         del t
         return h
 
@@ -1008,7 +1016,7 @@ class PDFTemplateTable(PDFTemplateItem):
         """
         ret = 0
         t = PDFTemplateTable._draw_table(item)
-        t.wrap(1, 0)
+        t.wrap(1, 1)
 
         curr_y = 0
         for idx, val in enumerate(t._rowHeights):
@@ -1086,14 +1094,12 @@ class PDFTemplateTable(PDFTemplateItem):
             temp.append(tuple([Paragraph(str(i), ss) for i in d]))
         content = temp
 
-        if "columns" not in format_json:
-            raise ValueError("don't have any columns infomation. ")
-
         data = [tuple(cols)]
         data.extend(content)
 
         # generate table style
         ts = TableStyle([
+            ('FONTNAME', (0, 0), (-1, 0), DefaultFontName),
             ('BACKGROUND', (0, 0), (-1, 0), colors.burlywood),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.red),
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
@@ -1565,6 +1571,12 @@ class PDFTemplateR(object):
         :param kwargs: 相关参数Key-Value对
         :return:
         """
+        _page_flag = "page%s" % page_num
+        if _page_flag not in self.pages:
+            raise ValueError("page number '%s' do not exist." % page_num)
+        if item_name not in self.pages['page%d' % page_num]['items']:
+            raise ValueError("%s has not item:%s." % (_page_flag, item_name))
+
         item = self.pages['page%d' % page_num]['items'][item_name]
 
         for k, v in kwargs.items():
