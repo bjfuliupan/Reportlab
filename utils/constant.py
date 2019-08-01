@@ -46,7 +46,7 @@ class LogConstant:
         "SENSOR_HOTFIX_STATUS": "补丁更新状态日志",
         "SENSOR_NETWORK_ABNORMAL": "服务器/程序网络使用异常日志",
         "SENSOR_NETWORK_FLOW": "服务器/程序流量使用异常日志",
-        "SENSOR_ALARM_MSG": "违规定义日志",
+        # "SENSOR_ALARM_MSG": "违规定义日志",
         "SENSOR_CURRENT_AUTORUN_DAILY": "主机服务运行日志",
         # "SENSOR_FILEPARSE_LOG": "关键文件分析日志",
         # "SENSOR_FILESYSYTEM_MERGE": "文件合并日志",
@@ -60,7 +60,9 @@ class LogConstant:
         "USB_IN": "U盘拷入",
         "USB_OUT": "U盘拷出",
         "SEC_USB_IN": "安全U盘拷入",
-        "SEC_USB_OUT": "安全U盘拷出"
+        "SEC_USB_OUT": "安全U盘拷出",
+        "SENSOR_ALARM_MSG": "探针离线报警",
+        "SENSOR_NET_SHART": "网络共享日志"
     }
 
     CATAEGORY_TIME_FORMAT = "%Y-%m-%d"
