@@ -16,12 +16,17 @@ pdfmetrics.registerFont(TTFont('SimSun', 'SimSun.ttf'))
 DefaultFontName = "SimSun"
 
 ALL_COLORS = [
-    colors.red,
+    colors.Color(251/255, 192/255, 45/255, 1),
+    colors.Color(38/255, 166/255, 154/255, 1),
+    colors.Color(41/255, 182/255, 246/255, 1),
+    colors.Color(255/255, 112/255, 67/255, 1),
+    colors.Color(126/255, 87/255, 194/255, 1),
+    colors.Color(175/255, 180/255, 43/255, 1),
     colors.green,
     colors.blue,
     colors.pink,
-    colors.yellow,
-    colors.black,
+    # colors.yellow,
+    # colors.black,
     colors.blueviolet,
     colors.brown,
     colors.burlywood,

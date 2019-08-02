@@ -228,6 +228,7 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
             self.titleMainFontName = main_title_font_name
         if main_title_font_size is not None:
             self.titleMainFontSize = main_title_font_size
+        self.titleMainFontColor = colors.black
         if main_title_font_color is not None:
             self.titleMainFontColor = main_title_font_color
 

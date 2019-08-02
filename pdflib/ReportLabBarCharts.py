@@ -98,7 +98,7 @@ class ReportLabBarChart(BarChart):
         self.titleMain = main_title
         self.titleMainFontName = DefaultFontName
         self.titleMainFontSize = STATE_DEFAULTS['fontSize']
-        self.titleMainFontColor = colors.gray
+        self.titleMainFontColor = colors.black
         if main_title_font_name is not None:
             self.titleMainFontName = main_title_font_name
         if main_title_font_size is not None:
