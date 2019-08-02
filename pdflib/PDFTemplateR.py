@@ -21,6 +21,69 @@ from pdflib.ReportLabLib import DefaultFontName, list_eval, color_eval
 from abc import ABC, abstractmethod
 
 
+class PDFTemplateConstant(object):
+
+    PDF_FILE_NAME = "file_name"
+    PDF_AUTHOR = "author"
+    PDF_TITLE = "title"
+    PDF_PAGE_SIZE = "page_size"
+    PDF_COORDINATE = "coordinate"
+    PDF_HEADER_TEXT = "header_text"
+    PDF_SHOW_BORDER = "show_border"
+
+    PDF_PAGES = "pages"
+    PDF_RECT = "rect"
+    PDF_AUTO_POSITION = "auto_position"
+    PDF_PAGE_PADDING_X = "x-padding"
+    PDF_PAGE_PADDING_Y = "y-padding"
+    PDF_ALIGN_TYPE = "align-type"
+    PDF_INVALID = "invalid"
+
+    PDF_ITEMS = "items"
+    PDF_ITEM_TYPE = "type"
+    PDF_ITEM_CONTENT = "content"
+    PDF_ITEM_DATA = "data"
+    PDF_POSITION = "position"
+    PDF_FONT_NAME = "font_name"
+    PDF_FONT_COLOR = "font_color"
+    PDF_FONT_SIZE = "font_size"
+    PDF_ITEM_MARGIN_LEFT = "margin-left"
+    PDF_ITEM_MARGIN_RIGHT = "margin-right"
+    PDF_ITEM_MARGIN_TOP = "margin-top"
+    PDF_ITEM_MARGIN_BOTTOM = "margin-bottom"
+    PDF_PARAGRAPH_INDENT = "indent_flag"
+    PDF_CHART_MAIN_TITLE = "main_title"
+    PDF_CHART_MT_FONT_NAME = "main_title_font_name"
+    PDF_CHART_MT_FONT_COLOR = "main_title_font_color"
+    PDF_CHART_MT_FONT_SIZE = "main_title_font_size"
+    PDF_CHART_X_DESC = "x_desc"
+    PDF_CHART_Y_DESC = "y_desc"
+    PDF_CHART_CAT_NAMES = "category_names"
+    PDF_CHART_LEGEND_NAMES = "legend_names"
+    PDF_CHART_LEGEND_POSITION = "legend_position"
+    PDF_CHART_LEGEND_ADJUST_X = "legend_adjust_x"
+    PDF_CHART_LEGEND_ADJUST_Y = "legend_adjust_y"
+    PDF_CHART_STEP_COUNT = "step_count"
+    PDF_CHART_CAT_LABEL_ALL = "cat_label_all"
+    PDF_CHART_CAT_LABEL_ANGLE = "cat_label_angle"
+    PDF_BAR_BAR_STYLE = "bar_style"
+    PDF_BAR_STYLE = "style"
+    PDF_PARAGRAPH_STYLE = "style"
+    PDF_BAR_LABEL_FORMAT = "label_format"
+    PDF_TABLE_COLUMNS = "columns"
+    PDF_TABLE_COL_WIDTHS = "col_widths"
+
+    PDF_ITEM_TYPE_LINE_CHART = "line_chart"
+    PDF_ITEM_TYPE_BAR_CHART = "bar_chart"
+    PDF_ITEM_TYPE_PIE_CHART = "pie_chart"
+    PDF_ITEM_TYPE_TEXT = "text"
+    PDF_ITEM_TYPE_PARAGRAPH = "paragraph"
+    PDF_ITEM_TYPE_TABLE = "table"
+
+    def __init__(self):
+        pass
+
+
 class PDFTemplateItem(ABC):
     """
     Item基类
@@ -34,87 +97,94 @@ class PDFTemplateItem(ABC):
 
     @staticmethod
     def format_content(item_content):
-        if "rect" in item_content and isinstance(item_content["rect"], str):
-            item_content["rect"] = list_eval(item_content["rect"])
+        if PDFTemplateConstant.PDF_RECT in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_RECT], str):
+            item_content[PDFTemplateConstant.PDF_RECT] = list_eval(item_content[PDFTemplateConstant.PDF_RECT])
 
-        if "margin-left" in item_content:
-            item_content['margin-left'] = int(item_content['margin-left'])
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT in item_content:
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT] = \
+                int(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT])
         else:
-            item_content['margin-left'] = 0
-        if "margin-right" in item_content:
-            item_content['margin-right'] = int(item_content['margin-right'])
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT] = 0
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT in item_content:
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT] = \
+                int(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT])
         else:
-            item_content['margin-right'] = 0
-        if "margin-top" in item_content:
-            item_content['margin-top'] = int(item_content['margin-top'])
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT] = 0
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_TOP in item_content:
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP] = \
+                int(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP])
         else:
-            item_content['margin-top'] = 0
-        if "margin-bottom" in item_content:
-            item_content['margin-bottom'] = int(item_content['margin-bottom'])
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP] = 0
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM in item_content:
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM] = \
+                int(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM])
         else:
-            item_content['margin-bottom'] = 0
+            item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM] = 0
 
-        if "invalid" not in item_content:
-            item_content['invalid'] = False
-        elif not isinstance(item_content['invalid'], bool):
-            if item_content['invalid'] == "True":
-                item_content['invalid'] = True
-            elif item_content['invalid'] == "False":
-                item_content['invalid'] = False
+        if PDFTemplateConstant.PDF_INVALID not in item_content:
+            item_content[PDFTemplateConstant.PDF_INVALID] = False
+        elif not isinstance(item_content[PDFTemplateConstant.PDF_INVALID], bool):
+            if item_content[PDFTemplateConstant.PDF_INVALID] == "True":
+                item_content[PDFTemplateConstant.PDF_INVALID] = True
+            elif item_content[PDFTemplateConstant.PDF_INVALID] == "False":
+                item_content[PDFTemplateConstant.PDF_INVALID] = False
             else:
-                item_content['invalid'] = False
+                item_content[PDFTemplateConstant.PDF_INVALID] = False
 
     @staticmethod
     def args_check(item_content):
         if not isinstance(item_content, dict):
             raise ValueError("item content is not dict json.")
 
-        if "type" not in item_content:
-            raise ValueError("no type.")
+        if PDFTemplateConstant.PDF_ITEM_TYPE not in item_content:
+            raise ValueError("no %s." % PDFTemplateConstant.PDF_ITEM_TYPE)
 
-        if "rect" not in item_content or \
-                not isListOfNumbers(item_content["rect"]) or \
-                len(item_content["rect"]) != 4:
-            raise ValueError("item rect format error.")
+        if PDFTemplateConstant.PDF_RECT not in item_content or \
+                not isListOfNumbers(item_content[PDFTemplateConstant.PDF_RECT]) or \
+                len(item_content[PDFTemplateConstant.PDF_RECT]) != 4:
+            raise ValueError("item %s format error." % PDFTemplateConstant.PDF_RECT)
 
-        if "invalid" not in item_content:
-            raise ValueError("no invalid.")
-        if not isinstance(item_content['invalid'], bool):
-            raise ValueError("the type of invalid is not bool.")
+        if PDFTemplateConstant.PDF_INVALID not in item_content:
+            raise ValueError("no %s." % PDFTemplateConstant.PDF_INVALID)
+        if not isinstance(item_content[PDFTemplateConstant.PDF_INVALID], bool):
+            raise ValueError("the type of %s is not bool." % PDFTemplateConstant.PDF_INVALID)
 
-        if "margin-left" not in item_content:
-            raise ValueError("no margin-left.")
-        if not isinstance(item_content['margin-left'], int):
-            raise ValueError("the type of margin-left is not int.")
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT not in item_content:
+            raise ValueError("no %s." % PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT)
+        if not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT], int):
+            raise ValueError("the type of %s is not int." % PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT)
 
-        if "margin-right" not in item_content:
-            raise ValueError("no margin-right.")
-        if not isinstance(item_content['margin-right'], int):
-            raise ValueError("the type of margin-right is not int.")
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT not in item_content:
+            raise ValueError("no %s." % PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT)
+        if not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT], int):
+            raise ValueError("the type of %s is not int." % PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT)
 
-        if "margin-top" not in item_content:
-            raise ValueError("no margin-top.")
-        if not isinstance(item_content['margin-top'], int):
-            raise ValueError("the type of margin-top is not int.")
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_TOP not in item_content:
+            raise ValueError("no %s." % PDFTemplateConstant.PDF_ITEM_MARGIN_TOP)
+        if not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP], int):
+            raise ValueError("the type of %s is not int." % PDFTemplateConstant.PDF_ITEM_MARGIN_TOP)
 
-        if "margin-bottom" not in item_content:
-            raise ValueError("no margin-bottom.")
-        if not isinstance(item_content['margin-bottom'], int):
-            raise ValueError("the type of margin-bottom is not int.")
+        if PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM not in item_content:
+            raise ValueError("no %s." % PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM)
+        if not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM], int):
+            raise ValueError("the type of %s is not int." % PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM)
 
     def get_rect(self):
-        return self.item_content['rect'][0], self.item_content['rect'][1], \
-               self.item_content['rect'][2], self.item_content['rect'][3]
+        return self.item_content[PDFTemplateConstant.PDF_RECT][0], \
+               self.item_content[PDFTemplateConstant.PDF_RECT][1], \
+               self.item_content[PDFTemplateConstant.PDF_RECT][2], \
+               self.item_content[PDFTemplateConstant.PDF_RECT][3]
 
     def set_rect(self, x=None, y=None, width=None, height=None):
         if x:
-            self.item_content['rect'][0] = x
+            self.item_content[PDFTemplateConstant.PDF_RECT][0] = x
         if y:
-            self.item_content['rect'][1] = y
+            self.item_content[PDFTemplateConstant.PDF_RECT][1] = y
         if width:
-            self.item_content['rect'][2] = width
+            self.item_content[PDFTemplateConstant.PDF_RECT][2] = width
         if height:
-            self.item_content['rect'][3] = height
+            self.item_content[PDFTemplateConstant.PDF_RECT][3] = height
 
     @staticmethod
     def auto_set_height(item):
@@ -132,19 +202,19 @@ class PDFTemplateItem(ABC):
         :param auto_calc:
         :return:
         """
-        width = format_json['rect'][2]
-        height = format_json['rect'][3]
+        width = format_json[PDFTemplateConstant.PDF_RECT][2]
+        height = format_json[PDFTemplateConstant.PDF_RECT][3]
 
         d = Drawing(width, height, vAlign="TOP")
 
-        content = format_json['content']
-        position = format_json['position']
+        content = format_json[PDFTemplateConstant.PDF_ITEM_CONTENT]
+        position = format_json[PDFTemplateConstant.PDF_POSITION]
         x = 0
         y = 0
 
         font_size = STATE_DEFAULTS['fontSize']
-        if "font_size" in format_json:
-            font_size = format_json['font_size']
+        if PDFTemplateConstant.PDF_FONT_SIZE in format_json:
+            font_size = format_json[PDFTemplateConstant.PDF_FONT_SIZE]
 
         if auto_calc:
             if position == "middle":
@@ -153,17 +223,17 @@ class PDFTemplateItem(ABC):
             elif position == "start":
                 y = height
         else:
-            x = format_json['rect'][0]
-            y = format_json['rect'][1]
+            x = format_json[PDFTemplateConstant.PDF_RECT][0]
+            y = format_json[PDFTemplateConstant.PDF_RECT][1]
 
         text = String(x, y, content)
 
         text.fontName = DefaultFontName
-        if "font_name" in format_json:
-            text.fontName = format_json['font_name']
+        if PDFTemplateConstant.PDF_FONT_NAME in format_json:
+            text.fontName = format_json[PDFTemplateConstant.PDF_FONT_NAME]
         text.fontSize = font_size
-        if "font_color" in format_json:
-            text.fillColor = format_json['font_color']
+        if PDFTemplateConstant.PDF_FONT_COLOR in format_json:
+            text.fillColor = format_json[PDFTemplateConstant.PDF_FONT_COLOR]
         text.textAnchor = position
 
         d.add(text)
@@ -177,22 +247,29 @@ class PDFTemplateItem(ABC):
 
         width += 40
         height += 40
-        text_format = {"rect": [int(width / 2), int(height / 2), width, height],
-                       "content": "暂无数据", "position": "middle",
-                       "font_name": DefaultFontName, "font_size": 30, "font_color": Color(0.5, 0.5, 0.5, 1)}
+        text_format = {PDFTemplateConstant.PDF_RECT: [int(width / 2), int(height / 2), width, height],
+                       PDFTemplateConstant.PDF_ITEM_CONTENT: "暂无数据", PDFTemplateConstant.PDF_POSITION: "middle",
+                       PDFTemplateConstant.PDF_FONT_NAME: DefaultFontName, PDFTemplateConstant.PDF_FONT_SIZE: 30,
+                       PDFTemplateConstant.PDF_FONT_COLOR: Color(0.5, 0.5, 0.5, 1)}
         t = PDFTemplateItem._draw_text(text_format)
         d.add(t)
 
-        if "main_title" in format_json:
-            text_format = {"rect": [0, height, width, height - 15],
-                           "content": format_json['main_title'], "position": "start",
-                           "font_name": DefaultFontName, "font_size": 15, "font_color": Color(0.5, 0.5, 0.5, 1)}
-            if "main_title_font_name" in format_json:
-                text_format['font_name'] = format_json['main_title_font_name']
-            if "main_title_font_size" in format_json:
-                text_format['font_size'] = format_json['main_title_font_size']
-            if "main_title_font_color" in format_json:
-                text_format['font_color'] = format_json['main_title_font_color']
+        if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json:
+            text_format = {PDFTemplateConstant.PDF_RECT: [0, height, width, height - 15],
+                           PDFTemplateConstant.PDF_ITEM_CONTENT: format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE],
+                           PDFTemplateConstant.PDF_POSITION: "start",
+                           PDFTemplateConstant.PDF_FONT_NAME: DefaultFontName,
+                           PDFTemplateConstant.PDF_FONT_SIZE: 15,
+                           PDFTemplateConstant.PDF_FONT_COLOR: Color(0.5, 0.5, 0.5, 1)}
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json:
+                text_format[PDFTemplateConstant.PDF_FONT_NAME] = \
+                    format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in format_json:
+                text_format[PDFTemplateConstant.PDF_FONT_SIZE] = \
+                    format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in format_json:
+                text_format[PDFTemplateConstant.PDF_FONT_COLOR] = \
+                    format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR]
             main_title = PDFTemplateItem._draw_text(text_format)
             d.add(main_title)
 
@@ -206,8 +283,11 @@ class PDFTemplateItem(ABC):
     @abstractmethod
     def draw(self, cv, show_border=False):
         if show_border:
-            self._draw_border(cv, self.item_content['rect'][0], self.item_content['rect'][1],
-                              self.item_content['rect'][2], self.item_content['rect'][3], Color(1, 0, 0, 1))
+            self._draw_border(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                              self.item_content[PDFTemplateConstant.PDF_RECT][1],
+                              self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                              self.item_content[PDFTemplateConstant.PDF_RECT][3],
+                              Color(1, 0, 0, 1))
 
 
 class PDFTemplateLineChart(PDFTemplateItem):
@@ -227,29 +307,43 @@ class PDFTemplateLineChart(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "data" in item_content and isinstance(item_content['data'], str):
-            item_content['data'] = list_eval(item_content['data'])
-        if "main_title_font_size" in item_content:
-            item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
-        if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
-            item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
-        if "category_names" in item_content and type(item_content['category_names']) is str:
-            item_content['category_names'] = list_eval(item_content['category_names'])
-        if "cat_label_angle" in item_content:
-            item_content['cat_label_angle'] = int(item_content['cat_label_angle'])
-        if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
-            if item_content['cat_label_all'] == "True":
-                item_content['cat_label_all'] = True
-            elif item_content['cat_label_all'] == "False":
-                item_content['cat_label_all'] = False
-        if "legend_names" in item_content and isinstance(item_content['legend_names'], str):
-            item_content['legend_names'] = list_eval(item_content['legend_names'])
-        if "legend_adjust_x" in item_content:
-            item_content['legend_adjust_x'] = int(item_content['legend_adjust_x'])
-        if "legend_adjust_y" in item_content:
-            item_content['legend_adjust_y'] = int(item_content['legend_adjust_y'])
-        if "step_count" in item_content:
-            item_content['step_count'] = int(item_content['step_count'])
+        if PDFTemplateConstant.PDF_ITEM_DATA in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_ITEM_DATA], str):
+            item_content[PDFTemplateConstant.PDF_ITEM_DATA] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_ITEM_DATA])
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE])
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR], str):
+            item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR])
+        if PDFTemplateConstant.PDF_CHART_CAT_NAMES in item_content and \
+                isString(item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES]):
+            item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES])
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE])
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL], bool):
+            if item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] == "True":
+                item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] = True
+            elif item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] == "False":
+                item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] = False
+        if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES], str):
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES])
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X])
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y])
+        if PDFTemplateConstant.PDF_CHART_STEP_COUNT in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT])
 
     @staticmethod
     def args_check(item_content):
@@ -260,35 +354,38 @@ class PDFTemplateLineChart(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
-        if "data" not in item_content:
-            raise ValueError("line chart no data.")
-        if item_content['data'] and not isinstance(item_content['data'], list):
-            raise ValueError("line chart data format error.")
-        if "main_title_font_size" in item_content and \
-                not isinstance(item_content['main_title_font_size'], int):
-            raise ValueError("line chart main_title_font_size format error.")
-        if "main_title_font_color" in item_content and \
-                not isinstance(item_content["main_title_font_color"], Color):
-            raise ValueError("line chart main_title_font_color format error.")
-        if "category_names" in item_content and \
-                not isinstance(item_content["category_names"], list):
-            raise ValueError("line chart category_names format error.")
-        if "cat_label_angle" in item_content and \
-                not isinstance(item_content['cat_label_angle'], int):
-            raise ValueError("line chart cat_label_angle format error.")
-        if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
-            raise ValueError("line chart cat_label_all format error.")
-        if "legend_names" in item_content and not isinstance(item_content['legend_names'], list):
-            raise ValueError("line chart legend_names format error.")
-        if "legend_adjust_x" in item_content and \
-                not isinstance(item_content['legend_adjust_x'], int):
-            raise ValueError("line chart legend_adjust_x format error.")
-        if "legend_adjust_y" in item_content and \
-                not isinstance(item_content['legend_adjust_y'], int):
-            raise ValueError("line chart legend_adjust_y format error.")
-        if "step_count" in item_content and \
-                not isinstance(item_content['step_count'], int):
-            raise ValueError("line chart step_count format error.")
+        if PDFTemplateConstant.PDF_ITEM_DATA not in item_content:
+            raise ValueError("line chart no %s." % PDFTemplateConstant.PDF_ITEM_DATA)
+        if item_content[PDFTemplateConstant.PDF_ITEM_DATA] and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_DATA], list):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_ITEM_DATA)
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE], int):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE)
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR], Color):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR)
+        if PDFTemplateConstant.PDF_CHART_CAT_NAMES in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES], list):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_CAT_NAMES)
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE], int):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE)
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL], bool):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES], list):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_NAMES)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X], int):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y], int):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y)
+        if PDFTemplateConstant.PDF_CHART_STEP_COUNT in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT], int):
+            raise ValueError("line chart %s format error." % PDFTemplateConstant.PDF_CHART_STEP_COUNT)
 
     @staticmethod
     def _draw_line_chart(format_json):
@@ -297,56 +394,68 @@ class PDFTemplateLineChart(PDFTemplateItem):
         :param format_json:
         :return:
         """
-        width = format_json['rect'][2]
-        height = format_json['rect'][3]
+        width = format_json[PDFTemplateConstant.PDF_RECT][2]
+        height = format_json[PDFTemplateConstant.PDF_RECT][3]
 
         d = Drawing(width, height, vAlign="TOP")
 
-        if format_json['data'] is None or type(format_json['data']) is str:
+        if format_json[PDFTemplateConstant.PDF_ITEM_DATA] is None or \
+                isinstance(format_json[PDFTemplateConstant.PDF_ITEM_DATA], str):
             PDFTemplateItem._draw_item_rect(d, 20, 20, width - 40, height - 50, format_json)
-        elif type(format_json['data']) is list:
-            cat_names = format_json['category_names']
-            data = format_json['data']
+        elif type(format_json[PDFTemplateConstant.PDF_ITEM_DATA]) is list:
+            cat_names = format_json[PDFTemplateConstant.PDF_CHART_CAT_NAMES]
+            data = format_json[PDFTemplateConstant.PDF_ITEM_DATA]
 
             step_count = 4
-            if "step_count" in format_json and isNumber(format_json['step_count']) is True:
-                step_count = format_json['step_count']
+            if PDFTemplateConstant.PDF_CHART_STEP_COUNT in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_STEP_COUNT]) is True:
+                step_count = format_json[PDFTemplateConstant.PDF_CHART_STEP_COUNT]
             legend_names = None
-            if "legend_names" in format_json and isListOfStrings(format_json['legend_names']) is True:
-                legend_names = format_json['legend_names']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in format_json and \
+                    isListOfStrings(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES]) is True:
+                legend_names = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES]
             legend_position = "top-right"
-            if "legend_position" in format_json and isString(format_json['legend_position']) is True:
-                legend_position = format_json['legend_position']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_POSITION in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_POSITION]) is True:
+                legend_position = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_POSITION]
             legend_adjust_x = 0
-            if "legend_adjust_x" in format_json and isNumber(format_json['legend_adjust_x']) is True:
-                legend_adjust_x = format_json['legend_adjust_x']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X]) is True:
+                legend_adjust_x = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X]
             legend_adjust_y = 0
-            if "legend_adjust_y" in format_json and isNumber(format_json['legend_adjust_y']) is True:
-                legend_adjust_y = format_json['legend_adjust_y']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y]) is True:
+                legend_adjust_y = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y]
             main_title = ""
-            if "main_title" in format_json and isString(format_json['main_title']) is True:
-                main_title = format_json['main_title']
+            if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]) is True:
+                main_title = format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]
             main_title_font_name = None
-            if "main_title_font_name" in format_json and isString(format_json['main_title_font_name']) is True:
-                main_title_font_name = format_json['main_title_font_name']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]) is True:
+                main_title_font_name = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
             main_title_font_size = None
-            if "main_title_font_size" in format_json and isNumber(format_json['main_title_font_size']) is True:
-                main_title_font_size = format_json['main_title_font_size']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]) is True:
+                main_title_font_size = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]
             main_title_font_color = None
-            if "main_title_font_color" in format_json:
-                main_title_font_color = format_json['main_title_font_color']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in format_json:
+                main_title_font_color = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR]
             x_desc = None
-            if "x_desc" in format_json and isString(format_json['x_desc']) is True:
-                x_desc = format_json['x_desc']
+            if PDFTemplateConstant.PDF_CHART_X_DESC in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_X_DESC]) is True:
+                x_desc = format_json[PDFTemplateConstant.PDF_CHART_X_DESC]
             y_desc = None
-            if "y_desc" in format_json and isString(format_json['y_desc']) is True:
-                y_desc = format_json['y_desc']
+            if PDFTemplateConstant.PDF_CHART_Y_DESC in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_Y_DESC]) is True:
+                y_desc = format_json[PDFTemplateConstant.PDF_CHART_Y_DESC]
             cat_label_all = False
-            if "cat_label_all" in format_json:
-                cat_label_all = format_json['cat_label_all']
+            if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL in format_json:
+                cat_label_all = format_json[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL]
             cat_label_angle = 30
-            if "cat_label_angle" in format_json and isNumber(format_json['cat_label_angle']) is True:
-                cat_label_angle = format_json['cat_label_angle']
+            if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE]) is True:
+                cat_label_angle = format_json[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE]
 
             line_chart = ReportLabHorizontalLineChart(0, 0, width, height, cat_names, data, step_count=step_count,
                                                       legend_names=legend_names, legend_position=legend_position,
@@ -371,8 +480,10 @@ class PDFTemplateLineChart(PDFTemplateItem):
 
         d = self._draw_line_chart(self.item_content)
 
-        d.wrapOn(cv, self.item_content['rect'][2], self.item_content['rect'][3])
-        d.drawOn(cv, self.item_content['rect'][0], self.item_content['rect'][1])
+        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
+        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
 class PDFTemplateBarChart(PDFTemplateItem):
@@ -392,29 +503,43 @@ class PDFTemplateBarChart(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "data" in item_content and isinstance(item_content['data'], str):
-            item_content['data'] = list_eval(item_content['data'])
-        if "main_title_font_size" in item_content:
-            item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
-        if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
-            item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
-        if "category_names" in item_content and type(item_content['category_names']) is str:
-            item_content['category_names'] = list_eval(item_content['category_names'])
-        if "cat_label_angle" in item_content:
-            item_content['cat_label_angle'] = int(item_content['cat_label_angle'])
-        if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
-            if item_content['cat_label_all'] == "True":
-                item_content['cat_label_all'] = True
-            elif item_content['cat_label_all'] == "False":
-                item_content['cat_label_all'] = False
-        if "legend_names" in item_content and isinstance(item_content['legend_names'], str):
-            item_content['legend_names'] = list_eval(item_content['legend_names'])
-        if "legend_adjust_x" in item_content:
-            item_content['legend_adjust_x'] = int(item_content['legend_adjust_x'])
-        if "legend_adjust_y" in item_content:
-            item_content['legend_adjust_y'] = int(item_content['legend_adjust_y'])
-        if "step_count" in item_content:
-            item_content['step_count'] = int(item_content['step_count'])
+        if PDFTemplateConstant.PDF_ITEM_DATA in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_ITEM_DATA], str):
+            item_content[PDFTemplateConstant.PDF_ITEM_DATA] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_ITEM_DATA])
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE])
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR], str):
+            item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR])
+        if PDFTemplateConstant.PDF_CHART_CAT_NAMES in item_content and \
+                isString(item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES]):
+            item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES])
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE])
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL], bool):
+            if item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] == "True":
+                item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] = True
+            elif item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] == "False":
+                item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] = False
+        if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES], str):
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES])
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X])
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y])
+        if PDFTemplateConstant.PDF_CHART_STEP_COUNT in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT])
 
     @staticmethod
     def args_check(item_content):
@@ -425,35 +550,38 @@ class PDFTemplateBarChart(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
-        if "data" not in item_content:
-            raise ValueError("bar chart no data.")
-        if item_content['data'] and not isinstance(item_content['data'], list):
-            raise ValueError("bar chart data format error.")
-        if "main_title_font_size" in item_content and \
-                not isinstance(item_content['main_title_font_size'], int):
-            raise ValueError("bar chart main_title_font_size format error.")
-        if "main_title_font_color" in item_content and \
-                not isinstance(item_content["main_title_font_color"], Color):
-            raise ValueError("bar chart main_title_font_color format error.")
-        if "category_names" in item_content and \
-                not isinstance(item_content["category_names"], list):
-            raise ValueError("bar chart category_names format error.")
-        if "cat_label_angle" in item_content and \
-                not isinstance(item_content['cat_label_angle'], int):
-            raise ValueError("bar chart cat_label_angle format error.")
-        if "cat_label_all" in item_content and not isinstance(item_content['cat_label_all'], bool):
-            raise ValueError("bar chart cat_label_all format error.")
-        if "legend_names" in item_content and not isinstance(item_content['legend_names'], list):
-            raise ValueError("bar chart legend_names format error.")
-        if "legend_adjust_x" in item_content and \
-                not isinstance(item_content['legend_adjust_x'], int):
-            raise ValueError("bar chart legend_adjust_x format error.")
-        if "legend_adjust_y" in item_content and \
-                not isinstance(item_content['legend_adjust_y'], int):
-            raise ValueError("bar chart legend_adjust_y format error.")
-        if "step_count" in item_content and \
-                not isinstance(item_content['step_count'], int):
-            raise ValueError("bar chart step_count format error.")
+        if PDFTemplateConstant.PDF_ITEM_DATA not in item_content:
+            raise ValueError("bar chart no %s." % PDFTemplateConstant.PDF_ITEM_DATA)
+        if item_content[PDFTemplateConstant.PDF_ITEM_DATA] and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_DATA], list):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_ITEM_DATA)
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE], int):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE)
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR], Color):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR)
+        if PDFTemplateConstant.PDF_CHART_CAT_NAMES in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_NAMES], list):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_CAT_NAMES)
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE], int):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE)
+        if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL], bool):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES], list):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_NAMES)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X], int):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y], int):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y)
+        if PDFTemplateConstant.PDF_CHART_STEP_COUNT in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT], int):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_STEP_COUNT)
 
     @staticmethod
     def _draw_bar_chart(format_json):
@@ -462,63 +590,77 @@ class PDFTemplateBarChart(PDFTemplateItem):
         :param format_json:
         :return:
         """
-        width = format_json['rect'][2]
-        height = format_json['rect'][3]
+        width = format_json[PDFTemplateConstant.PDF_RECT][2]
+        height = format_json[PDFTemplateConstant.PDF_RECT][3]
 
         d = Drawing(width, height, vAlign="TOP")
 
-        if format_json['data'] is None or type(format_json['data']) is str:
+        if format_json[PDFTemplateConstant.PDF_ITEM_DATA] is None or \
+                isinstance(format_json[PDFTemplateConstant.PDF_ITEM_DATA], str):
             PDFTemplateItem._draw_item_rect(d, 20, 20, width - 40, height - 50, format_json)
-        elif type(format_json['data']) is list:
-            cat_names = format_json['category_names']
-            data = format_json['data']
-            bar_style = format_json['bar_style']
+        elif type(format_json[PDFTemplateConstant.PDF_ITEM_DATA]) is list:
+            cat_names = format_json[PDFTemplateConstant.PDF_CHART_CAT_NAMES]
+            data = format_json[PDFTemplateConstant.PDF_ITEM_DATA]
+            bar_style = format_json[PDFTemplateConstant.PDF_BAR_BAR_STYLE]
 
             style = "parallel"
-            if "style" in format_json and isString(format_json['style']) is True:
-                style = format_json['style']
+            if PDFTemplateConstant.PDF_BAR_STYLE in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_BAR_STYLE]) is True:
+                style = format_json[PDFTemplateConstant.PDF_BAR_STYLE]
             label_format = None
-            if "label_format" in format_json and isString(format_json['label_format']) is True:
-                label_format = format_json['label_format']
+            if PDFTemplateConstant.PDF_BAR_LABEL_FORMAT in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_BAR_LABEL_FORMAT]) is True:
+                label_format = format_json[PDFTemplateConstant.PDF_BAR_LABEL_FORMAT]
             step_count = 4
-            if "step_count" in format_json and isNumber(format_json['step_count']) is True:
-                step_count = format_json['step_count']
+            if PDFTemplateConstant.PDF_CHART_STEP_COUNT in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_STEP_COUNT]) is True:
+                step_count = format_json[PDFTemplateConstant.PDF_CHART_STEP_COUNT]
             legend_names = None
-            if "legend_names" in format_json and isListOfStrings(format_json['legend_names']) is True:
-                legend_names = format_json['legend_names']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in format_json and \
+                    isListOfStrings(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES]) is True:
+                legend_names = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES]
             legend_position = "top-right"
-            if "legend_position" in format_json and isString(format_json['legend_position']) is True:
-                legend_position = format_json['legend_position']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_POSITION in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_POSITION]) is True:
+                legend_position = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_POSITION]
             legend_adjust_x = 0
-            if "legend_adjust_x" in format_json and isNumber(format_json['legend_adjust_x']) is True:
-                legend_adjust_x = format_json['legend_adjust_x']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X]) is True:
+                legend_adjust_x = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_X]
             legend_adjust_y = 0
-            if "legend_adjust_y" in format_json and isNumber(format_json['legend_adjust_y']) is True:
-                legend_adjust_y = format_json['legend_adjust_y']
+            if PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y]) is True:
+                legend_adjust_y = format_json[PDFTemplateConstant.PDF_CHART_LEGEND_ADJUST_Y]
             main_title = ""
-            if "main_title" in format_json and isString(format_json['main_title']) is True:
-                main_title = format_json['main_title']
+            if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]) is True:
+                main_title = format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]
             main_title_font_name = None
-            if "main_title_font_name" in format_json and isString(format_json['main_title_font_name']) is True:
-                main_title_font_name = format_json['main_title_font_name']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]) is True:
+                main_title_font_name = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
             main_title_font_size = None
-            if "main_title_font_size" in format_json and isNumber(format_json['main_title_font_size']) is True:
-                main_title_font_size = format_json['main_title_font_size']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]) is True:
+                main_title_font_size = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]
             main_title_font_color = None
-            if "main_title_font_color" in format_json:
-                main_title_font_color = format_json['main_title_font_color']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in format_json:
+                main_title_font_color = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR]
             x_desc = None
-            if "x_desc" in format_json and isString(format_json['x_desc']) is True:
-                x_desc = format_json['x_desc']
+            if PDFTemplateConstant.PDF_CHART_X_DESC in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_X_DESC]) is True:
+                x_desc = format_json[PDFTemplateConstant.PDF_CHART_X_DESC]
             y_desc = None
-            if "y_desc" in format_json and isString(format_json['y_desc']) is True:
-                y_desc = format_json['y_desc']
+            if PDFTemplateConstant.PDF_CHART_Y_DESC in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_Y_DESC]) is True:
+                y_desc = format_json[PDFTemplateConstant.PDF_CHART_Y_DESC]
             cat_label_all = False
-            if "cat_label_all" in format_json:
-                cat_label_all = format_json['cat_label_all']
+            if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL in format_json:
+                cat_label_all = format_json[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL]
             cat_label_angle = 30
-            if "cat_label_angle" in format_json and isNumber(format_json['cat_label_angle']) is True:
-                cat_label_angle = format_json['cat_label_angle']
+            if PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE]) is True:
+                cat_label_angle = format_json[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ANGLE]
 
             bar_chart = None
             if bar_style == "horizontal":
@@ -557,8 +699,10 @@ class PDFTemplateBarChart(PDFTemplateItem):
 
         d = self._draw_bar_chart(self.item_content)
 
-        d.wrapOn(cv, self.item_content['rect'][2], self.item_content['rect'][3])
-        d.drawOn(cv, self.item_content['rect'][0], self.item_content['rect'][1])
+        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
+        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
 class PDFTemplatePieChart(PDFTemplateItem):
@@ -578,14 +722,21 @@ class PDFTemplatePieChart(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "data" in item_content and isinstance(item_content['data'], str):
-            item_content['data'] = list_eval(item_content['data'])
-        if "main_title_font_size" in item_content:
-            item_content["main_title_font_size"] = int(item_content["main_title_font_size"])
-        if "main_title_font_color" in item_content and isinstance(item_content["main_title_font_color"], str):
-            item_content["main_title_font_color"] = color_eval(item_content["main_title_font_color"])
-        if "legend_names" in item_content and type(item_content['legend_names']) is str:
-            item_content['legend_names'] = list_eval(item_content['legend_names'])
+        if PDFTemplateConstant.PDF_ITEM_DATA in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_ITEM_DATA], str):
+            item_content[PDFTemplateConstant.PDF_ITEM_DATA] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_ITEM_DATA])
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE] = \
+                int(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE])
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR], str):
+            item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR])
+        if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
+                isString(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES]):
+            item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES])
 
     @staticmethod
     def args_check(item_content):
@@ -596,18 +747,20 @@ class PDFTemplatePieChart(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
-        if "data" not in item_content:
-            raise ValueError("pie chart no data.")
-        if item_content['data'] and not isinstance(item_content['data'], list):
-            raise ValueError("pie chart data format error.")
-        if "main_title_font_size" in item_content and \
-                not isinstance(item_content['main_title_font_size'], int):
-            raise ValueError("pie chart main_title_font_size format error.")
-        if "main_title_font_color" in item_content and \
-                not isinstance(item_content["main_title_font_color"], Color):
-            raise ValueError("pie chart main_title_font_color format error.")
-        if "legend_names" in item_content and not isinstance(item_content['legend_names'], list):
-            raise ValueError("pie chart legend_names format error.")
+        if PDFTemplateConstant.PDF_ITEM_DATA not in item_content:
+            raise ValueError("pie chart no %s." % PDFTemplateConstant.PDF_ITEM_DATA)
+        if item_content[PDFTemplateConstant.PDF_ITEM_DATA] and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_DATA], list):
+            raise ValueError("pie chart %s format error." % PDFTemplateConstant.PDF_ITEM_DATA)
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE], int):
+            raise ValueError("pie chart %s format error." % PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE)
+        if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR], Color):
+            raise ValueError("pie chart %s format error." % PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR)
+        if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES], list):
+            raise ValueError("pie chart %s format error." % PDFTemplateConstant.PDF_CHART_LEGEND_NAMES)
 
     @staticmethod
     def _draw_pie_chart(format_json):
@@ -616,29 +769,33 @@ class PDFTemplatePieChart(PDFTemplateItem):
         :param format_json:
         :return:
         """
-        width = format_json['rect'][2]
-        height = format_json['rect'][3]
+        width = format_json[PDFTemplateConstant.PDF_RECT][2]
+        height = format_json[PDFTemplateConstant.PDF_RECT][3]
 
         d = Drawing(width, height, vAlign="TOP")
 
-        if format_json['data'] is None or type(format_json['data']) is str:
+        if format_json[PDFTemplateConstant.PDF_ITEM_DATA] is None or \
+                isString(format_json[PDFTemplateConstant.PDF_ITEM_DATA]):
             PDFTemplateItem._draw_item_rect(d, 20, 20, width - 40, height - 50, format_json)
-        elif type(format_json['data']) is list:
-            cat_names = format_json['category_names']
-            data = format_json['data']
+        elif type(format_json[PDFTemplateConstant.PDF_ITEM_DATA]) is list:
+            cat_names = format_json[PDFTemplateConstant.PDF_CHART_CAT_NAMES]
+            data = format_json[PDFTemplateConstant.PDF_ITEM_DATA]
 
             main_title = ""
-            if "main_title" in format_json and isString(format_json['main_title']) is True:
-                main_title = format_json['main_title']
+            if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]) is True:
+                main_title = format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]
             main_title_font_name = None
-            if "main_title_font_name" in format_json and isString(format_json['main_title_font_name']) is True:
-                main_title_font_name = format_json['main_title_font_name']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json and \
+                    isString(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]) is True:
+                main_title_font_name = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
             main_title_font_size = None
-            if "main_title_font_size" in format_json and isNumber(format_json['main_title_font_size']) is True:
-                main_title_font_size = format_json['main_title_font_size']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE in format_json and \
+                    isNumber(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]) is True:
+                main_title_font_size = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_SIZE]
             main_title_font_color = None
-            if "main_title_font_color" in format_json:
-                main_title_font_color = format_json['main_title_font_color']
+            if PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR in format_json:
+                main_title_font_color = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_COLOR]
 
             pie_chart = ReportLabPieChart(0, 0, width, height, cat_names, data, main_title=main_title,
                                           main_title_font_name=main_title_font_name,
@@ -660,8 +817,10 @@ class PDFTemplatePieChart(PDFTemplateItem):
 
         d = self._draw_pie_chart(self.item_content)
 
-        d.wrapOn(cv, self.item_content['rect'][2], self.item_content['rect'][3])
-        d.drawOn(cv, self.item_content['rect'][0], self.item_content['rect'][1])
+        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
+        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
 class PDFTemplateParagraph(PDFTemplateItem):
@@ -683,16 +842,20 @@ class PDFTemplateParagraph(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "content" in item_content and item_content['content'] is None:
-            item_content['content'] = ""
-        if "style" not in item_content:
-            item_content["style"] = "BodyText"
-        if "font_size" in item_content:
-            item_content["font_size"] = int(item_content["font_size"])
-        if "font_color" in item_content and isinstance(item_content["font_color"], str):
-            item_content["font_color"] = color_eval(item_content["font_color"])
-        if "indent_flag" in item_content:
-            item_content["indent_flag"] = int(item_content["indent_flag"])
+        if PDFTemplateConstant.PDF_ITEM_CONTENT in item_content and \
+                item_content[PDFTemplateConstant.PDF_ITEM_CONTENT] is None:
+            item_content[PDFTemplateConstant.PDF_ITEM_CONTENT] = ""
+        if PDFTemplateConstant.PDF_PARAGRAPH_STYLE not in item_content:
+            item_content[PDFTemplateConstant.PDF_PARAGRAPH_STYLE] = "BodyText"
+        if PDFTemplateConstant.PDF_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_FONT_SIZE] = int(item_content[PDFTemplateConstant.PDF_FONT_SIZE])
+        if PDFTemplateConstant.PDF_FONT_COLOR in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_FONT_COLOR], str):
+            item_content[PDFTemplateConstant.PDF_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_FONT_COLOR])
+        if PDFTemplateConstant.PDF_PARAGRAPH_INDENT in item_content:
+            item_content[PDFTemplateConstant.PDF_PARAGRAPH_INDENT] = \
+                int(item_content[PDFTemplateConstant.PDF_PARAGRAPH_INDENT])
 
     @staticmethod
     def args_check(item_content):
@@ -703,14 +866,17 @@ class PDFTemplateParagraph(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
-        if "content" not in item_content:
-            raise ValueError("paragraph no content.")
-        if "font_size" in item_content and not isinstance(item_content['font_size'], int):
-            raise ValueError("paragraph font_size format error.")
-        if "font_color" in item_content and not isinstance(item_content["font_color"], Color):
-            raise ValueError("paragraph font_color format error.")
-        if "indent_flag" in item_content and not isinstance(item_content["indent_flag"], int):
-            raise ValueError("paragraph indent_flag format error.")
+        if PDFTemplateConstant.PDF_ITEM_CONTENT not in item_content:
+            raise ValueError("paragraph no %s." % PDFTemplateConstant.PDF_ITEM_CONTENT)
+        if PDFTemplateConstant.PDF_FONT_SIZE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_FONT_SIZE], int):
+            raise ValueError("paragraph %s format error." % PDFTemplateConstant.PDF_FONT_SIZE)
+        if PDFTemplateConstant.PDF_FONT_COLOR in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_FONT_COLOR], Color):
+            raise ValueError("paragraph %s format error." % PDFTemplateConstant.PDF_FONT_COLOR)
+        if PDFTemplateConstant.PDF_PARAGRAPH_INDENT in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_PARAGRAPH_INDENT], int):
+            raise ValueError("paragraph %s format error." % PDFTemplateConstant.PDF_PARAGRAPH_INDENT)
 
     @staticmethod
     def _draw_paragraph(format_json):
@@ -719,20 +885,20 @@ class PDFTemplateParagraph(PDFTemplateItem):
         :param format_json:
         :return:
         """
-        content = format_json['content']
-        style_name = format_json['style']
+        content = format_json[PDFTemplateConstant.PDF_ITEM_CONTENT]
+        style_name = format_json[PDFTemplateConstant.PDF_PARAGRAPH_STYLE]
         font_name = DefaultFontName
-        if "font_name" in format_json:
-            font_name = format_json['font_name']
+        if PDFTemplateConstant.PDF_FONT_NAME in format_json:
+            font_name = format_json[PDFTemplateConstant.PDF_FONT_NAME]
         font_color = None
-        if "font_color" in format_json:
-            font_color = format_json['font_color']
+        if PDFTemplateConstant.PDF_FONT_COLOR in format_json:
+            font_color = format_json[PDFTemplateConstant.PDF_FONT_COLOR]
         font_size = None
-        if "font_size" in format_json:
-            font_size = format_json['font_size']
+        if PDFTemplateConstant.PDF_FONT_SIZE in format_json:
+            font_size = format_json[PDFTemplateConstant.PDF_FONT_SIZE]
         indent_flag = 0
-        if "indent_flag" in format_json:
-            indent_flag = format_json['indent_flag']
+        if PDFTemplateConstant.PDF_PARAGRAPH_INDENT in format_json:
+            indent_flag = format_json[PDFTemplateConstant.PDF_PARAGRAPH_INDENT]
 
         stylesheet = getSampleStyleSheet()
         ss = stylesheet[style_name]
@@ -748,8 +914,10 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
         paragraph = Paragraph(content, ss)
         if "force_top" in format_json and int(format_json['force_top']) == 1:
-            _, h = paragraph.wrap(format_json['rect'][2], format_json['rect'][3])
-            format_json['rect'][1] = format_json['rect'][1] + format_json['rect'][3] - h
+            _, h = paragraph.wrap(format_json[PDFTemplateConstant.PDF_RECT][2],
+                                  format_json[PDFTemplateConstant.PDF_RECT][3])
+            format_json[PDFTemplateConstant.PDF_RECT][1] = \
+                format_json[PDFTemplateConstant.PDF_RECT][1] + format_json[PDFTemplateConstant.PDF_RECT][3] - h
 
         return paragraph
 
@@ -761,7 +929,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
         :return:
         """
         p = PDFTemplateParagraph._draw_paragraph(item)
-        _, h = p.wrap(item['rect'][2], 0)
+        _, h = p.wrap(item[PDFTemplateConstant.PDF_RECT][2], 0)
         del p
         return h
 
@@ -772,7 +940,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
         :param item:
         :return:
         """
-        item['rect'][3] = PDFTemplateParagraph._calc_paragraph_height(item)
+        item[PDFTemplateConstant.PDF_RECT][3] = PDFTemplateParagraph._calc_paragraph_height(item)
 
     @staticmethod
     def _split_paragraph_text_by_height(item, split_height):
@@ -782,13 +950,13 @@ class PDFTemplateParagraph(PDFTemplateItem):
         :param split_height:
         :return:
         """
-        content = item['content']
+        content = item[PDFTemplateConstant.PDF_ITEM_CONTENT]
         str_len = len(content)
         content_height = PDFTemplateParagraph._calc_paragraph_height(item)
         split_index = int(split_height / content_height * str_len)
 
         tmp_item = deepcopy(item)
-        tmp_item['content'] = content[:split_index]
+        tmp_item[PDFTemplateConstant.PDF_ITEM_CONTENT] = content[:split_index]
         content_height = PDFTemplateParagraph._calc_paragraph_height(tmp_item)
 
         if content_height > split_height:
@@ -802,7 +970,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
             else:
                 split_index += 1
 
-            tmp_item['content'] = content[:split_index]
+            tmp_item[PDFTemplateConstant.PDF_ITEM_CONTENT] = content[:split_index]
             tmp_height = PDFTemplateParagraph._calc_paragraph_height(tmp_item)
 
             if flag == 0:
@@ -827,11 +995,11 @@ class PDFTemplateParagraph(PDFTemplateItem):
         :return:
         """
         item = items[index]
-        if item['type'] != "paragraph":
+        if item[PDFTemplateConstant.PDF_ITEM_TYPE] != PDFTemplateConstant.PDF_ITEM_TYPE_PARAGRAPH:
             return False
 
-        item_height = item['rect'][3]
-        y = item['rect'][1]
+        item_height = item[PDFTemplateConstant.PDF_RECT][3]
+        y = item[PDFTemplateConstant.PDF_RECT][1]
         if item_height + y <= page_height:
             return True
 
@@ -839,11 +1007,11 @@ class PDFTemplateParagraph(PDFTemplateItem):
         split_index = PDFTemplateParagraph._split_paragraph_text_by_height(item, split_height)
 
         new_item = deepcopy(item)
-        new_item['content'] = new_item['content'][split_index:]
-        new_item['indent_flag'] = 0
+        new_item[PDFTemplateConstant.PDF_ITEM_CONTENT] = new_item[PDFTemplateConstant.PDF_ITEM_CONTENT][split_index:]
+        new_item[PDFTemplateConstant.PDF_PARAGRAPH_INDENT] = 0
 
-        item['content'] = item['content'][:split_index]
-        item['rect'][3] = split_height
+        item[PDFTemplateConstant.PDF_ITEM_CONTENT] = item[PDFTemplateConstant.PDF_ITEM_CONTENT][:split_index]
+        item[PDFTemplateConstant.PDF_RECT][3] = split_height
 
         items.insert(index + 1, new_item)
 
@@ -860,8 +1028,10 @@ class PDFTemplateParagraph(PDFTemplateItem):
 
         d = self._draw_paragraph(self.item_content)
 
-        d.wrapOn(cv, self.item_content['rect'][2], self.item_content['rect'][3])
-        d.drawOn(cv, self.item_content['rect'][0], self.item_content['rect'][1])
+        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
+        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
 class PDFTemplateText(PDFTemplateItem):
@@ -881,10 +1051,13 @@ class PDFTemplateText(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "font_size" in item_content:
-            item_content["font_size"] = int(item_content["font_size"])
-        if "font_color" in item_content and isinstance(item_content["font_color"], str):
-            item_content["font_color"] = color_eval(item_content["font_color"])
+        if PDFTemplateConstant.PDF_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_FONT_SIZE] = \
+                int(item_content[PDFTemplateConstant.PDF_FONT_SIZE])
+        if PDFTemplateConstant.PDF_FONT_COLOR in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_FONT_COLOR], str):
+            item_content[PDFTemplateConstant.PDF_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_FONT_COLOR])
 
     @staticmethod
     def args_check(item_content):
@@ -895,12 +1068,14 @@ class PDFTemplateText(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
-        if "content" not in item_content:
-            raise ValueError("text no content.")
-        if "font_size" in item_content and not isinstance(item_content['font_size'], int):
-            raise ValueError("text font_size format error.")
-        if "font_color" in item_content and not isinstance(item_content["font_color"], Color):
-            raise ValueError("text font_color format error.")
+        if PDFTemplateConstant.PDF_ITEM_CONTENT not in item_content:
+            raise ValueError("text no %s." % PDFTemplateConstant.PDF_ITEM_CONTENT)
+        if PDFTemplateConstant.PDF_FONT_SIZE in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_FONT_SIZE], int):
+            raise ValueError("text %s format error." % PDFTemplateConstant.PDF_FONT_SIZE)
+        if PDFTemplateConstant.PDF_FONT_COLOR in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_FONT_COLOR], Color):
+            raise ValueError("text %s format error." % PDFTemplateConstant.PDF_FONT_COLOR)
 
     def draw(self, cv, show_border=False):
         """
@@ -913,8 +1088,10 @@ class PDFTemplateText(PDFTemplateItem):
 
         d = self._draw_text(self.item_content)
 
-        d.wrapOn(cv, self.item_content['rect'][2], self.item_content['rect'][3])
-        d.drawOn(cv, self.item_content['rect'][0], self.item_content['rect'][1])
+        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
+        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
 class PDFTemplateTable(PDFTemplateItem):
@@ -934,34 +1111,43 @@ class PDFTemplateTable(PDFTemplateItem):
         """
         PDFTemplateItem.format_content(item_content)
 
-        if "columns" not in item_content:
-            item_content['columns'] = []
-        elif isinstance(item_content['columns'], str):
-            item_content['columns'] = list_eval(item_content['columns'])
+        if PDFTemplateConstant.PDF_TABLE_COLUMNS not in item_content:
+            item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS] = []
+        elif isinstance(item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS], str):
+            item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS])
 
-        if "content" not in item_content:
-            item_content['content'] = []
-        elif isinstance(item_content['content'], str):
-            item_content['content'] = list_eval(item_content['content'])
+        if PDFTemplateConstant.PDF_ITEM_CONTENT not in item_content:
+            item_content[PDFTemplateConstant.PDF_ITEM_CONTENT] = []
+        elif isinstance(item_content[PDFTemplateConstant.PDF_ITEM_CONTENT], str):
+            item_content[PDFTemplateConstant.PDF_ITEM_CONTENT] = \
+                list_eval(item_content[PDFTemplateConstant.PDF_ITEM_CONTENT])
 
-        if "font_size" in item_content:
-            item_content['font_size'] = int(item_content['font_size'])
-        if "font_color" in item_content:
-            item_content['font_color'] = color_eval(item_content['font_color'])
+        if PDFTemplateConstant.PDF_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_FONT_SIZE] = int(item_content[PDFTemplateConstant.PDF_FONT_SIZE])
+        if PDFTemplateConstant.PDF_FONT_COLOR in item_content:
+            item_content[PDFTemplateConstant.PDF_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_FONT_COLOR])
 
-        if "col_widths" in item_content:
-            if isinstance(item_content['col_widths'], str):
-                item_content['col_widths'] = list_eval(item_content['col_widths'])
-                for i in range(len(item_content['col_widths'])):
-                    if isinstance(item_content['col_widths'][i], str) and item_content['col_widths'][i].find("%") > 0:
-                        item_content['col_widths'][i] = int(item_content['col_widths'][i].replace("%", ""))
-                        item_content['col_widths'][i] = \
-                            int(item_content['col_widths'][i] / 100 * item_content['rect'][2])
+        if PDFTemplateConstant.PDF_TABLE_COL_WIDTHS in item_content:
+            if isinstance(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS], str):
+                item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS] = \
+                    list_eval(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS])
+                for i in range(len(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS])):
+                    if isinstance(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS][i], str) and \
+                            item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS][i].find("%") > 0:
+                        item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS][i] = \
+                            int(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS][i].replace("%", ""))
+                        item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS][i] = \
+                            int(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS][i] / 100 *
+                                item_content[PDFTemplateConstant.PDF_RECT][2])
         else:
-            item_content['col_widths'] = []
-            col_count = len(item_content['columns'])
+            item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS] = []
+            col_count = len(item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS])
             for i in range(col_count):
-                item_content['col_widths'].append(int(item_content['rect'][2] / col_count))
+                item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS].append(
+                    int(item_content[PDFTemplateConstant.PDF_RECT][2] / col_count)
+                )
 
     @staticmethod
     def args_check(item_content):
@@ -972,18 +1158,20 @@ class PDFTemplateTable(PDFTemplateItem):
         """
         PDFTemplateItem.args_check(item_content)
 
-        if "columns" not in item_content:
-            raise ValueError("don't have columns information.")
-        if "content" not in item_content:
-            raise ValueError("don't have content information.")
+        if PDFTemplateConstant.PDF_TABLE_COLUMNS not in item_content:
+            raise ValueError("don't have %s information." % PDFTemplateConstant.PDF_TABLE_COLUMNS)
+        if PDFTemplateConstant.PDF_ITEM_CONTENT not in item_content:
+            raise ValueError("don't have %s information." % PDFTemplateConstant.PDF_ITEM_CONTENT)
 
-        if item_content['columns'] and isListOfStrings(item_content['columns']) is False:
-            raise ValueError("table columns format error.")
-        if not isinstance(item_content['content'], list):
-            raise ValueError("table content format error.")
+        if item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS] and \
+                isListOfStrings(item_content[PDFTemplateConstant.PDF_TABLE_COLUMNS]) is False:
+            raise ValueError("table %s format error." % PDFTemplateConstant.PDF_TABLE_COLUMNS)
+        if not isinstance(item_content[PDFTemplateConstant.PDF_ITEM_CONTENT], list):
+            raise ValueError("table %s format error." % PDFTemplateConstant.PDF_ITEM_CONTENT)
 
-        if "col_widths" in item_content and isListOfNumbers(item_content['col_widths']) is False:
-            raise ValueError("table col_widths format error.")
+        if PDFTemplateConstant.PDF_TABLE_COL_WIDTHS in item_content and \
+                isListOfNumbers(item_content[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS]) is False:
+            raise ValueError("table %s format error." % PDFTemplateConstant.PDF_TABLE_COL_WIDTHS)
 
     @staticmethod
     def _calc_table_height(item):
@@ -1004,7 +1192,7 @@ class PDFTemplateTable(PDFTemplateItem):
         :param item:
         :return:
         """
-        item['rect'][3] = PDFTemplateTable._calc_table_height(item)
+        item[PDFTemplateConstant.PDF_RECT][3] = PDFTemplateTable._calc_table_height(item)
 
     @staticmethod
     def _cut_table_rows(item, split_height):
@@ -1039,8 +1227,8 @@ class PDFTemplateTable(PDFTemplateItem):
         """
         item = items[index]
 
-        item_height = item['rect'][3]
-        y = item['rect'][1]
+        item_height = item[PDFTemplateConstant.PDF_RECT][3]
+        y = item[PDFTemplateConstant.PDF_RECT][1]
         if item_height + y <= page_height:
             return True
 
@@ -1048,10 +1236,10 @@ class PDFTemplateTable(PDFTemplateItem):
         split_index = PDFTemplateTable._cut_table_rows(item, split_height)
 
         new_item = deepcopy(item)
-        new_item['content'] = new_item['content'][split_index:]
+        new_item[PDFTemplateConstant.PDF_ITEM_CONTENT] = new_item[PDFTemplateConstant.PDF_ITEM_CONTENT][split_index:]
 
-        item['content'] = item['content'][:split_index]
-        item['rect'][3] = split_height
+        item[PDFTemplateConstant.PDF_ITEM_CONTENT] = item[PDFTemplateConstant.PDF_ITEM_CONTENT][:split_index]
+        item[PDFTemplateConstant.PDF_RECT][3] = split_height
 
         items.insert(index + 1, new_item)
 
@@ -1064,23 +1252,23 @@ class PDFTemplateTable(PDFTemplateItem):
         :param format_json:
         :return:
         """
-        cols = format_json["columns"]
-        content = format_json["content"]
-        table_width = format_json["rect"][2]
+        cols = format_json[PDFTemplateConstant.PDF_TABLE_COLUMNS]
+        content = format_json[PDFTemplateConstant.PDF_ITEM_CONTENT]
+        table_width = format_json[PDFTemplateConstant.PDF_RECT][2]
 
         font_name = DefaultFontName
-        if "font_name" in format_json:
-            font_name = format_json['font_name']
+        if PDFTemplateConstant.PDF_FONT_NAME in format_json:
+            font_name = format_json[PDFTemplateConstant.PDF_FONT_NAME]
         font_size = STATE_DEFAULTS['fontSize']
-        if "font_size" in format_json:
-            font_size = format_json['font_size']
+        if PDFTemplateConstant.PDF_FONT_SIZE in format_json:
+            font_size = format_json[PDFTemplateConstant.PDF_FONT_SIZE]
         font_color = STATE_DEFAULTS['fontSize']
-        if "font_color" in format_json:
-            font_color = format_json['font_color']
+        if PDFTemplateConstant.PDF_FONT_COLOR in format_json:
+            font_color = format_json[PDFTemplateConstant.PDF_FONT_COLOR]
 
         col_widths = [int(table_width / len(cols)) for _ in cols]
-        if "col_widths" in format_json:
-            col_widths = format_json['col_widths']
+        if PDFTemplateConstant.PDF_TABLE_COL_WIDTHS in format_json:
+            col_widths = format_json[PDFTemplateConstant.PDF_TABLE_COL_WIDTHS]
 
         stylesheet = getSampleStyleSheet()
         ss = stylesheet['BodyText']
@@ -1123,8 +1311,10 @@ class PDFTemplateTable(PDFTemplateItem):
 
         d = self._draw_table(self.item_content)
 
-        d.wrapOn(cv, self.item_content['rect'][2], self.item_content['rect'][3])
-        d.drawOn(cv, self.item_content['rect'][0], self.item_content['rect'][1])
+        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
+        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
 class PDFTemplatePage(object):
@@ -1134,12 +1324,12 @@ class PDFTemplatePage(object):
 
     # 各Item对应的类
     ItemClass = {
-        "line_chart": PDFTemplateLineChart,
-        "bar_chart": PDFTemplateBarChart,
-        "pie_chart": PDFTemplatePieChart,
-        "paragraph": PDFTemplateParagraph,
-        "text": PDFTemplateText,
-        "table": PDFTemplateTable
+        PDFTemplateConstant.PDF_ITEM_TYPE_LINE_CHART: PDFTemplateLineChart,
+        PDFTemplateConstant.PDF_ITEM_TYPE_BAR_CHART: PDFTemplateBarChart,
+        PDFTemplateConstant.PDF_ITEM_TYPE_PIE_CHART: PDFTemplatePieChart,
+        PDFTemplateConstant.PDF_ITEM_TYPE_PARAGRAPH: PDFTemplateParagraph,
+        PDFTemplateConstant.PDF_ITEM_TYPE_TEXT: PDFTemplateText,
+        PDFTemplateConstant.PDF_ITEM_TYPE_TABLE: PDFTemplateTable
     }
 
     def __init__(self, page_content, page_num, page_size, **kw):
@@ -1165,20 +1355,20 @@ class PDFTemplatePage(object):
         self.format_content(self.page_content)
         self.args_check(self.page_content)
 
-        if "rect" in self.page_content:
-            self.rect = self.page_content['rect']
-        if "coordinate" in self.page_content:
-            self.coordinate = self.page_content['coordinate']
-        if "auto_position" in self.page_content:
-            self.auto_position = self.page_content['auto_position']
-        if "x-padding" in self.page_content:
-            self.x_padding = self.page_content['x-padding']
-        if "y-padding" in self.page_content:
-            self.y_padding = self.page_content['y-padding']
-        if "align-type" in self.page_content:
-            self.align_type = self.page_content['align-type']
+        if PDFTemplateConstant.PDF_RECT in self.page_content:
+            self.rect = self.page_content[PDFTemplateConstant.PDF_RECT]
+        if PDFTemplateConstant.PDF_COORDINATE in self.page_content:
+            self.coordinate = self.page_content[PDFTemplateConstant.PDF_COORDINATE]
+        if PDFTemplateConstant.PDF_AUTO_POSITION in self.page_content:
+            self.auto_position = self.page_content[PDFTemplateConstant.PDF_AUTO_POSITION]
+        if PDFTemplateConstant.PDF_PAGE_PADDING_X in self.page_content:
+            self.x_padding = self.page_content[PDFTemplateConstant.PDF_PAGE_PADDING_X]
+        if PDFTemplateConstant.PDF_PAGE_PADDING_Y in self.page_content:
+            self.y_padding = self.page_content[PDFTemplateConstant.PDF_PAGE_PADDING_Y]
+        if PDFTemplateConstant.PDF_ALIGN_TYPE in self.page_content:
+            self.align_type = self.page_content[PDFTemplateConstant.PDF_ALIGN_TYPE]
 
-        for item in self.page_content['items']:
+        for item in self.page_content[PDFTemplateConstant.PDF_ITEMS]:
             self.add_item(item)
 
     @staticmethod
@@ -1188,48 +1378,51 @@ class PDFTemplatePage(object):
         :param page_content:
         :return:
         """
-        if "rect" in page_content and isinstance(page_content['rect'], str):
-            page_content['rect'] = list_eval(page_content['rect'])
+        if PDFTemplateConstant.PDF_RECT in page_content and \
+                isinstance(page_content[PDFTemplateConstant.PDF_RECT], str):
+            page_content[PDFTemplateConstant.PDF_RECT] = list_eval(page_content[PDFTemplateConstant.PDF_RECT])
 
-        if "auto_position" not in page_content:
-            page_content['auto_position'] = False
-        elif not isinstance(page_content['auto_position'], bool):
-            if page_content['auto_position'] == "True":
-                page_content['auto_position'] = True
-            elif page_content['auto_position'] == "False":
-                page_content['auto_position'] = False
+        if PDFTemplateConstant.PDF_AUTO_POSITION not in page_content:
+            page_content[PDFTemplateConstant.PDF_AUTO_POSITION] = False
+        elif not isinstance(page_content[PDFTemplateConstant.PDF_AUTO_POSITION], bool):
+            if page_content[PDFTemplateConstant.PDF_AUTO_POSITION] == "True":
+                page_content[PDFTemplateConstant.PDF_AUTO_POSITION] = True
+            elif page_content[PDFTemplateConstant.PDF_AUTO_POSITION] == "False":
+                page_content[PDFTemplateConstant.PDF_AUTO_POSITION] = False
             else:
-                page_content['auto_position'] = False
+                page_content[PDFTemplateConstant.PDF_AUTO_POSITION] = False
 
-        if "x-padding" in page_content:
-            page_content['x-padding'] = int(page_content['x-padding'])
+        if PDFTemplateConstant.PDF_PAGE_PADDING_X in page_content:
+            page_content[PDFTemplateConstant.PDF_PAGE_PADDING_X] = \
+                int(page_content[PDFTemplateConstant.PDF_PAGE_PADDING_X])
         else:
-            page_content['x-padding'] = 0
+            page_content[PDFTemplateConstant.PDF_PAGE_PADDING_X] = 0
 
-        if "y-padding" in page_content:
-            page_content['y-padding'] = int(page_content['y-padding'])
+        if PDFTemplateConstant.PDF_PAGE_PADDING_Y in page_content:
+            page_content[PDFTemplateConstant.PDF_PAGE_PADDING_Y] = \
+                int(page_content[PDFTemplateConstant.PDF_PAGE_PADDING_Y])
         else:
-            page_content['y-padding'] = 0
+            page_content[PDFTemplateConstant.PDF_PAGE_PADDING_Y] = 0
 
-        if "align-type" not in page_content:
-            page_content['align-type'] = "middle"
+        if PDFTemplateConstant.PDF_ALIGN_TYPE not in page_content:
+            page_content[PDFTemplateConstant.PDF_ALIGN_TYPE] = "middle"
 
-        if "invalid" not in page_content:
-            page_content['invalid'] = False
-        elif not isinstance(page_content['invalid'], bool):
-            if page_content['invalid'] == "True":
-                page_content['invalid'] = True
-            elif page_content['invalid'] == "False":
-                page_content['invalid'] = False
+        if PDFTemplateConstant.PDF_INVALID not in page_content:
+            page_content[PDFTemplateConstant.PDF_INVALID] = False
+        elif not isinstance(page_content[PDFTemplateConstant.PDF_INVALID], bool):
+            if page_content[PDFTemplateConstant.PDF_INVALID] == "True":
+                page_content[PDFTemplateConstant.PDF_INVALID] = True
+            elif page_content[PDFTemplateConstant.PDF_INVALID] == "False":
+                page_content[PDFTemplateConstant.PDF_INVALID] = False
             else:
-                page_content['invalid'] = False
+                page_content[PDFTemplateConstant.PDF_INVALID] = False
 
         # 格式化各Item数据
-        if "items" in page_content:
-            for item in page_content['items']:
+        if PDFTemplateConstant.PDF_ITEMS in page_content:
+            for item in page_content[PDFTemplateConstant.PDF_ITEMS]:
                 if not isinstance(item, dict):
-                    item = page_content['items'][item]
-                item_type = item['type']
+                    item = page_content[PDFTemplateConstant.PDF_ITEMS][item]
+                item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
 
                 PDFTemplatePage.ItemClass[item_type].format_content(item)
 
@@ -1240,20 +1433,21 @@ class PDFTemplatePage(object):
         :param page_content:
         :return:
         """
-        if "rect" not in page_content:
-            raise ValueError("page no rect.")
+        if PDFTemplateConstant.PDF_RECT not in page_content:
+            raise ValueError("page no %s." % PDFTemplateConstant.PDF_RECT)
 
-        if not isListOfNumbers(page_content['rect']) or len(page_content['rect']) != 4:
-            raise ValueError("page rect error.")
+        if not isListOfNumbers(page_content[PDFTemplateConstant.PDF_RECT]) or \
+                len(page_content[PDFTemplateConstant.PDF_RECT]) != 4:
+            raise ValueError("page %s error." % PDFTemplateConstant.PDF_RECT)
 
-        if "items" not in page_content:
-            raise ValueError("page no items.")
+        if PDFTemplateConstant.PDF_ITEMS not in page_content:
+            raise ValueError("page no %s." % PDFTemplateConstant.PDF_ITEMS)
 
         # 各Item数据合法性校验
-        for item in page_content['items']:
+        for item in page_content[PDFTemplateConstant.PDF_ITEMS]:
             if not isinstance(item, dict):
-                item = page_content['items'][item]
-            item_type = item['type']
+                item = page_content[PDFTemplateConstant.PDF_ITEMS][item]
+            item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
 
             PDFTemplatePage.ItemClass[item_type].args_check(item)
 
@@ -1265,11 +1459,11 @@ class PDFTemplatePage(object):
         """
         if not isinstance(item_content, dict):
             raise ValueError("item format is error.")
-        if "type" not in item_content:
-            raise ValueError("item has not property: type.")
+        if PDFTemplateConstant.PDF_ITEM_TYPE not in item_content:
+            raise ValueError("item has not property: %s." % PDFTemplateConstant.PDF_ITEM_TYPE)
 
         # 生成Item实例化对象
-        item_ins = self.ItemClass[item_content['type']](item_content)
+        item_ins = self.ItemClass[item_content[PDFTemplateConstant.PDF_ITEM_TYPE]](item_content)
         self.items.append(item_ins)
 
     @staticmethod
@@ -1288,11 +1482,11 @@ class PDFTemplatePage(object):
             # 居中、右对齐
             items_width = (end_index - start_index - 1) * x_padding
             for i in range(end_index - start_index):
-                item = page['items'][start_index + i]
+                item = page[PDFTemplateConstant.PDF_ITEMS][start_index + i]
 
-                margin_left = item['margin-left']
-                margin_right = item['margin-right']
-                items_width += item['rect'][2] + margin_left + margin_right
+                margin_left = item[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT]
+                margin_right = item[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT]
+                items_width += item[PDFTemplateConstant.PDF_RECT][2] + margin_left + margin_right
 
             start_pos = 0
             if align_type == "middle":
@@ -1301,12 +1495,12 @@ class PDFTemplatePage(object):
                 start_pos = page_width - items_width
 
             for i in range(end_index - start_index):
-                item = page['items'][start_index + i]
+                item = page[PDFTemplateConstant.PDF_ITEMS][start_index + i]
 
-                margin_left = item['margin-left']
-                margin_right = item['margin-right']
-                item['rect'][0] = start_pos + margin_left
-                start_pos += item['rect'][2] + x_padding + margin_left + margin_right
+                margin_left = item[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT]
+                margin_right = item[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT]
+                item[PDFTemplateConstant.PDF_RECT][0] = start_pos + margin_left
+                start_pos += item[PDFTemplateConstant.PDF_RECT][2] + x_padding + margin_left + margin_right
         elif align_type == "left":
             # 默认是左对齐，不用处理
             pass
@@ -1319,13 +1513,13 @@ class PDFTemplatePage(object):
         :return:
         """
         next_page = deepcopy(page)
-        next_page['items'] = []
+        next_page[PDFTemplateConstant.PDF_ITEMS] = []
 
-        page_width = page['rect'][2]
-        page_height = page['rect'][3]
-        x_padding = page['x-padding']
-        y_padding = page['y-padding']
-        align_type = page['align-type']
+        page_width = page[PDFTemplateConstant.PDF_RECT][2]
+        page_height = page[PDFTemplateConstant.PDF_RECT][3]
+        x_padding = page[PDFTemplateConstant.PDF_PAGE_PADDING_X]
+        y_padding = page[PDFTemplateConstant.PDF_PAGE_PADDING_Y]
+        align_type = page[PDFTemplateConstant.PDF_ALIGN_TYPE]
 
         cur_x = 0
         cur_y = 0
@@ -1335,19 +1529,19 @@ class PDFTemplatePage(object):
         next_page_index = 0
         row_start = 0
 
-        for item in page['items']:
-            item_type = item['type']
+        for item in page[PDFTemplateConstant.PDF_ITEMS]:
+            item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
 
             # 自动计算Item的高度
             PDFTemplatePage.ItemClass[item_type].auto_set_height(item)
 
-            item_width = item['rect'][2]
-            item_height = item['rect'][3]
+            item_width = item[PDFTemplateConstant.PDF_RECT][2]
+            item_height = item[PDFTemplateConstant.PDF_RECT][3]
 
-            margin_left = item['margin-left']
-            margin_right = item['margin-right']
-            margin_top = item['margin-top']
-            margin_bottom = item['margin-bottom']
+            margin_left = item[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT]
+            margin_right = item[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT]
+            margin_top = item[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP]
+            margin_bottom = item[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM]
 
             if cur_x != 0 and cur_x + item_width + margin_left + margin_right > page_width:
                 # 需要换行显示
@@ -1357,16 +1551,16 @@ class PDFTemplatePage(object):
 
                 next_page_index = index
                 row_start = index
-                item['rect'][0] = margin_left
-                item['rect'][1] = next_y + margin_top
+                item[PDFTemplateConstant.PDF_RECT][0] = margin_left
+                item[PDFTemplateConstant.PDF_RECT][1] = next_y + margin_top
                 cur_x = item_width + x_padding + margin_left + margin_right
                 cur_y = next_y
                 next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
             else:
                 # 不需要换行，从左到右依次放置
 
-                item['rect'][0] = cur_x + margin_left
-                item['rect'][1] = cur_y + margin_top
+                item[PDFTemplateConstant.PDF_RECT][0] = cur_x + margin_left
+                item[PDFTemplateConstant.PDF_RECT][1] = cur_y + margin_top
                 cur_x += item_width + x_padding + margin_left + margin_right
                 if cur_y + item_height + y_padding + margin_top + margin_bottom > next_y:
                     next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
@@ -1375,7 +1569,9 @@ class PDFTemplatePage(object):
                 # 需要分页显示
 
                 # 尝试对当前Item进行拆分
-                split_flag = PDFTemplatePage.ItemClass[item_type].split_by_height(page['items'], index, page_height)
+                split_flag = PDFTemplatePage.ItemClass[item_type].split_by_height(
+                    page[PDFTemplateConstant.PDF_ITEMS], index, page_height
+                )
                 if split_flag:
                     # 拆分成功
                     next_page_index += 1
@@ -1391,8 +1587,8 @@ class PDFTemplatePage(object):
 
         if next_page_flag:
             # 取出需要放到下一页的Item，并返回
-            next_page['items'] = page['items'][next_page_index:]
-            page['items'] = page['items'][:next_page_index]
+            next_page[PDFTemplateConstant.PDF_ITEMS] = page[PDFTemplateConstant.PDF_ITEMS][next_page_index:]
+            page[PDFTemplateConstant.PDF_ITEMS] = page[PDFTemplateConstant.PDF_ITEMS][:next_page_index]
             return next_page
 
         return None
@@ -1526,17 +1722,17 @@ class PDFTemplateR(object):
 
             template = xmltodict.parse(template)['pdf']
 
-            if "pages" not in template:
-                raise ValueError("template no pages.")
-            if "file_name" not in template:
-                raise ValueError("template no file_name.")
-            if "page_size" not in template:
-                raise ValueError("template no page_size.")
+            if PDFTemplateConstant.PDF_PAGES not in template:
+                raise ValueError("template no %s." % PDFTemplateConstant.PDF_PAGES)
+            if PDFTemplateConstant.PDF_FILE_NAME not in template:
+                raise ValueError("template no %s." % PDFTemplateConstant.PDF_FILE_NAME)
+            if PDFTemplateConstant.PDF_PAGE_SIZE not in template:
+                raise ValueError("template no %s." % PDFTemplateConstant.PDF_PAGE_SIZE)
 
-            template['page_size'] = list_eval(template['page_size'])
+            template[PDFTemplateConstant.PDF_PAGE_SIZE] = list_eval(template[PDFTemplateConstant.PDF_PAGE_SIZE])
 
-            for page in template['pages']:
-                page = template['pages'][page]
+            for page in template[PDFTemplateConstant.PDF_PAGES]:
+                page = template[PDFTemplateConstant.PDF_PAGES][page]
                 # 格式化Page数据
                 PDFTemplatePage.format_content(page)
                 # 各参数合法性校验
@@ -1548,20 +1744,20 @@ class PDFTemplateR(object):
             raise ValueError("PDF template file format error.")
 
         self.template_content = template
-        self.pages = self.template_content['pages']
-        self.pdf_file = self.template_content['file_name']
-        self.page_size = self.template_content['page_size']
+        self.pages = self.template_content[PDFTemplateConstant.PDF_PAGES]
+        self.pdf_file = self.template_content[PDFTemplateConstant.PDF_FILE_NAME]
+        self.page_size = self.template_content[PDFTemplateConstant.PDF_PAGE_SIZE]
 
-        if "author" in self.template_content:
-            self.author = self.template_content['author']
-        if "title" in self.template_content:
-            self.title = self.template_content['title']
-        if "coordinate" in self.template_content:
-            self.coordinate = self.template_content['coordinate']
-        if "header_text" in self.template_content:
-            self.header_text = self.template_content['header_text']
-        if "show_border" in self.template_content:
-            self.show_border = self.template_content['show_border']
+        if PDFTemplateConstant.PDF_AUTHOR in self.template_content:
+            self.author = self.template_content[PDFTemplateConstant.PDF_AUTHOR]
+        if PDFTemplateConstant.PDF_TITLE in self.template_content:
+            self.title = self.template_content[PDFTemplateConstant.PDF_TITLE]
+        if PDFTemplateConstant.PDF_COORDINATE in self.template_content:
+            self.coordinate = self.template_content[PDFTemplateConstant.PDF_COORDINATE]
+        if PDFTemplateConstant.PDF_HEADER_TEXT in self.template_content:
+            self.header_text = self.template_content[PDFTemplateConstant.PDF_HEADER_TEXT]
+        if PDFTemplateConstant.PDF_SHOW_BORDER in self.template_content:
+            self.show_border = self.template_content[PDFTemplateConstant.PDF_SHOW_BORDER]
 
     def set_item_data(self, page_num, item_name, **kwargs):
         """
@@ -1574,14 +1770,14 @@ class PDFTemplateR(object):
         _page_flag = "page%s" % page_num
         if _page_flag not in self.pages:
             raise ValueError("page number '%s' do not exist." % page_num)
-        if item_name not in self.pages['page%d' % page_num]['items']:
+        if item_name not in self.pages['page%d' % page_num][PDFTemplateConstant.PDF_ITEMS]:
             raise ValueError("%s has not item:%s." % (_page_flag, item_name))
 
-        item = self.pages['page%d' % page_num]['items'][item_name]
+        item = self.pages['page%d' % page_num][PDFTemplateConstant.PDF_ITEMS][item_name]
 
         for k, v in kwargs.items():
             item[k] = v
-        item['invalid'] = False
+        item[PDFTemplateConstant.PDF_INVALID] = False
 
     def _set_pdf_info(self):
         """
@@ -1609,7 +1805,7 @@ class PDFTemplateR(object):
                 max_page_num = int(page_num)
 
             page = self.pages[page]
-            if not page['invalid']:
+            if not page[PDFTemplateConstant.PDF_INVALID]:
                 valid_count.append(page_num)
         if max_page_num != len(self.pages) - 1:
             raise ValueError("page num discontinuous.")
@@ -1624,13 +1820,13 @@ class PDFTemplateR(object):
             page = self.pages['page%d' % page_num]
 
             _pages[index] = deepcopy(page)
-            _pages[index]['items'] = []
-            for item_name in page['items']:
-                item = page['items'][item_name]
-                if item['invalid'] is True:
+            _pages[index][PDFTemplateConstant.PDF_ITEMS] = []
+            for item_name in page[PDFTemplateConstant.PDF_ITEMS]:
+                item = page[PDFTemplateConstant.PDF_ITEMS][item_name]
+                if item[PDFTemplateConstant.PDF_INVALID] is True:
                     continue
 
-                _pages[index]['items'].append(item)
+                _pages[index][PDFTemplateConstant.PDF_ITEMS].append(item)
 
             index += 1
 
@@ -1648,7 +1844,7 @@ class PDFTemplateR(object):
         _pages = {}
         for page_num in pages:
             page = pages[page_num]
-            if page['auto_position'] is True:
+            if page[PDFTemplateConstant.PDF_AUTO_POSITION] is True:
                 # 需要自动排版
                 next_page = PDFTemplatePage._calc_position(page)
                 _pages[page_num + add_count] = deepcopy(page)
