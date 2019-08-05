@@ -3,10 +3,9 @@
 import xmltodict
 from copy import deepcopy
 from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
-# from reportlab.graphics import renderPDF
 from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings
-from reportlab.lib.styles import getSampleStyleSheet  # , ParagraphStyle
-from reportlab.platypus import Paragraph  # , SimpleDocTemplate  # , KeepTogether
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.colors import Color
@@ -16,7 +15,7 @@ from reportlab.platypus import Table, TableStyle
 from pdflib.ReportLabLineCharts import ReportLabHorizontalLineChart
 from pdflib.ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVerticalBarChart
 from pdflib.ReportLabPieCharts import ReportLabPieChart
-from pdflib.ReportLabLib import DefaultFontName, list_eval, color_eval
+from pdflib.ReportLabLib import DefaultFontName, list_eval, color_eval, bool_eval
 
 from abc import ABC, abstractmethod
 
@@ -274,7 +273,7 @@ class PDFTemplateItem(ABC):
             d.add(main_title)
 
     @staticmethod
-    def _draw_border(cv, x, y, width, height, color, stroke_width=1):
+    def draw_border(cv, x, y, width, height, color, stroke_width=1):
         d = Drawing(width, height)
         r = Rect(0, 0, width, height, strokeWidth=stroke_width, strokeColor=color, fillColor=Color(0, 0, 0, 0))
         d.add(r)
@@ -283,11 +282,11 @@ class PDFTemplateItem(ABC):
     @abstractmethod
     def draw(self, cv, show_border=False):
         if show_border:
-            self._draw_border(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
-                              self.item_content[PDFTemplateConstant.PDF_RECT][1],
-                              self.item_content[PDFTemplateConstant.PDF_RECT][2],
-                              self.item_content[PDFTemplateConstant.PDF_RECT][3],
-                              Color(1, 0, 0, 1))
+            self.draw_border(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                             self.item_content[PDFTemplateConstant.PDF_RECT][1],
+                             self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                             self.item_content[PDFTemplateConstant.PDF_RECT][3],
+                             Color(1, 0, 0, 1))
 
 
 class PDFTemplateLineChart(PDFTemplateItem):
@@ -1506,7 +1505,7 @@ class PDFTemplatePage(object):
             pass
 
     @staticmethod
-    def _calc_position(page):
+    def calc_position(page):
         """
         自动计算page中的所有Item的位置
         :param page:
@@ -1685,8 +1684,8 @@ class PDFTemplatePage(object):
 
         # 画Page边界
         if show_border:
-            PDFTemplateItem._draw_border(cv, self.rect[0], self.rect[1], self.rect[2], self.rect[3],
-                                         Color(0, 0, 1, 1), 2)
+            PDFTemplateItem.draw_border(cv, self.rect[0], self.rect[1], self.rect[2], self.rect[3],
+                                        Color(0, 0, 1, 1), 2)
 
 
 class PDFTemplateR(object):
@@ -1730,6 +1729,11 @@ class PDFTemplateR(object):
                 raise ValueError("template no %s." % PDFTemplateConstant.PDF_PAGE_SIZE)
 
             template[PDFTemplateConstant.PDF_PAGE_SIZE] = list_eval(template[PDFTemplateConstant.PDF_PAGE_SIZE])
+            if PDFTemplateConstant.PDF_SHOW_BORDER in template:
+                template[PDFTemplateConstant.PDF_SHOW_BORDER] = \
+                    bool_eval(template[PDFTemplateConstant.PDF_SHOW_BORDER])
+            else:
+                template[PDFTemplateConstant.PDF_SHOW_BORDER] = False
 
             for page in template[PDFTemplateConstant.PDF_PAGES]:
                 page = template[PDFTemplateConstant.PDF_PAGES][page]
@@ -1846,12 +1850,12 @@ class PDFTemplateR(object):
             page = pages[page_num]
             if page[PDFTemplateConstant.PDF_AUTO_POSITION] is True:
                 # 需要自动排版
-                next_page = PDFTemplatePage._calc_position(page)
+                next_page = PDFTemplatePage.calc_position(page)
                 _pages[page_num + add_count] = deepcopy(page)
                 while next_page:
                     # 需要分页
                     add_count += 1
-                    _next_page = PDFTemplatePage._calc_position(next_page)
+                    _next_page = PDFTemplatePage.calc_position(next_page)
                     _pages[page_num + add_count] = deepcopy(next_page)
 
                     if _next_page:

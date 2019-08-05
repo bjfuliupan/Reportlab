@@ -368,6 +368,19 @@ def dict_eval(list_str):
     return eval(list_str)
 
 
+def bool_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str == "None":
+        return None
+
+    if list_str != "True" and list_str != "False":
+        raise ValueError("not bool format.")
+
+    return eval(list_str)
+
+
 def color_eval(list_str):
     if not isinstance(list_str, str):
         raise ValueError("not str.")
