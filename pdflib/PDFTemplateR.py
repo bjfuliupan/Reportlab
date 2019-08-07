@@ -1861,19 +1861,19 @@ class PDFTemplateR(object):
     """
 
     def __init__(self, template_file):
-        self.template_file = template_file
+        self._template_file = template_file
 
-        self.template_content = None
-        self.pages = None
-        self.valid_pages = None
-        self.pdf_file = None
-        self.author = None
-        self.title = None
-        self.page_size = None
-        self.coordinate = "left-top"
-        self.header_text = None
-        self.show_border = False
-        self.cv = None
+        self._template_content = None
+        self._pages = None
+        self._valid_pages = None
+        self._pdf_file = None
+        self._author = None
+        self._title = None
+        self._page_size = None
+        self._coordinate = "left-top"
+        self._header_text = None
+        self._show_border = False
+        self._cv = None
 
         self._read_template_file()
 
@@ -1883,7 +1883,7 @@ class PDFTemplateR(object):
         :return:
         """
         try:
-            with open(self.template_file, "r", encoding='UTF-8') as f:
+            with open(self._template_file, "r", encoding='UTF-8') as f:
                 template = f.read()
 
             template = xmltodict.parse(template)['pdf']
@@ -1914,21 +1914,27 @@ class PDFTemplateR(object):
             print(err_info)
             raise ValueError("PDF template file format error.")
 
-        self.template_content = template
-        self.pages = self.template_content[PDFTemplateConstant.PDF_PAGES]
-        self.pdf_file = self.template_content[PDFTemplateConstant.PDF_FILE_NAME]
-        self.page_size = self.template_content[PDFTemplateConstant.PDF_PAGE_SIZE]
+        self._template_content = template
+        self._pages = self._template_content[PDFTemplateConstant.PDF_PAGES]
+        self._pdf_file = self._template_content[PDFTemplateConstant.PDF_FILE_NAME]
+        self._page_size = self._template_content[PDFTemplateConstant.PDF_PAGE_SIZE]
 
-        if PDFTemplateConstant.PDF_AUTHOR in self.template_content:
-            self.author = self.template_content[PDFTemplateConstant.PDF_AUTHOR]
-        if PDFTemplateConstant.PDF_TITLE in self.template_content:
-            self.title = self.template_content[PDFTemplateConstant.PDF_TITLE]
-        if PDFTemplateConstant.PDF_COORDINATE in self.template_content:
-            self.coordinate = self.template_content[PDFTemplateConstant.PDF_COORDINATE]
-        if PDFTemplateConstant.PDF_HEADER_TEXT in self.template_content:
-            self.header_text = self.template_content[PDFTemplateConstant.PDF_HEADER_TEXT]
-        if PDFTemplateConstant.PDF_SHOW_BORDER in self.template_content:
-            self.show_border = self.template_content[PDFTemplateConstant.PDF_SHOW_BORDER]
+        if PDFTemplateConstant.PDF_AUTHOR in self._template_content:
+            self._author = self._template_content[PDFTemplateConstant.PDF_AUTHOR]
+        if PDFTemplateConstant.PDF_TITLE in self._template_content:
+            self._title = self._template_content[PDFTemplateConstant.PDF_TITLE]
+        if PDFTemplateConstant.PDF_COORDINATE in self._template_content:
+            self._coordinate = self._template_content[PDFTemplateConstant.PDF_COORDINATE]
+        if PDFTemplateConstant.PDF_HEADER_TEXT in self._template_content:
+            self._header_text = self._template_content[PDFTemplateConstant.PDF_HEADER_TEXT]
+        if PDFTemplateConstant.PDF_SHOW_BORDER in self._template_content:
+            self._show_border = self._template_content[PDFTemplateConstant.PDF_SHOW_BORDER]
+
+    def set_pdf_file(self, file_name):
+        if not isinstance(file_name, str):
+            raise ValueError("file name is not str.")
+
+        self._pdf_file = file_name
 
     def set_item_data(self, page_num, item_name, **kwargs):
         """
@@ -1939,12 +1945,12 @@ class PDFTemplateR(object):
         :return:
         """
         _page_flag = "page%s" % page_num
-        if _page_flag not in self.pages:
+        if _page_flag not in self._pages:
             raise ValueError("page number '%s' do not exist." % page_num)
-        if item_name not in self.pages['page%d' % page_num][PDFTemplateConstant.PDF_ITEMS]:
+        if item_name not in self._pages['page%d' % page_num][PDFTemplateConstant.PDF_ITEMS]:
             raise ValueError("%s has not item:%s." % (_page_flag, item_name))
 
-        item = self.pages['page%d' % page_num][PDFTemplateConstant.PDF_ITEMS][item_name]
+        item = self._pages['page%d' % page_num][PDFTemplateConstant.PDF_ITEMS][item_name]
 
         for k, v in kwargs.items():
             item[k] = v
@@ -1955,10 +1961,10 @@ class PDFTemplateR(object):
         设置PDF文件的相关属性
         :return:
         """
-        if self.author is not None:
-            self.cv.setAuthor(self.author)
-        if self.title is not None:
-            self.cv.setTitle(self.title)
+        if self._author is not None:
+            self._cv.setAuthor(self._author)
+        if self._title is not None:
+            self._cv.setTitle(self._title)
 
     def _get_valid_pages(self):
         """
@@ -1968,17 +1974,17 @@ class PDFTemplateR(object):
         max_page_num = 0
         valid_count = []
 
-        for page in self.pages:
+        for page in self._pages:
             page_num = int(page.replace("page", ""))
             if page_num < 0:
                 raise ValueError("page num must >= 0.")
             if int(page_num) > max_page_num:
                 max_page_num = int(page_num)
 
-            page = self.pages[page]
+            page = self._pages[page]
             if not page[PDFTemplateConstant.PDF_INVALID]:
                 valid_count.append(page_num)
-        if max_page_num != len(self.pages) - 1:
+        if max_page_num != len(self._pages) - 1:
             raise ValueError("page num discontinuous.")
 
         valid_count = sorted(valid_count)
@@ -1988,7 +1994,7 @@ class PDFTemplateR(object):
         for page_num in valid_count:
             _pages[index] = {}
 
-            page = self.pages['page%d' % page_num]
+            page = self._pages['page%d' % page_num]
 
             _pages[index] = deepcopy(page)
             _pages[index][PDFTemplateConstant.PDF_ITEMS] = []
@@ -2043,22 +2049,22 @@ class PDFTemplateR(object):
         :param pages:
         :return:
         """
-        self.valid_pages = []
+        self._valid_pages = []
 
         for page_num in pages:
             page = pages[page_num]
 
-            page_ins = PDFTemplatePage(page, page_num, self.page_size, coordinate=self.coordinate,
-                                       header_text=self.header_text)
+            page_ins = PDFTemplatePage(page, page_num, self._page_size, coordinate=self._coordinate,
+                                       header_text=self._header_text)
 
-            self.valid_pages.append(page_ins)
+            self._valid_pages.append(page_ins)
 
     def draw(self):
         """
         生成PDF文件
         :return:
         """
-        self.cv = canvas.Canvas(self.pdf_file, pagesize=self.page_size, bottomup=1)
+        self._cv = canvas.Canvas(self._pdf_file, pagesize=self._page_size, bottomup=1)
 
         self._set_pdf_info()
 
@@ -2067,15 +2073,15 @@ class PDFTemplateR(object):
         self._create_page_object(pages)
 
         first_page = True
-        for page_ins in self.valid_pages:
+        for page_ins in self._valid_pages:
             if first_page is False:
                 # 新开一页
-                self.cv.showPage()
+                self._cv.showPage()
             if first_page is True:
                 first_page = False
 
             # 画当前页
-            page_ins.draw(self.cv, self.show_border)
+            page_ins.draw(self._cv, self._show_border)
 
-        self.cv.save()
-        self.cv = None
+        self._cv.save()
+        self._cv = None
