@@ -78,6 +78,7 @@ class PDFTemplateConstant(object):
     PDF_ITEM_TYPE_TEXT = "text"
     PDF_ITEM_TYPE_PARAGRAPH = "paragraph"
     PDF_ITEM_TYPE_TABLE = "table"
+    PDF_ITEM_TYPE_BOX = "box-container"
 
     def __init__(self):
         pass
@@ -186,8 +187,8 @@ class PDFTemplateItem(ABC):
             self.item_content[PDFTemplateConstant.PDF_RECT][3] = height
 
     @staticmethod
-    def auto_set_height(item):
-        pass
+    def auto_calc_height(item, set_flag=True):
+        return item[PDFTemplateConstant.PDF_RECT][3]
 
     @staticmethod
     def split_by_height(items, index, page_height):
@@ -933,13 +934,18 @@ class PDFTemplateParagraph(PDFTemplateItem):
         return h
 
     @staticmethod
-    def auto_set_height(item):
+    def auto_calc_height(item, set_flag=True):
         """
         自动设置高度
         :param item:
+        :param set_flag:
         :return:
         """
-        item[PDFTemplateConstant.PDF_RECT][3] = PDFTemplateParagraph._calc_paragraph_height(item)
+        h = PDFTemplateParagraph._calc_paragraph_height(item)
+        if set_flag:
+            item[PDFTemplateConstant.PDF_RECT][3] = h
+
+        return h
 
     @staticmethod
     def _split_paragraph_text_by_height(item, split_height):
@@ -1185,13 +1191,18 @@ class PDFTemplateTable(PDFTemplateItem):
         return h
 
     @staticmethod
-    def auto_set_height(item):
+    def auto_calc_height(item, set_flag=True):
         """
         自动计算表格高度
         :param item:
+        :param set_flag:
         :return:
         """
-        item[PDFTemplateConstant.PDF_RECT][3] = PDFTemplateTable._calc_table_height(item)
+        h = PDFTemplateTable._calc_table_height(item)
+        if set_flag:
+            item[PDFTemplateConstant.PDF_RECT][3] = h
+
+        return h
 
     @staticmethod
     def _cut_table_rows(item, split_height):
@@ -1316,20 +1327,176 @@ class PDFTemplateTable(PDFTemplateItem):
                  self.item_content[PDFTemplateConstant.PDF_RECT][1])
 
 
+class PDFTemplateBox(PDFTemplateItem):
+
+    def __init__(self, item_content):
+        PDFTemplateItem.__init__(self, item_content)
+
+    @staticmethod
+    def format_content(item_content):
+        PDFTemplateItem.format_content(item_content)
+
+    @staticmethod
+    def args_check(item_content):
+        PDFTemplateItem.args_check(item_content)
+
+    @staticmethod
+    def _calc_box_height(item):
+        """
+        计算BOX的高度
+        :param item:
+        :return:
+        """
+        box_width = item[PDFTemplateConstant.PDF_RECT][2]
+        x_padding = item[PDFTemplateConstant.PDF_PAGE_PADDING_X]
+        y_padding = item[PDFTemplateConstant.PDF_PAGE_PADDING_Y]
+
+        cur_x = 0
+        cur_y = 0
+        next_y = 0
+        for it in item[PDFTemplateConstant.PDF_ITEMS]:
+            it = item[PDFTemplateConstant.PDF_ITEMS][it]
+            item_type = it[PDFTemplateConstant.PDF_ITEM_TYPE]
+
+            # 自动计算Item的高度
+            item_height = PDFTemplateItemClass[item_type].auto_calc_height(it, False)
+            item_width = it[PDFTemplateConstant.PDF_RECT][2]
+
+            margin_left = it[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT]
+            margin_right = it[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT]
+            margin_top = it[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP]
+            margin_bottom = it[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM]
+
+            if cur_x != 0 and cur_x + item_width + margin_left + margin_right > box_width:
+                # 需要换行显示
+                cur_x = item_width + x_padding + margin_left + margin_right
+                cur_y = next_y
+                next_y += item_height + y_padding + margin_top + margin_bottom
+            else:
+                # 不需要换行，从左到右依次放置
+                cur_x += item_width + x_padding + margin_left + margin_right
+                if cur_y + item_height + y_padding + margin_top + margin_bottom > next_y:
+                    next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
+
+        return next_y
+
+    @staticmethod
+    def auto_calc_height(item, set_flag=True):
+        h = PDFTemplateBox._calc_box_height(item)
+        if set_flag:
+            item[PDFTemplateConstant.PDF_RECT][3] = h
+
+        return h
+
+    @staticmethod
+    def split_by_height(items, x_index, page_height):
+        # box_item = items[x_index]
+        # next_box_item = deepcopy(box_item)
+        #
+        # box_width = box_item[PDFTemplateConstant.PDF_RECT][2]
+        # box_height = box_item[PDFTemplateConstant.PDF_RECT][3]
+        # x_padding = box_item[PDFTemplateConstant.PDF_PAGE_PADDING_X]
+        # y_padding = box_item[PDFTemplateConstant.PDF_PAGE_PADDING_Y]
+        # align_type = box_item[PDFTemplateConstant.PDF_ALIGN_TYPE]
+        #
+        # cur_x = box_item[PDFTemplateConstant.PDF_RECT][0]
+        # cur_y = box_item[PDFTemplateConstant.PDF_RECT][1]
+        # next_y = cur_y
+        # next_page_flag = False
+        # index = 0
+        # next_page_index = 0
+        # row_start = 0
+        #
+        # for item in box_item[PDFTemplateConstant.PDF_ITEMS]:
+        #     item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
+        #
+        #     # 自动计算Item的高度
+        #     PDFTemplateItemClass[item_type].auto_calc_height(item)
+        #
+        #     item_width = item[PDFTemplateConstant.PDF_RECT][2]
+        #     item_height = item[PDFTemplateConstant.PDF_RECT][3]
+        #
+        #     margin_left = item[PDFTemplateConstant.PDF_ITEM_MARGIN_LEFT]
+        #     margin_right = item[PDFTemplateConstant.PDF_ITEM_MARGIN_RIGHT]
+        #     margin_top = item[PDFTemplateConstant.PDF_ITEM_MARGIN_TOP]
+        #     margin_bottom = item[PDFTemplateConstant.PDF_ITEM_MARGIN_BOTTOM]
+        #
+        #     if cur_x != 0 and cur_x + item_width + margin_left + margin_right > page_width:
+        #         # 需要换行显示
+        #
+        #         # 对本行中的Item进行对齐
+        #         PDFTemplatePage._calc_position_align(page, page_width, x_padding, row_start, index, align_type)
+        #
+        #         next_page_index = index
+        #         row_start = index
+        #         item[PDFTemplateConstant.PDF_RECT][0] = margin_left
+        #         item[PDFTemplateConstant.PDF_RECT][1] = next_y + margin_top
+        #         cur_x = item_width + x_padding + margin_left + margin_right
+        #         cur_y = next_y
+        #         next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
+        #     else:
+        #         # 不需要换行，从左到右依次放置
+        #
+        #         item[PDFTemplateConstant.PDF_RECT][0] = cur_x + margin_left
+        #         item[PDFTemplateConstant.PDF_RECT][1] = cur_y + margin_top
+        #         cur_x += item_width + x_padding + margin_left + margin_right
+        #         if cur_y + item_height + y_padding + margin_top + margin_bottom > next_y:
+        #             next_y = cur_y + item_height + y_padding + margin_top + margin_bottom
+        #
+        #     if next_y > page_height:
+        #         # 需要分页显示
+        #
+        #         # 尝试对当前Item进行拆分
+        #         split_flag = PDFTemplateItemClass[item_type].split_by_height(
+        #             page[PDFTemplateConstant.PDF_ITEMS], index, page_height
+        #         )
+        #         if split_flag:
+        #             # 拆分成功
+        #             next_page_index += 1
+        #             index += 1
+        #         if split_flag or cur_y != 0:
+        #             # 拆分成功，或者当前Item不是当前页中的第一个，则跳出循环，剩下的Item移到下一页处理
+        #             next_page_flag = True
+        #             break
+        #
+        #     index += 1
+        # # 处理最后一行的对齐
+        # PDFTemplatePage._calc_position_align(page, page_width, x_padding, row_start, index, align_type)
+        #
+        # if next_page_flag:
+        #     # 取出需要放到下一页的Item，并返回
+        #     next_page[PDFTemplateConstant.PDF_ITEMS] = page[PDFTemplateConstant.PDF_ITEMS][next_page_index:]
+        #     page[PDFTemplateConstant.PDF_ITEMS] = page[PDFTemplateConstant.PDF_ITEMS][:next_page_index]
+        #     return next_page
+
+        return False
+
+    @abstractmethod
+    def draw(self, cv, show_border=False):
+        if show_border:
+            self.draw_border(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
+                             self.item_content[PDFTemplateConstant.PDF_RECT][1],
+                             self.item_content[PDFTemplateConstant.PDF_RECT][2],
+                             self.item_content[PDFTemplateConstant.PDF_RECT][3],
+                             Color(1, 0, 0, 1))
+
+
+# 各Item对应的类
+PDFTemplateItemClass = {
+    PDFTemplateConstant.PDF_ITEM_TYPE_LINE_CHART: PDFTemplateLineChart,
+    PDFTemplateConstant.PDF_ITEM_TYPE_BAR_CHART: PDFTemplateBarChart,
+    PDFTemplateConstant.PDF_ITEM_TYPE_PIE_CHART: PDFTemplatePieChart,
+    PDFTemplateConstant.PDF_ITEM_TYPE_PARAGRAPH: PDFTemplateParagraph,
+    PDFTemplateConstant.PDF_ITEM_TYPE_TEXT: PDFTemplateText,
+    PDFTemplateConstant.PDF_ITEM_TYPE_TABLE: PDFTemplateTable,
+    PDFTemplateConstant.PDF_ITEM_TYPE_BOX: PDFTemplateBox
+}
+
+
 class PDFTemplatePage(object):
     """
     此类负责组织Page中的各Item。
     """
-
-    # 各Item对应的类
-    ItemClass = {
-        PDFTemplateConstant.PDF_ITEM_TYPE_LINE_CHART: PDFTemplateLineChart,
-        PDFTemplateConstant.PDF_ITEM_TYPE_BAR_CHART: PDFTemplateBarChart,
-        PDFTemplateConstant.PDF_ITEM_TYPE_PIE_CHART: PDFTemplatePieChart,
-        PDFTemplateConstant.PDF_ITEM_TYPE_PARAGRAPH: PDFTemplateParagraph,
-        PDFTemplateConstant.PDF_ITEM_TYPE_TEXT: PDFTemplateText,
-        PDFTemplateConstant.PDF_ITEM_TYPE_TABLE: PDFTemplateTable
-    }
 
     def __init__(self, page_content, page_num, page_size, **kw):
         self.items = []
@@ -1423,7 +1590,7 @@ class PDFTemplatePage(object):
                     item = page_content[PDFTemplateConstant.PDF_ITEMS][item]
                 item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
 
-                PDFTemplatePage.ItemClass[item_type].format_content(item)
+                PDFTemplateItemClass[item_type].format_content(item)
 
     @staticmethod
     def args_check(page_content):
@@ -1448,7 +1615,7 @@ class PDFTemplatePage(object):
                 item = page_content[PDFTemplateConstant.PDF_ITEMS][item]
             item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
 
-            PDFTemplatePage.ItemClass[item_type].args_check(item)
+            PDFTemplateItemClass[item_type].args_check(item)
 
     def add_item(self, item_content):
         """
@@ -1462,7 +1629,7 @@ class PDFTemplatePage(object):
             raise ValueError("item has not property: %s." % PDFTemplateConstant.PDF_ITEM_TYPE)
 
         # 生成Item实例化对象
-        item_ins = self.ItemClass[item_content[PDFTemplateConstant.PDF_ITEM_TYPE]](item_content)
+        item_ins = PDFTemplateItemClass[item_content[PDFTemplateConstant.PDF_ITEM_TYPE]](item_content)
         self.items.append(item_ins)
 
     @staticmethod
@@ -1532,7 +1699,7 @@ class PDFTemplatePage(object):
             item_type = item[PDFTemplateConstant.PDF_ITEM_TYPE]
 
             # 自动计算Item的高度
-            PDFTemplatePage.ItemClass[item_type].auto_set_height(item)
+            PDFTemplateItemClass[item_type].auto_calc_height(item)
 
             item_width = item[PDFTemplateConstant.PDF_RECT][2]
             item_height = item[PDFTemplateConstant.PDF_RECT][3]
@@ -1568,7 +1735,7 @@ class PDFTemplatePage(object):
                 # 需要分页显示
 
                 # 尝试对当前Item进行拆分
-                split_flag = PDFTemplatePage.ItemClass[item_type].split_by_height(
+                split_flag = PDFTemplateItemClass[item_type].split_by_height(
                     page[PDFTemplateConstant.PDF_ITEMS], index, page_height
                 )
                 if split_flag:
