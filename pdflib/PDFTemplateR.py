@@ -1763,7 +1763,8 @@ class PDFTemplatePage(object):
 
             if item[PDFTemplateConstant.PDF_ITEM_TYPE] == PDFTemplateConstant.PDF_ITEM_TYPE_BOX:
                 _items = []
-                PDFTemplateBox.list_items(item[PDFTemplateConstant.PDF_ITEMS], _items)
+                PDFTemplateItemClass[item[PDFTemplateConstant.PDF_ITEM_TYPE]].list_items(
+                    item[PDFTemplateConstant.PDF_ITEMS], _items)
                 item[PDFTemplateConstant.PDF_ITEMS] = deepcopy(_items)
 
             items_list.append(item)

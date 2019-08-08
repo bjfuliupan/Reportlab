@@ -34,16 +34,26 @@
                             <font_color>Color(0.5,0.5,0.5,1)</font_color>
                             <font_size>20</font_size>
                         </title>
-                        <description>
-                            <!--必填项-->
-                            <type>paragraph</type>
-                            <rect>[0, 0, 450, 0]</rect>
-                            <content> </content>
-                            <style>BodyText</style>
-                            <!--必填项-->
-                            <font_size>12</font_size>
-                            <indent_flag>1</indent_flag>
-                        </description>
+                        <box2>
+                            <type>box-container</type>
+                            <rect>[0, 0, 450, 200]</rect>
+                            <x-padding>20</x-padding>
+                            <y-padding>20</y-padding>
+                            <align-type>middle</align-type>
+                            <invalid>False</invalid>
+                            <items>
+                                <description>
+                                    <!--必填项-->
+                                    <type>paragraph</type>
+                                    <rect>[0, 0, 450, 0]</rect>
+                                    <content> </content>
+                                    <style>BodyText</style>
+                                    <!--必填项-->
+                                    <font_size>12</font_size>
+                                    <indent_flag>1</indent_flag>
+                                </description>
+                            </items>
+                        </box2>
                     </items>
                 </box1>
                 <table>
