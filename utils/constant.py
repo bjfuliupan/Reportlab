@@ -1,5 +1,3 @@
-
-
 class LogConstant:
     FORMAT_DETAIL_MAPPING = {
         "SENSOR_INFO_WORK_TIME": "开关机记录日志",
@@ -57,12 +55,21 @@ class LogConstant:
         "SENSOR_CREDIBLE_PORT": "可信端口日志",
         "SENSOR_CREDIBLE_DATA": "可信数据日志",
         "SENSOR_PSYSTEM_FILE": "Linux系统应用保护日志",
+        "SENSOR_ALARM_MSG": "探针离线报警",
+        "SENSOR_NET_SHART": "网络共享日志",
+        "SENSOR_POLICY_UPDATE_DAILY": "策略更新日志",
         "USB_IN": "U盘拷入",
         "USB_OUT": "U盘拷出",
         "SEC_USB_IN": "安全U盘拷入",
         "SEC_USB_OUT": "安全U盘拷出",
-        "SENSOR_ALARM_MSG": "探针离线报警",
-        "SENSOR_NET_SHART": "网络共享日志"
+        "CD_IN": "CD拷入",
+        "CD_OUT": "CD拷出",
+        "SHARE_IN": "共享服务器拷入",
+        "SHARE_OUT": "共享服务器拷出",
+        "PRINT": "打印",
+        "EXTERNAL": "外部互传",
+        "online": "在线",
+        "offline": "离线",
     }
 
     CATAEGORY_TIME_FORMAT = "%Y-%m-%d"
@@ -70,3 +77,157 @@ class LogConstant:
     ES_LOG_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
     PAYLOAD_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000"
+
+
+class Case:
+    report = {
+        "eb318a1caeb411e9b4740242edef7f35": {
+            "report_name": "test",
+            "report_format": "pdf",
+            "timed": 1,
+            "send_date": "0 * * * 1",
+            "data_scope": "week",
+            "sensor_group_ids": "",
+            "send_mail": "",
+            "update_time": "2019-07-26 11:05:33",
+            "create_time": "2019-07-26 11:05:33"
+        }
+    }
+
+    report_detail = {
+        "eb318a1caeb411e9b4740242edef7f35": [
+            {
+                "custom_name": "host",
+                "page_source_name": "主机运行日志",
+                "page_source_url": "/host_log?"
+                                   "tab=1&"
+                                   "type=SENSOR_MULTIPLE_OS_BOOT,SENSOR_VM_INSTALLED,SENSOR_INFO_WORK_TIME,"
+                                   "SENSOR_SOFTWARE_CHANGE,SENSOR_HARDWARE_CHANGE,SENSOR_SERVICECHANGE,"
+                                   "SENSOR_SAFEMODE_BOOT",
+                "sort_number": 0,
+            },
+            {
+                "custom_name": "123",
+                "page_source_name": "违规定义日志",
+                "page_source_url": "/host_security_log?tab=1",
+                "sort_number": 1,
+            },
+            {
+                "custom_name": "111",
+                "page_source_name": "违规详情日志",
+                "page_source_url": "/host_security_log?tab=2",
+                "sort_number": 2,
+            },
+            {
+                "custom_name": "222",
+                "page_source_name": "其他安全日志",
+                "page_source_url": "/host_security_log?tab=3",
+                "sort_number": 3,
+            },
+            {
+                "custom_name": "访问管控策略日志",
+                "page_source_name": "访问管控策略日志",
+                "page_source_url": "/network_isolation_log?tab=1",
+                "sort_number": 4,
+            },
+            {
+                "custom_name": "流量管控策略日志",
+                "page_source_name": "流量管控策略日志",
+                "page_source_url": "/network_isolation_log?tab=2",
+                "sort_number": 5,
+            },
+            {
+                "custom_name": "平均流量统计",
+                "page_source_name": "平均流量统计",
+                "page_source_url": "/network_isolation_log?tab=3&type=1",
+                "sort_number": 5,
+            },
+            {
+                "custom_name": "平均流量统计",
+                "page_source_name": "平均流量统计",
+                "page_source_url": "/network_isolation_log?tab=3&type=2",
+                "sort_number": 6,
+            },
+            {
+                "custom_name": "端口开放管理日志",
+                "page_source_name": "端口开放管理日志",
+                "page_source_url": "/port_log?",
+                "sort_number": 7,
+            },
+            {
+                "custom_name": "应用安全基线日志",
+                "page_source_name": "应用安全基线日志",
+                "page_source_url": "/baseline_log?&type=SENSOR_CREDIBLE_APP",
+                "sort_number": 8,
+            },
+            # {
+            #     "custom_name": "应用安全基线日志",
+            #     "page_source_name": "应用安全基线日志",
+            #     "page_source_url": "/baseline_log?&type=SENSOR_CREDIBLE_NETWORK",
+            #     "sort_number": 9,
+            # },
+            # {
+            #     "custom_name": "应用安全基线日志",
+            #     "page_source_name": "应用安全基线日志",
+            #     "page_source_url": "/baseline_log?&type=SENSOR_CREDIBLE_PORT",
+            #     "sort_number": 10,
+            # },
+            # {
+            #     "custom_name": "应用安全基线日志",
+            #     "page_source_name": "应用安全基线日志",
+            #     "page_source_url": "/baseline_log?&type=SENSOR_CREDIBLE_DATA",
+            #     "sort_number": 11,
+            # },
+            # {
+            #     "custom_name": "应用安全基线日志",
+            #     "page_source_name": "应用安全基线日志",
+            #     "page_source_url": "/baseline_log?&type=SENSOR_CREDIBLE_FILE",
+            #     "sort_number": 12,
+            # },
+            # {
+            #     "custom_name": "关键文件分析日志",
+            #     "page_source_name": "关键文件分析日志",
+            #     "page_source_url": "/key_file_log?",
+            #     # TODO: 从tab_file_analysis获取全部uuid
+            #     "uuid": ["8b79218ea23111e996490cc47ab4d1a4"],
+            #     "sort_number": 13,
+            # },
+            {
+                "custom_name": "文件出入日志",
+                "page_source_name": "文件"
+                                    "出入日志",
+                "page_source_url": "/file_log?&type=USB",
+                "sort_number": 14,
+            },
+            {
+                "custom_name": "文件出入日志",
+                "page_source_name": "文件出入日志",
+                "page_source_url": "/file_log?&type=CD",
+                "sort_number": 15,
+            },
+            {
+                "custom_name": "文件出入日志",
+                "page_source_name": "文件出入日志",
+                "page_source_url": "/file_log?&type=SHARE",
+                "sort_number": 16,
+            },
+            {
+                "custom_name": "文件出入日志",
+                "page_source_name": "文件出入日志",
+                "page_source_url": "/file_log?&type=PRINT",
+                "sort_number": 17,
+            },
+            {
+                "custom_name": "文件出入日志",
+                "page_source_name": "文件出入日志",
+                "page_source_url": "/file_log?&type=EXTERNAL",
+                "sort_number": 18,
+            },
+            {
+                "custom_name": "运行日志",
+                "page_source_name": "运行日志",
+                "page_source_url": "/zmw_log?tab=1",
+                "sort_number": 19,
+            },
+        ]
+    }

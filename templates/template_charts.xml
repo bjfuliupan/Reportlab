@@ -6,7 +6,7 @@
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
-    <show_border>True</show_border>
+    <!--<show_border>True</show_border>-->
     <pages>
         <page0>
             <rect>[90, 80, 450, 731]</rect>
@@ -210,6 +210,16 @@
                     <!--必填项-->
                     <indent_flag>1</indent_flag>
                 </section_desc4>
+
+                <sensor_top_SENSOR_SAFEMODE_BOOT>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 200, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title_font_size>10</main_title_font_size>
+                </sensor_top_SENSOR_SAFEMODE_BOOT>
 
                 <sensor_top_SENSOR_MULTIPLE_OS_BOOT>
                     <!--必填项-->
@@ -716,9 +726,9 @@
                       <!--必填项-->
                       <type>paragraph</type>
                       <rect>[0, 0, 450, 0]</rect>
-                     <content> </content>
-                    <!--必填项-->
-                    <indent_flag>1</indent_flag>
+                      <content> </content>
+                       <!--必填项-->
+                       <indent_flag>1</indent_flag>
                  </netflow_violation_desc>
 
                  <netflow_violation_trend_line_chart>
@@ -1337,7 +1347,7 @@
 
                 <!-- 文件共享访问 -->
 
-                <file_operate_heading_NET_SHARE>
+                <file_operate_heading_SHARE>
                     <!-- 文件出入日志 NET_SHARE标题-->
                     <type>paragraph</type>
                     <style>Heading2</style>
@@ -1345,9 +1355,9 @@
                     <content> </content>
                     <!--必填项-->
                     <indent_flag>0</indent_flag>
-                </file_operate_heading_NET_SHARE>
+                </file_operate_heading_SHARE>
 
-                <file_operate_num_line_chart_NET_SHARE>
+                <file_operate_num_line_chart_SHARE>
                     <!-- 文件操作 NET_SHARE 统计数量 -->
                     <type>line_chart</type>
                     <rect>[0, 0, 450, 200]</rect>
@@ -1357,9 +1367,9 @@
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>日期</x_desc>
                     <y_desc>数量</y_desc>
-                </file_operate_num_line_chart_NET_SHARE>
+                </file_operate_num_line_chart_SHARE>
 
-                <file_operate_flow_line_chart_NET_SHARE>
+                <file_operate_flow_line_chart_SHARE>
                     <!--文件操作 NET_SHARE 统计流量-->
                     <type>line_chart</type>
                     <rect>[0, 0, 450, 200]</rect>
@@ -1369,40 +1379,40 @@
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>日期</x_desc>
                     <y_desc>流量</y_desc>
-                </file_operate_flow_line_chart_NET_SHARE>
+                </file_operate_flow_line_chart_SHARE>
 
-                <file_operate_sensor_group_num_top_NET_SHARE>
+                <file_operate_sensor_group_num_top_SHARE>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
 
                     <bar_style>vertical</bar_style>
                     <data> </data>
 
-                </file_operate_sensor_group_num_top_NET_SHARE>
+                </file_operate_sensor_group_num_top_SHARE>
 
-                <file_operate_sensor_group_flow_top_NET_SHARE>
+                <file_operate_sensor_group_flow_top_SHARE>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
 
                     <bar_style>vertical</bar_style>
                     <data> </data>
-                </file_operate_sensor_group_flow_top_NET_SHARE>
+                </file_operate_sensor_group_flow_top_SHARE>
 
-                <file_operate_sensor_num_top_NET_SHARE>
+                <file_operate_sensor_num_top_SHARE>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
 
                     <bar_style>vertical</bar_style>
                     <data> </data>
-                </file_operate_sensor_num_top_NET_SHARE>
+                </file_operate_sensor_num_top_SHARE>
 
-                <file_operate_sensor_flow_top_NET_SHARE>
+                <file_operate_sensor_flow_top_SHARE>
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
 
                     <bar_style>vertical</bar_style>
                     <data> </data>
-                </file_operate_sensor_flow_top_NET_SHARE>
+                </file_operate_sensor_flow_top_SHARE>
 
                 <!-- 打印统计-->
 
@@ -1521,6 +1531,73 @@
             </items>
 
         </page7>
+
+        <page8>
+            <!-- 运行日志 -->
+            <rect>[90, 80, 450, 731]</rect>
+            <auto_position>True</auto_position>
+            <x-padding>10</x-padding>
+            <y-padding>10</y-padding>
+            <align-type>middle</align-type>
+
+            <items>
+                <running_heading>
+                    <!-- 运行日志 标题-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <indent_flag>0</indent_flag>
+                </running_heading>
+
+                <running_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <indent_flag>1</indent_flag>
+                </running_desc>
+
+                <sensor_client_running_state_line_chart>
+                    <!-- 至明卫历史状态对比分析 -->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <bar_style>vertical</bar_style>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>至明卫历史状态对比分析</main_title>
+                    <cat_label_all>True</cat_label_all>
+                    <cat_label_angle>30</cat_label_angle>
+                    <style>stacked</style>
+                </sensor_client_running_state_line_chart>
+
+                <aver_online_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>平均在线数量探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </aver_online_sensor_group_top10>
+
+                <aver_offline_sensor_group_top10>
+                     <type>bar_chart</type>
+                     <rect>[0, 0, 200, 200]</rect>
+                     <bar_style>horizontal</bar_style>
+                     <data> </data>
+                     <!--必填项-->
+                     <main_title>平均离线数量探针组Top10</main_title>
+                     <cat_label_all>True</cat_label_all>
+                     <cat_label_angle>0</cat_label_angle>
+                 </aver_offline_sensor_group_top10>
+
+            </items>
+        </page8>
 
     </pages>
 </pdf>
