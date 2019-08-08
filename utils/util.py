@@ -1,15 +1,16 @@
 import collections
+import functools
+import json
+import time
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-import json
-import requests
-from utils import constant
-from datetime import timedelta
-import functools
-import time
-from urllib.parse import urlparse
 from urllib.parse import parse_qs
+from urllib.parse import urlparse
+
+import requests
+
+from utils import constant
 
 
 def datetime_to_str(dt: datetime) -> str:
@@ -32,7 +33,7 @@ def time_with_Z_to_datetime(z_time: str) -> datetime:
 
 def init_data_for_pdf_with_interval(days_interval: int) -> collections.defaultdict:
     # 初始化图数据，初始list中元素数量为 end_time - start_time + 1
-    return collections.defaultdict(lambda: [0 for _ in range(days_interval+1)])
+    return collections.defaultdict(lambda: [0 for _ in range(days_interval + 1)])
 
 
 def init_data_for_pdf_with_default_int() -> collections.defaultdict:
@@ -52,8 +53,8 @@ def pretty_print(data):
         print(data)
 
 
-def payload_time_to_datetime(payload_time: str) -> datetime:
-    return datetime.strptime(payload_time, constant.LogConstant.PAYLOAD_TIME_FORMAT)
+def payload_time_to_datetime(payload_time: str) -> datetime.date:
+    return datetime.strptime(payload_time, constant.LogConstant.PAYLOAD_TIME_FORMAT).date()
 
 
 def log_format_to_detail(log_format: str) -> str:
@@ -66,9 +67,9 @@ def datetime_to_category_time(target_time: datetime) -> str:
     return target_time.strftime(constant.LogConstant.CATAEGORY_TIME_FORMAT)
 
 
-def adjust_es_log_time_to_datetime(log_time: str) -> datetime:
+def adjust_es_log_time_to_datetime(log_time: str) -> datetime.date:
     # 从ES获取的日志格式形如： 2019-07-03T16:00:00.000Z， 且时间滞后8小时，需要重新格式化和校准
-    return datetime.strptime(log_time, constant.LogConstant.ES_LOG_TIME_FORMAT) + timedelta(hours=8)
+    return (datetime.strptime(log_time, constant.LogConstant.ES_LOG_TIME_FORMAT) + timedelta(hours=8)).date()
 
 
 def cal_time_interval(base_time: datetime, target_time, target_time_format=None) -> int:
