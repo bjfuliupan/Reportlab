@@ -10,11 +10,12 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.colors import Color
 from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab.platypus import Table, TableStyle
+from reportlab.platypus import TableStyle
 
 from pdflib.ReportLabLineCharts import ReportLabHorizontalLineChart
 from pdflib.ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVerticalBarChart
 from pdflib.ReportLabPieCharts import ReportLabPieChart
+from pdflib.ReportLabTable import ReportLabTable
 from pdflib.ReportLabLib import DefaultFontName, list_eval, color_eval, bool_eval
 
 from abc import ABC, abstractmethod
@@ -1217,10 +1218,10 @@ class PDFTemplateTable(PDFTemplateItem):
         """
         ret = 0
         t = PDFTemplateTable._draw_table(item)
-        t.wrap(1, 1)
+        row_heights = t.get_row_heights()
 
         curr_y = 0
-        for idx, val in enumerate(t._rowHeights):
+        for idx, val in enumerate(row_heights):
             curr_y += val
             if curr_y >= split_height:
                 ret = idx
@@ -1308,7 +1309,7 @@ class PDFTemplateTable(PDFTemplateItem):
         ])
 
         # merage data
-        table = Table(data, colWidths=col_widths)
+        table = ReportLabTable(data, colWidths=col_widths)
         table.setStyle(ts)
 
         return table
