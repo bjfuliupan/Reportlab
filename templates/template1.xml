@@ -18,7 +18,7 @@
             <items>
                 <box1>
                     <type>box-container</type>
-                    <rect>[0, 0, 100, 200]</rect>
+                    <rect>[0, 0, 450, 200]</rect>
                     <x-padding>20</x-padding>
                     <y-padding>20</y-padding>
                     <align-type>middle</align-type>
