@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import math
 from reportlab.lib import colors
 from reportlab.lib.attrmap import AttrMap
 from reportlab.lib.attrmap import AttrMapValue
@@ -9,7 +10,7 @@ from reportlab.lib.validators import isBoolean, OneOf, isListOfStringsOrNone, is
 from reportlab.graphics.shapes import Rect
 from reportlab.graphics.shapes import String, STATE_DEFAULTS
 from pdflib.ReportLabLib import ChartsLegend, ALL_COLORS, XCategoryAxisWithDesc, YValueAxisWithDesc, DefaultFontName
-# from reportlab.pdfbase.pdfmetrics import stringWidth
+from reportlab.pdfbase.pdfmetrics import stringWidth
 
 
 class LegendedHorizontalLineChart(HorizontalLineChart):
@@ -36,7 +37,8 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
         titleMainFontName=AttrMapValue(isString, desc='main title font name.'),
         titleMainFontSize=AttrMapValue(isNumberInRange(0, 100), desc='main title font size.'),
         titleMainFontColor=AttrMapValue(isColor, desc='main title font color.'),
-        legendFontSize=AttrMapValue(isNumberInRange(0, 100), desc='legend text font size.')
+        legendFontSize=AttrMapValue(isNumberInRange(0, 100), desc='legend text font size.'),
+        labels_height=AttrMapValue(isNumberInRange(0, 100), desc='the max height of x-labels.')
     )
 
     def __init__(self):
@@ -54,19 +56,22 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
 
         self.legendFontSize = 7
 
+        self.labels_height = 0
+
     def set_line_color(self):
         if self.legendCategoryNames is None:
             self.legendCategoryNames = []
         legend_num = len(self.legendCategoryNames)
         data_num = len(self.data)
         for i in range(data_num):
-            self.lines[i].strokeColor = ALL_COLORS[i]
+            line = self.lines[i]
+            line.strokeColor = ALL_COLORS[i]
             if i >= legend_num:
                 self.legendCategoryNames.append("unknown")
 
         legend_num = len(self.legendCategoryNames)
         temp_category_names = self.legendCategoryNames[:]
-        if legend_num > 1:
+        if legend_num >= 1:
             self.legendCategoryNames = []
             color_name_pairs = [(0, name) for name in temp_category_names]
 
@@ -86,10 +91,50 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
             if len(row_names) > 0:
                 self.legendCategoryNames.append(row_names)
         else:
-            self.legendCategoryNames = [temp_category_names]
+            self.legendCategoryNames = temp_category_names
+
+    def _calc_labels_size(self):
+        max_width = 0
+        index = 0
+        for label_text in self.categoryAxis.categoryNames:
+            tmp_width = stringWidth(label_text, self.categoryAxis.labels.fontName, self.categoryAxis.labels.fontSize)
+            if tmp_width > max_width:
+                max_width = tmp_width
+
+            if self.categoryAxis.labels[index].angle % 90 == 0:
+                self.categoryAxis.labels[index].dx = \
+                    int(tmp_width * math.cos(self.categoryAxis.labels[index].angle / 180 * math.pi) / 2) - \
+                    int(self.categoryAxis.labels.fontSize *
+                        math.sin(self.categoryAxis.labels[index].angle / 180 * math.pi)
+                        / 2)
+            index += 1
+
+        self.labels_height = \
+            int(max_width * math.sin(self.categoryAxis.labels.angle / 180 * math.pi)) + \
+            int(self.categoryAxis.labels.fontSize * math.cos(self.categoryAxis.labels.angle / 180 * math.pi))
+
+        return self.labels_height
+
+    def _adjust_positon(self):
+        self.x = 30
+        if self.labels_height > 20:
+            self.y = self.labels_height + 10
+        else:
+            self.y = 30
+        self.width -= self.x + 30
+        self.height -= self.y + self.titleMainFontSize + 20
 
     def draw(self):
+        self._calc_labels_size()
+        self._adjust_positon()
+
         self.set_line_color()
+        if self.drawLegend is True:
+            if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
+                row_count = len(self.legendCategoryNames) + 1
+                self.height -= row_count * self.legendFontSize
+                self.y += row_count * self.legendFontSize
+
         g = HorizontalLineChart.draw(self)
 
         if self.drawLegend:
@@ -98,8 +143,13 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
 
                 legend.positionType = self.legendPositionType
                 if self.legendPositionType != "null":
-                    legend.backgroundRect = \
-                        Rect(self.x, self.y - (i * int(self.legendFontSize * 1.5)), self.width, self.height)
+                    if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
+                        legend.backgroundRect = \
+                            Rect(self.x, self.y + legend.bottom_gap - self.labels_height - 15 - ((i+1) * legend.fontSize),
+                                 self.width, self.height)
+                    else:
+                        legend.backgroundRect = Rect(self.x, self.y - (i * legend.fontSize * 1.2),
+                                                     self.width, self.height)
 
                 legend.adjustX = self.legendAdjustX
                 legend.adjustY = self.legendAdjustY
@@ -133,7 +183,7 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
                  x, y, width, height, cat_names, data,
                  step_count=4, legend_names=None, legend_position="top-right", legend_adjust_x=0, legend_adjust_y=0,
                  main_title="", main_title_font_name=None, main_title_font_size=None, main_title_font_color=None,
-                 x_desc=None, y_desc=None):
+                 x_desc=None, y_desc=None, cat_label_angle=30, cat_label_all=False):
         LegendedHorizontalLineChart.__init__(self)
 
         self.categoryAxis = XCategoryAxisWithDesc(desc=x_desc)
@@ -145,13 +195,14 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
         self.width = width
         self.data = data
 
-        cat_names_num = len(cat_names)
-        show_cat_num = 7
-        if cat_names_num > show_cat_num:
-            gap_num = int(cat_names_num / show_cat_num)
-            for i in range(cat_names_num):
-                if i % gap_num != 0:
-                    cat_names[i] = ""
+        if cat_label_all is False:
+            cat_names_num = len(cat_names)
+            show_cat_num = 7
+            if cat_names_num > show_cat_num:
+                gap_num = int(cat_names_num / show_cat_num)
+                for i in range(cat_names_num):
+                    if i % gap_num != 0:
+                        cat_names[i] = ""
 
         self.categoryAxis.categoryNames = cat_names
         self.categoryAxis.labels.boxAnchor = 'n'
@@ -177,13 +228,14 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
             self.titleMainFontName = main_title_font_name
         if main_title_font_size is not None:
             self.titleMainFontSize = main_title_font_size
+        self.titleMainFontColor = colors.black
         if main_title_font_color is not None:
             self.titleMainFontColor = main_title_font_color
 
         self.categoryAxis.labels.boxAnchor = 'ne'
         self.categoryAxis.labels.dx = 0
-        self.categoryAxis.labels.dy = 0
-        self.categoryAxis.labels.angle = 30
+        self.categoryAxis.labels.angle = cat_label_angle
+        # self.categoryAxis.labels.boxFillColor = colors.Color(1, 0, 0, 1)
 
     def get_limit_value(self, step_count):
         min_value = 0xffffffff

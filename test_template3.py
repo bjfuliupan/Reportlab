@@ -1,4 +1,4 @@
-from utils import utils
+from utils import util
 from pdflib import PDFTemplate
 from datetime import timedelta
 import os
@@ -131,14 +131,11 @@ class DrawSensorHostLogPDF(object):
     def __init__(self, payload: dict):
         self.payload = payload
         # datetime type
-        self.start_time = utils.post_time_to_datetime(payload["start_time"])
+        self.start_time = util.post_time_to_datetime(payload["start_time"])
         # datetime type
-        self.end_time = utils.post_time_to_datetime(payload["end_time"])
-
-
-
+        self.end_time = util.post_time_to_datetime(payload["end_time"])
         self.days_interval = (self.end_time - self.start_time).days
-        self.data_for_drawing = utils.init_data_for_PDF(self.days_interval)
+        self.data_for_drawing = util.init_data_for_pdf_with_interval(self.days_interval)
         self.time_list = [
             (self.start_time + timedelta(hours=8, days=int(_))).\
             strftime("%Y%m%d")
@@ -148,7 +145,7 @@ class DrawSensorHostLogPDF(object):
     def parse_log(self, logs):
         for format_time_list, value, *_ in logs:
             log_format = format_time_list[0]["FORMAT.raw"]
-            log_time = utils.time_with_Z_to_datetime(format_time_list[1]["TIME"])
+            log_time = util.time_with_Z_to_datetime(format_time_list[1]["TIME"])
             value_index = (log_time - self.start_time).days + 1
             self.data_for_drawing[log_format][value_index] += value
 
@@ -171,8 +168,8 @@ class DrawSensorHostLogPDF(object):
 
             description = (
                 f"{self.TITLE},"
-                f"从{utils.datetime_to_str(self.start_time)} 至 "
-                f"{utils.datetime_to_str(self.end_time)},"
+                f"从{util.datetime_to_str(self.start_time)} 至 "
+                f"{util.datetime_to_str(self.end_time)},"
                 f"探针组: {list(GROUP_SENSORS_MAPPING.keys())}"
             )
 

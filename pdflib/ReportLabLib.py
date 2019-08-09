@@ -16,15 +16,17 @@ pdfmetrics.registerFont(TTFont('SimSun', 'SimSun.ttf'))
 DefaultFontName = "SimSun"
 
 ALL_COLORS = [
-    colors.red,
+    colors.Color(251/255, 192/255, 45/255, 1),
+    colors.Color(38/255, 166/255, 154/255, 1),
+    colors.Color(41/255, 182/255, 246/255, 1),
+    colors.Color(255/255, 112/255, 67/255, 1),
+    colors.Color(126/255, 87/255, 194/255, 1),
+    colors.Color(175/255, 180/255, 43/255, 1),
     colors.green,
     colors.blue,
     colors.pink,
-    colors.yellow,
-    colors.black,
-    colors.gold,
-    colors.bisque,
-    colors.blanchedalmond,
+    # colors.yellow,
+    # colors.black,
     colors.blueviolet,
     colors.brown,
     colors.burlywood,
@@ -115,11 +117,17 @@ class ChartsLegend(LineLegend):
     _attrMap = AttrMap(
         BASE=LineLegend,
         positionType=AttrMapValue(
-            OneOf("null", "top-left", "top-mid", "top-right", "bottom-left", "bottom-mid", "bottom-right"),
+            OneOf(
+                "null",
+                "top-left", "top-mid", "top-right",
+                "bottom-left", "bottom-mid", "bottom-right",
+                "right"
+            ),
             desc="The position of LinLegend."),
         backgroundRect=AttrMapValue(None, desc="The position of LinLegend."),
         adjustX=AttrMapValue(isNumber, desc='xxx.'),
-        adjustY=AttrMapValue(isNumber, desc='xxx.')
+        adjustY=AttrMapValue(isNumber, desc='xxx.'),
+        bottom_gap=AttrMapValue(isNumber, desc='xxx.')
     )
 
     def __init__(self):
@@ -139,14 +147,24 @@ class ChartsLegend(LineLegend):
         self.alignment = 'right'
         self.dxTextSpace = 5
 
+        self.bottom_gap = 40
+
     @staticmethod
-    def calc_legend_width(color_name_pairs, dx, deltax, font_name, font_size):
+    def calc_legend_width(color_name_pairs, dx, deltax, font_name, font_size, sub_cols=None):
         pairs_num = len(color_name_pairs)
 
         max_text_width = 0
         x_width = 0
         for x in color_name_pairs:
-            x_width = stringWidth(x[1], font_name, font_size)
+            if type(x[1]) is tuple:
+                for str_i in x[1]:
+                    tmp_width = stringWidth(str(str_i), font_name, font_size)
+                    if sub_cols is not None and tmp_width < sub_cols[0].minWidth:
+                        tmp_width = sub_cols[0].minWidth
+                    x_width += tmp_width
+            else:
+                str_x = x[1]
+                x_width = stringWidth(str_x, font_name, font_size)
             if x_width > max_text_width:
                 max_text_width = x_width
         total_text_width = (pairs_num - 1) * max_text_width + x_width
@@ -156,7 +174,8 @@ class ChartsLegend(LineLegend):
         return legend_width
 
     def draw(self):
-        legend_width = self.calc_legend_width(self.colorNamePairs, self.dx, self.deltax, self.fontName, self.fontSize)
+        legend_width = self.calc_legend_width(self.colorNamePairs, self.dx, self.deltax, self.fontName, self.fontSize,
+                                              self.subCols)
 
         if self.positionType != "null" and self.backgroundRect is not None:
             if self.positionType == "top-left":
@@ -170,13 +189,16 @@ class ChartsLegend(LineLegend):
                 self.y = self.backgroundRect.y + self.backgroundRect.height
             elif self.positionType == "bottom-left":
                 self.x = self.backgroundRect.x
-                self.y = self.backgroundRect.y - 40
+                self.y = self.backgroundRect.y - self.bottom_gap
             elif self.positionType == "bottom-mid":
                 self.x = self.backgroundRect.x + int(self.backgroundRect.width / 2) - int(legend_width / 2)
-                self.y = self.backgroundRect.y - 40
+                self.y = self.backgroundRect.y - self.bottom_gap
             elif self.positionType == "bottom-right":
                 self.x = self.backgroundRect.x + self.backgroundRect.width - legend_width
-                self.y = self.backgroundRect.y - 40
+                self.y = self.backgroundRect.y - self.bottom_gap
+            elif self.positionType == "right":
+                self.x = self.backgroundRect.x + self.backgroundRect.width + 10
+                self.y = self.backgroundRect.y + self.backgroundRect.height
 
             self.x += self.adjustX
             self.y += self.adjustY
@@ -305,3 +327,66 @@ class YValueAxisWithDesc(YValueAxis):
             g.add(desc_text)
 
         return g
+
+
+def list_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str == "None":
+        return None
+
+    if list_str[0] != '[' or list_str[-1] != ']':
+        raise ValueError("not list format.")
+
+    return eval(list_str)
+
+
+def tuple_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str == "None":
+        return None
+
+    if list_str[0] != '(' or list_str[-1] != ')':
+        raise ValueError("not tuple format.")
+
+    return eval(list_str)
+
+
+def dict_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str == "None":
+        return None
+
+    if list_str[0] != '{' or list_str[-1] != '}':
+        raise ValueError("not dict format.")
+
+    return eval(list_str)
+
+
+def bool_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str == "None":
+        return None
+
+    if list_str != "True" and list_str != "False":
+        raise ValueError("not bool format.")
+
+    return eval(list_str)
+
+
+def color_eval(list_str):
+    if not isinstance(list_str, str):
+        raise ValueError("not str.")
+
+    if list_str.find("Color(") != 0 or list_str[-1] != ')':
+        raise ValueError("not dict format.")
+
+    _list_str = list_str.replace("Color", "colors.Color")
+    return eval(_list_str)

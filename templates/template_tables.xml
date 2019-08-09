@@ -14,56 +14,40 @@
             <x-padding>20</x-padding>
             <y-padding>20</y-padding>
             <align-type>middle</align-type>
-            <invalid>False</invalid>
             <items>
-                <box1>
-                    <type>box-container</type>
-                    <rect>[0, 0, 450, 200]</rect>
-                    <x-padding>20</x-padding>
-                    <y-padding>20</y-padding>
-                    <align-type>middle</align-type>
-                    <invalid>False</invalid>
-                    <items>
-                        <title>
-                            <!--必填项-->
-                            <type>text</type>
-                            <rect>[0, 0, 450, 30]</rect>
-                            <content> </content>
-                            <!--必填项-->
-                            <position>middle</position>
-                            <font_color>Color(0.5,0.5,0.5,1)</font_color>
-                            <font_size>20</font_size>
-                        </title>
-                        <box2>
-                            <type>box-container</type>
-                            <rect>[0, 0, 450, 200]</rect>
-                            <x-padding>20</x-padding>
-                            <y-padding>20</y-padding>
-                            <align-type>middle</align-type>
-                            <invalid>False</invalid>
-                            <items>
-                                <description>
-                                    <!--必填项-->
-                                    <type>paragraph</type>
-                                    <rect>[0, 0, 450, 0]</rect>
-                                    <content> </content>
-                                    <style>BodyText</style>
-                                    <!--必填项-->
-                                    <font_size>12</font_size>
-                                    <indent_flag>1</indent_flag>
-                                </description>
-                            </items>
-                        </box2>
-                    </items>
-                </box1>
+                <title>
+                    <!--必填项-->
+                    <type>text</type>
+                    <rect>[0, 0, 450, 30]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <position>middle</position>
+                    <font_color>Color(0.5,0.5,0.5,1)</font_color>
+                    <font_size>20</font_size>
+                </title>
+
+                <description>
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <style>BodyText</style>
+                    <!--必填项-->
+                    <font_size>10</font_size>
+                    <indent_flag>1</indent_flag>
+                </description>
                 <table>
                     <type>table</type>
                     <rect>[0, 0, 450, 0]</rect>
+                    <position>middle</position>
                     <font_size>12</font_size>
-                    <h-align>center</h-align>
-                    <v-align>middle</v-align>
-                    <columns>["t1", "t2", "t3", "t4", "t5"]</columns>
-                    <col_widths>["10%", "20%", "20%", "30%", "20%"]</col_widths>
+                    <columns>
+                        <col1>t1</col1>
+                        <col2>t2</col2>
+                        <col3>t3</col3>
+                        <col4>t4</col4>
+                        <col5>t5</col5>
+                    </columns>
                 </table>
                 <line_chart>
                     <!--必填项-->
@@ -76,29 +60,18 @@
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>月份</x_desc>
                     <y_desc>数量</y_desc>
-                    <invalid>True</invalid>
-                    <legend_position>top-right</legend_position>
-                    <cat_label_all>False</cat_label_all>
-                    <cat_label_angle>60</cat_label_angle>
-                    <margin-right>-10</margin-right>
-                    <margin-bottom>-10</margin-bottom>
                 </line_chart>
                 <bar_chart>
                     <!--必填项-->
                     <type>bar_chart</type>
                     <rect>[0, 0, 200, 200]</rect>
-                    <bar_style>horizontal</bar_style>
+                    <bar_style>vertical</bar_style>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针组身体状况示意图</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <x_desc>姓名</x_desc>
                     <y_desc>身高/体重</y_desc>
-                    <legend_position>bottom-mid</legend_position>
-                    <cat_label_all>False</cat_label_all>
-                    <cat_label_angle>60</cat_label_angle>
-                    <style>stacked</style>
-                    <label_format>%s</label_format>
                 </bar_chart>
                 <line_chart2>
                     <!--必填项-->
@@ -163,16 +136,14 @@
             </items>
         </page0>
         <page1>
-            <rect>[90, 80, 450, 731]</rect>
-            <auto_position>True</auto_position>
-            <align-type>middle</align-type>
+            <rect>[0, 0, 630, 731]</rect>
             <invalid>False</invalid>
             <items>
                 <bar_chart2>
                     <!--必填项-->
                     <page_num>1</page_num>
                     <type>bar_chart</type>
-                    <rect>[0, 85, 430, 200]</rect>
+                    <rect>[100, 460, 430, 200]</rect>
                     <bar_style>vertical</bar_style>
                     <data> </data>
                     <!--必填项-->
@@ -185,14 +156,13 @@
             </items>
         </page1>
         <page2>
-            <rect>[90, 80, 450, 731]</rect>
-            <align-type>middle</align-type>
+            <rect>[0, 0, 630, 731]</rect>
             <items>
                 <pie_chart>
                     <!--必填项-->
                     <page_num>2</page_num>
                     <type>pie_chart</type>
-                    <rect>[100, 460, 250, 200]</rect>
+                    <rect>[100, 460, 200, 200]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针组身体状况示意图</main_title>
