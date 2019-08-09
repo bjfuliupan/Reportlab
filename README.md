@@ -3,7 +3,7 @@ Reportlab
 
 ## 1 PDF模板结构
 ```
-pdf:													
+pdf:
     file_name                                  生成的PDF文件的路径。必填项
     author                                     PDF文件作者。默认为空
     title                                      PDF文件标题。默认为空
@@ -11,16 +11,16 @@ pdf:
     coordinate                                 坐标系，取值：left-top、left-bottom。rect使用的坐标系。默认为left-top
     header_text                                页眉显示的文字。默认为空
     show_border                                是否显示各page和item的边界，用于debug或初期调试位置。取值：True、False。默认为False
-    pages:												
-        page0:											
+    pages:
+        page0:
             rect                               当前页的有效区域。格式：[x, y, width, height]。必填项
             auto_position                      是否自动排版。取值：True、False。默认为False
             x-padding                          水平方向各item之间的间距。设置自动排版时有效。默认为0
             y-padding                          垂直方向各item之间的间距。设置自动排版时有效。默认为0
             align-type                         水平方向上各item的对齐方式。取值：middle、left、right。设置自动排版时有效。默认为middle
             invalid                            是否无效。取值：True、False。默认为False。当设为True时，该页不显示。默认为False
-            items:										
-                [item_name1]:									
+            items:
+                [item_name1]:
                     type                       text。该item为文本段。必填项
                     rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
                     content                    该文本段的内容。必填项
@@ -30,12 +30,12 @@ pdf:
                     font_size                  字体大小。默认为10
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
-                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
-                /[item_name1]									
-                                                    
-                [item_name2]:									
+                /[item_name1]
+                
+                [item_name2]:
                     type                       paragraph。该item为段落。必填项
                     rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
                     content                    该段落的内容。必填项
@@ -47,12 +47,12 @@ pdf:
                     indent_flag                段落开头是否缩进。取值：0、1。1是缩进两个word大小，0是不缩进。默认是0
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
-                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
-                /[item_name2]									
-                                                    
-                [item_name3]:									
+                /[item_name2]
+                
+                [item_name3]:
                     type                       line_chart。该item为折线图。必填项
                     rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
                     data                       折线图的数据。格式：[(数据集1), (数据集2), …]。必填项
@@ -71,7 +71,7 @@ pdf:
                     cat_label_angle            category lable的显示倾斜度。取值：[0, 90]。默认为30
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
-                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
                 /[item_name3]									
@@ -98,12 +98,12 @@ pdf:
                     label_format               bar label的格式。如，%s表示显示每个bar的数值。默认不显示
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
-                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
-                /[item_name4]									
-                                                    
-                [item_name5]:									
+                /[item_name4]
+                
+                [item_name5]:
                     type                       pie_chart。该item为饼图。必填项
                     rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
                     data                       饼图的数据。格式：[数值1, 数值2, …]。必填项
@@ -114,7 +114,7 @@ pdf:
                     main_title_font_size       主标题的字体大小。默认为10
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
-                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
                 /[item_name5]
@@ -130,17 +130,33 @@ pdf:
                     font_size                  字体大小。未设置style时，默认为10
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
-                    margin-up                  该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
                 /[item_name6]
-            /items										
-        /page0											
-        page1:											
-            ……										
-        /page1											
-        ……											
-    /pages												
+                
+                [item_name7]:
+                    type                       box-container。该item为BOX容器。必填项
+                    rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
+                    x-padding                  水平方向，Box中各item之间的间距。设置自动排版时有效。默认为0
+                    y-padding                  垂直方向，Box中各item之间的间距。设置自动排版时有效。默认为0
+                    align-type                 水平方向上，Box中各item的对齐方式。取值：middle、left、right。设置自动排版时有效。默认为middle
+                    margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
+                    items:
+                        ...                    同Page的items。各item的rect是相对于box的rect而言的
+                    /items
+                /[item_name7]
+            /items
+        /page0
+        page1:
+            ...
+        /page1
+        ...
+    /pages
 /pdf													
 ```
 
