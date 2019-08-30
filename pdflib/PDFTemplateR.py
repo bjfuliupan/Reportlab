@@ -1377,7 +1377,7 @@ class PDFTemplateTable(PDFTemplateItem):
                            PDFTemplateConstant.PDF_FONT_COLOR: self._title_font_color}
             title = PDFTemplateItem._draw_text(text_format, False)
             title.wrapOn(cv, w, self._title_font_size)
-            title.drawOn(cv, x, y + table_height + gap_h)
+            title.drawOn(cv, x, y + table_height + gap_h + 2)
 
         d = self._draw_table(self.item_content)
         d.wrapOn(cv, w, h)

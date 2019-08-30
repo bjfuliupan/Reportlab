@@ -60,6 +60,8 @@
                     <type>table</type>
                     <rect>[0, 0, 450, 0]</rect>
                     <font_size>12</font_size>
+                    <title>示例用标题：</title>
+                    <title_font_size>18</title_font_size>
                     <h-align>center</h-align>
                     <v-align>middle</v-align>
                     <columns>["t1", "t2", "t3", "t4", "t5"]</columns>
