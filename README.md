@@ -128,6 +128,10 @@ pdf:
                     font_name                  字体名称。未设置style时，默认为SimSun
                     font_color                 字体颜色。格式：Color(r, g, b, a)，r、g、b和a的取值范围：[0, 1]。未设置style时，默认为黑色Color(0, 0, 0, 1)
                     font_size                  字体大小。未设置style时，默认为10
+                    title                      标题的内容
+                    title_font_name            标题的字体名称。默认为SimSun
+                    title_font_color           标题的字体颜色。格式：Color(r, g, b, a)，r、g、b和a的取值范围：[0, 1]。默认为黑色Color(0, 0, 0, 1)
+                    title_font_size            标题的字体大小。默认为18
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
