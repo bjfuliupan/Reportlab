@@ -72,6 +72,10 @@ class PDFTemplateConstant(object):
     PDF_BAR_LABEL_FORMAT = "label_format"
     PDF_TABLE_COLUMNS = "columns"
     PDF_TABLE_COL_WIDTHS = "col_widths"
+    PDF_TABLE_TITLE = "title"
+    PDF_TABLE_TITLE_FONT_NAME = "title_font_name"
+    PDF_TABLE_TITLE_FONT_SIZE = "title_font_size"
+    PDF_TABLE_TITLE_FONT_COLOR = "title_font_color"
 
     PDF_ITEM_TYPE_LINE_CHART = "line_chart"
     PDF_ITEM_TYPE_BAR_CHART = "bar_chart"
@@ -1108,8 +1112,23 @@ class PDFTemplateTable(PDFTemplateItem):
     表格
     """
 
+    DefaultTitleFontSize = 18
+
     def __init__(self, item_content):
         PDFTemplateItem.__init__(self, item_content)
+
+        self._title_content = None
+        if PDFTemplateConstant.PDF_TABLE_TITLE in self.item_content:
+            self._title_content = self.item_content[PDFTemplateConstant.PDF_TABLE_TITLE]
+        self._title_font_name = DefaultFontName
+        if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_NAME in self.item_content:
+            self._title_font_name = self.item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_NAME]
+        self._title_font_size = self.DefaultTitleFontSize
+        if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE in self.item_content:
+            self._title_font_size = self.item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE]
+        self._title_font_color = Color(0.0, 0.0, 0.0, 1)
+        if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_COLOR in self.item_content:
+            self._title_font_color = self.item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_COLOR]
 
     @staticmethod
     def format_content(item_content):
@@ -1131,6 +1150,14 @@ class PDFTemplateTable(PDFTemplateItem):
         elif isinstance(item_content[PDFTemplateConstant.PDF_ITEM_CONTENT], str):
             item_content[PDFTemplateConstant.PDF_ITEM_CONTENT] = \
                 list_eval(item_content[PDFTemplateConstant.PDF_ITEM_CONTENT])
+
+        if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE in item_content:
+            item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE] = \
+                int(item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE])
+        if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_COLOR in item_content and \
+                isinstance(item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_COLOR], str):
+            item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_COLOR] = \
+                color_eval(item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_COLOR])
 
         if PDFTemplateConstant.PDF_FONT_SIZE in item_content:
             item_content[PDFTemplateConstant.PDF_FONT_SIZE] = int(item_content[PDFTemplateConstant.PDF_FONT_SIZE])
@@ -1192,6 +1219,13 @@ class PDFTemplateTable(PDFTemplateItem):
         t = PDFTemplateTable._draw_table(item)
         _, h = t.wrap(1, 1)
         del t
+
+        if PDFTemplateConstant.PDF_TABLE_TITLE in item:
+            if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE in item:
+                h += item[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE]
+            else:
+                h += PDFTemplateTable.DefaultTitleFontSize
+
         return h
 
     @staticmethod
@@ -1221,6 +1255,11 @@ class PDFTemplateTable(PDFTemplateItem):
         row_heights = t.get_row_heights()
 
         curr_y = 0
+        if PDFTemplateConstant.PDF_TABLE_TITLE in item:
+            if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE in item:
+                curr_y = item[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_SIZE]
+            else:
+                curr_y = PDFTemplateTable.DefaultTitleFontSize
         for idx, val in enumerate(row_heights):
             curr_y += val
             if curr_y >= split_height:
@@ -1321,14 +1360,28 @@ class PDFTemplateTable(PDFTemplateItem):
         :param show_border:
         :return:
         """
+        x, y, w, h = self.item_content[PDFTemplateConstant.PDF_RECT]
+        table_height = self._calc_table_height(self.item_content)
+        gap_h = h - table_height
+
         PDFTemplateItem.draw(self, cv, show_border)
 
-        d = self._draw_table(self.item_content)
+        if self._title_content:
+            table_height -= self._title_font_size
 
-        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
-                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
-        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
-                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
+            text_format = {PDFTemplateConstant.PDF_RECT: [0, 0, w, self._title_font_size],
+                           PDFTemplateConstant.PDF_ITEM_CONTENT: self._title_content,
+                           PDFTemplateConstant.PDF_POSITION: "start",
+                           PDFTemplateConstant.PDF_FONT_NAME: self._title_font_name,
+                           PDFTemplateConstant.PDF_FONT_SIZE: self._title_font_size,
+                           PDFTemplateConstant.PDF_FONT_COLOR: self._title_font_color}
+            title = PDFTemplateItem._draw_text(text_format, False)
+            title.wrapOn(cv, w, self._title_font_size)
+            title.drawOn(cv, x, y + table_height + gap_h)
+
+        d = self._draw_table(self.item_content)
+        d.wrapOn(cv, w, h)
+        d.drawOn(cv, x, y + gap_h)
 
 
 class PDFTemplateBox(PDFTemplateItem):
