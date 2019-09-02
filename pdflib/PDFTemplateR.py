@@ -1039,12 +1039,13 @@ class PDFTemplateParagraph(PDFTemplateItem):
         """
         PDFTemplateItem.draw(self, cv, show_border)
 
-        d = self._draw_paragraph(self.item_content)
+        x, y, w, h = self.item_content[PDFTemplateConstant.PDF_RECT]
+        p_h = self._calc_paragraph_height(self.item_content)
+        p_h = h - p_h
 
-        d.wrapOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][2],
-                 self.item_content[PDFTemplateConstant.PDF_RECT][3])
-        d.drawOn(cv, self.item_content[PDFTemplateConstant.PDF_RECT][0],
-                 self.item_content[PDFTemplateConstant.PDF_RECT][1])
+        d = self._draw_paragraph(self.item_content)
+        d.wrapOn(cv, w, h)
+        d.drawOn(cv, x, y + p_h)
 
 
 class PDFTemplateText(PDFTemplateItem):
