@@ -18,6 +18,7 @@ class DummyOb(object):
 
     ruleng_url = "http://192.168.11.200:8002"
     # ruleng_url = "http://192.168.10.222:8002"
+    # ruleng_url = "http://192.168.8.60:8002"
     post_time_out = 10000  # 秒
 
     def __init__(self):
@@ -58,6 +59,7 @@ class DummyOb(object):
         :param need_second:
         :return:
         """
+        ret = {}
         begin_t = util.payload_time_to_datetime(payload["start_time"])
         end_t = util.payload_time_to_datetime(payload["end_time"])
         interval = (end_t - begin_t).days
@@ -80,8 +82,11 @@ class DummyOb(object):
 
         # 通过payload及时间参数，获取ES日志，并清洗
         # 返回折线图横坐标、纵坐标、折线标签数据
+        print(payload)
         data = json.dumps(payload)
         es_log_data = self.ruleng_url_post(data)
+        if not es_log_data:
+            return ret
 
         chart_datas = util.init_data_for_pdf_with_interval(interval)
         for key_list, value, *_ in es_log_data["result"]:
@@ -199,14 +204,18 @@ class DummyOb(object):
                 continue
             pie_data[category] += value
 
-        # 获取饼图日志类型
-        log_formats = list(pie_data.keys())
+        # # 获取饼图日志类型
+        # log_formats = list(pie_data.keys())
+
         # 违规定义日志的类型为'规则名称'
-        category_names = [constant.LogConstant.FORMAT_DETAIL_MAPPING[_] for _ in payload_log_format]
+        if payload["page_name"] == "violation_define":
+            category_names = list(pie_data.keys())
+        else:
+            category_names = [constant.LogConstant.FORMAT_DETAIL_MAPPING[_] for _ in payload_log_format]
 
         # 获取饼图日志数量
         if payload_log_format == ["SENSOR_ALARM_MSG"]:
-            payload_log_format = [constant.LogConstant.FORMAT_DETAIL_MAPPING["SENSOR_ALARM_MSG"]]
+            payload_log_format = category_names
         datas = [
             pie_data[_]
             for _ in payload_log_format
@@ -219,7 +228,7 @@ class DummyOb(object):
 
         return ret
 
-    def cook_bar_data(self, payload: dict, sort=True, limit=10, grouping=False):
+    def cook_bar_data(self, payload: dict, sort=True, limit=10, grouping=False, without_format=False):
         """
         通过payload获取日志，进行清洗并返回
         :param payload: payload的FORMAT缺省，使用log_formats字段顺序填充
@@ -240,7 +249,11 @@ class DummyOb(object):
             # if log_format == "SENSOR_NETWORK_ABNORMAL":
             #     del payload["data_scope"]["FORMAT.raw"]
             # else:
+
             payload["data_scope"][data_access] = [log_format]
+
+            if without_format:
+                del payload["data_scope"]["FORMAT.raw"]
 
             # 获取数据
             raw_data = json.dumps(payload)
@@ -260,6 +273,8 @@ class DummyOb(object):
                     key = key_dict[0]["RULENAME.raw"]
                 elif key_dict[0].get("FILE_NAME.raw"):
                     key = key_dict[0]["FILE_NAME.raw"]
+                elif key_dict[0].get("KEYWORD.raw"):
+                    key = key_dict[0]["KEYWORD.raw"]
                 else:
                     continue
                 data_for_draw[key] += int(value)
@@ -415,7 +430,7 @@ class PDFReport(DummyOb):
     def making_data(self, chart_typ: str, fmts=None, resolved=None, access_fmts=None,
                     page_name="log_classify", item_id=0, rule_id="00", search_index="log*",
                     grouping=False, opt1=None, need_second=False, level=None, limit=10,
-                    rule_uuid=None, top=None, **kwargs):
+                    rule_uuid=None, top=None, without_format=False, **kwargs):
         """
         生成数据并进行翻译
         :param fmts: array 查询功能列表
@@ -468,7 +483,7 @@ class PDFReport(DummyOb):
         if chart_typ == "line":
             ret = self.cook_line_data(content, grouping=grouping, need_second=need_second)
         elif chart_typ == "bar":
-            ret = self.cook_bar_data(content, grouping=grouping, limit=limit)
+            ret = self.cook_bar_data(content, grouping=grouping, limit=limit, without_format=without_format)
         elif chart_typ == "pie":
             ret = self.cook_pie_data(content)
         else:
@@ -520,9 +535,8 @@ class PDFReport(DummyOb):
 
     def report_draw_bar(self, page_idx, elname_prefix: str, bar_infos: dict, elname=None,
                         has_description=False, description_elname="",
-                        description_intro=""):
+                        description_intro="", limit=10, grouping=False, is_flow=False):
         """
-
         :param page_idx: page number
         :param elname_prefix: 生成柱图会通过组批量产生，提供前缀
         :param bar_infos:
@@ -530,6 +544,7 @@ class PDFReport(DummyOb):
         :param has_description:
         :param description_elname:
         :param description_intro: 图描述
+        :param limit: 柱数量
         :return:
         """
         logging.warning("elname is not used, %s", elname)
@@ -540,6 +555,20 @@ class PDFReport(DummyOb):
         for log_format, bar_chart_data in bar_infos.items():
             category_names = bar_chart_data["category_names"]
             legend_names = bar_chart_data["legend_names"]
+            data = bar_chart_data["datas"]
+
+            # if len(category_names) < limit:
+            #     if grouping:
+            #         for group_name in self.sensor_group_map.values():
+            #             if group_name not in category_names and len(category_names) < limit:
+            #                 category_names.append(group_name)
+            #                 data[0].append(0)
+            #     else:
+            #         for sensor_id in self.sensors:
+            #             if sensor_id not in category_names and len(category_names) < limit:
+            #                 category_names.append(sensor_id)
+            #                 data[0].append(0)
+
             # 触发隔离违规定义TOP10 不需要后缀
             item_name = elname_prefix \
                 if log_format in ["SENSOR_ALARM_MSG",
@@ -552,14 +581,21 @@ class PDFReport(DummyOb):
                                   "SENSOR_CREDIBLE_DATA",
                                   "SENSOR_PSYSTEM_FILE",
                                   "SENSOR_FILEPARSE_LOG",
+                                  "SENSOR_POLICY_UPDATE_DAILY",
                                   ] \
                 else f"{elname_prefix}{log_format}"
 
-            self.report_tpl.set_item_data(page_idx, item_name, data=bar_chart_data["datas"],
-                                          category_names=category_names, legend_names=legend_names)
+            if is_flow:
+                data = [[util.trans_bit_to_mb(value) for value in lst] for lst in data]
+
+            self.report_tpl.set_item_data(page_idx, item_name, data=data,
+                                          category_names=category_names,
+                                          # legend_names=legend_names
+                                          )
 
     def report_draw_bar1(self, page_idx, elname_prefix=None, bar_infos=None, elname=None,
-                         has_description=False, description_elname="", description_intro="", group_bar=False):
+                         has_description=False, description_elname="", description_intro="",
+                         group_bar=False, limit=10, is_flow=False):
         """
         draw group bar
 
@@ -571,6 +607,7 @@ class PDFReport(DummyOb):
         :param description_elname:
         :param description_intro: 图描述
         :param group_bar:
+        :param limit:
         :return:
         """
 
@@ -590,7 +627,7 @@ class PDFReport(DummyOb):
             _max_c = list(max_c)
             for i in range(len(_max_c)):
                 _ik = _max_c[i]
-                if _ik not in value["category_names"]:
+                if _ik not in value["category_names"] and len(value["category_names"]) < limit:
                     value["category_names"].append(_ik)
                     value["datas"][0].append(0)
 
@@ -611,8 +648,14 @@ class PDFReport(DummyOb):
                 else:
                     raise ValueError("template element name prefix or name must be set.")
 
-                self.report_tpl.set_item_data(page_idx, item_name, data=bar_chart_data["datas"],
-                                              category_names=category_names, legend_names=legend_names)
+                datas = bar_chart_data["datas"]
+                if is_flow:
+                    datas = [[util.trans_bit_to_mb(value) for value in lst] for lst in datas]
+
+                self.report_tpl.set_item_data(page_idx, item_name, data=datas,
+                                              category_names=category_names,
+                                              # legend_names=legend_names
+                                              )
         else:
             # 设置多bar的柱图
             datas = []
@@ -645,8 +688,13 @@ class PDFReport(DummyOb):
                 # category
                 category_names = _category
 
+            if is_flow:
+                datas = [[util.trans_bit_to_mb(value) for value in lst] for lst in datas]
+
             self.report_tpl.set_item_data(page_idx, elname, data=datas,
-                                          category_names=category_names, legend_names=legend_names)
+                                          category_names=category_names,
+                                          # legend_names=legend_names
+                                          )
 
     def report_draw_table(self, page_idx, elname, datas, category_names,
                           has_description=False, description_elname="",
@@ -731,9 +779,12 @@ class ReportSenHost(PDFReport):
                                         item_id=page["item_id"]["line"])
             if line_ret:
                 desc = (
-                    f"探针主机网络管控报告报告，包含：运行趋势、运行日志分布展示、探针组Top10、探针Top10,"
-                    f"包含日志类型: {line_ret['legend_names']},"
-                    f"时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}"
+                    f"""
+                    探针主机网络管控报告报告
+                    分析图：运行趋势、运行日志分布展示、探针组Top10、探针Top10
+                    日志类型: {line_ret['legend_names']}
+                    时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}
+                    """
                 )
                 self.report_draw_line(self.report_tpl_pg_num,
                                       page["elname"]["line"],
@@ -758,6 +809,8 @@ class ReportSenHost(PDFReport):
             sensor_bar_ret = self.making_data(chart_typ="bar", fmts=page["fmts"],
                                               page_name=page["page_name"],
                                               item_id=page["item_id"]["bar"])
+
+
             if sensor_bar_ret:
                 self.report_draw_bar(
                     self.report_tpl_pg_num,
@@ -773,7 +826,8 @@ class ReportSenHost(PDFReport):
                 self.report_draw_bar(
                     self.report_tpl_pg_num,
                     page["elname"]["bar_group"],
-                    sensor_group_bar_ret
+                    sensor_group_bar_ret,
+                    grouping=True
                 )
 
 
@@ -1346,7 +1400,7 @@ class ReportSenFile(PDFReport):
             "bar_all_file": "file_name_top5",
             "bar_sensor_group": "key_file_sensor_group_top10",
             "bar_sensor": "key_file_sensor_top10",
-            "table_key_heat_top10": "file_content_key_heat_top5",
+            "file_content_key_heat_top10": "file_content_key_heat_top10",
         },
         "description_elname": {
         },
@@ -1402,21 +1456,33 @@ class ReportSenFile(PDFReport):
                                                limit=self.LIMIT_NUM,
                                                rule_uuid=page["rule_uuid"]["line_rule_file"],
                                                top=page["top"]["file_name_top5"])
+
             if table_file_top5:
                 self.report_draw_table(
                     self.report_tpl_pg_num,
                     elname=page["elname"]["bar_all_file"],
-                    datas=table_file_top5["SENSOR_FILEPARSE_LOG"]["datas"],
+                    datas=table_file_top5["SENSOR_FILEPARSE_LOG"]["datas"][0],
                     category_names=table_file_top5["SENSOR_FILEPARSE_LOG"]["category_names"],
                 )
 
-            # table_key_heat_top10 = self.making_data(chart_typ="bar",
-            #                                         fmts=page["fmts_sensor_parse_file"],
-            #                                         page_name=page["page_name"],
-            #                                         item_id=page["item_id"]["table_key_heat_top10"],
-            #                                         search_index=page["search_index"]["spe"],
-            #                                         rule_uuid=page["uuid"]["line_rule_file"],
-            #                                         )
+            table_key_heat_top10 = self.making_data(chart_typ="bar",
+                                                    fmts=page["fmts_sensor_parse_file"],
+                                                    page_name=page["page_name"],
+                                                    item_id=page["item_id"]["table_key_heat_top10"],
+                                                    search_index=page["search_index"]["spe"],
+                                                    rule_uuid=page["rule_uuid"]["line_rule_file"],
+                                                    without_format=True
+                                                    )
+
+            util.pretty_print(table_key_heat_top10)
+
+            if table_key_heat_top10:
+                self.report_draw_table(
+                    self.report_tpl_pg_num,
+                    elname=page["elname"]["file_content_key_heat_top10"],
+                    datas=table_key_heat_top10["SENSOR_FILEPARSE_LOG"]["datas"][0],
+                    category_names=table_key_heat_top10["SENSOR_FILEPARSE_LOG"]["category_names"]
+                )
 
             bar_group_ret = self.making_data(chart_typ="bar", fmts=page["fmts_sensor_parse_file"],
                                              page_name=page["page_name"],
@@ -1435,7 +1501,7 @@ class ReportSenFile(PDFReport):
                                              page_name=page["page_name"],
                                              item_id=page["item_id"]["bar_sensor"],
                                              search_index=page["search_index"]["normal"],
-                                             rule_uuid=page["uuid"]["line_rule_file"],
+                                             rule_uuid=page["rule_uuid"]["line_rule_file"],
                                              top=page["top"]["file_name_top5"])
             self.report_draw_bar(
                 self.report_tpl_pg_num,
@@ -1474,6 +1540,7 @@ class ReportFileOperation(PDFReport):
                     "item_id": 1,
                     "access_format": ["USB_OUT", "USB_IN",
                                       "SEC_USB_IN", "SEC_USB_OUT"],
+                    "is_flow": True
                 },
                 "file_operate_sensor_group_num_top_USB": {
                     "chart_type": "bar",
@@ -1490,6 +1557,7 @@ class ReportFileOperation(PDFReport):
                                       ["SEC_USB_OUT", "USB_OUT"]],
                     "group": True,
                     "split_request": True,
+                    "is_flow": True
                 },
                 "file_operate_sensor_num_top_USB": {
                     "chart_type": "bar",
@@ -1504,6 +1572,7 @@ class ReportFileOperation(PDFReport):
                     "access_format": [["SEC_USB_IN", "USB_IN"],
                                       ["SEC_USB_OUT", "USB_OUT"]],
                     "split_request": True,
+                    "is_flow": True
                 },
 
             },
@@ -1537,6 +1606,7 @@ class ReportFileOperation(PDFReport):
                     "chart_type": "line",
                     "item_id": 1,
                     "access_format": ["CD_OUT", "CD_IN"],
+                    "is_flow": True
                 },
                 "file_operate_sensor_group_num_top_CD": {
                     "chart_type": "bar",
@@ -1553,6 +1623,7 @@ class ReportFileOperation(PDFReport):
                                       ["CD_OUT"]],
                     "group": True,
                     "split_request": True,
+                    "is_flow": True
                 },
                 "file_operate_sensor_num_top_CD": {
                     "chart_type": "bar",
@@ -1567,6 +1638,7 @@ class ReportFileOperation(PDFReport):
                     "access_format": [["CD_IN"],
                                       ["CD_OUT"]],
                     "split_request": True,
+                    "is_flow": True
                 },
 
             },
@@ -1600,6 +1672,7 @@ class ReportFileOperation(PDFReport):
                     "chart_type": "line",
                     "item_id": 1,
                     "access_format": ["SHARE_OUT", "SHARE_IN"],
+                    "is_flow": True
                 },
                 "file_operate_sensor_group_num_top_SHARE": {
                     "chart_type": "bar",
@@ -1616,6 +1689,7 @@ class ReportFileOperation(PDFReport):
                                       ["SHARE_OUT"]],
                     "group": True,
                     "split_request": True,
+                    "is_flow": True
                 },
                 "file_operate_sensor_num_top_SHARE": {
                     "chart_type": "bar",
@@ -1630,6 +1704,7 @@ class ReportFileOperation(PDFReport):
                     "access_format": [["SHARE_IN"],
                                       ["SHARE_OUT"]],
                     "split_request": True,
+                    "is_flow": True
                 },
 
             },
@@ -1699,6 +1774,11 @@ class ReportFileOperation(PDFReport):
                     "item_id": 0,
                     "access_format": ["EXTERNAL"],
                 },
+                "file_operate_flow_line_chart_EXTERNAL": {
+                    "chart_type": "line",
+                    "item_id": 1,
+                    "access_format": ["EXTERNAL"]
+                },
                 "file_operate_sensor_group_num_top_EXTERNAL": {
                     "chart_type": "bar",
                     "item_id": 2,
@@ -1706,11 +1786,26 @@ class ReportFileOperation(PDFReport):
                     "group": True,
                     "split_request": False,
                 },
+                "file_operate_sensor_group_flow_top_EXTERNAL": {
+                    "chart_type": "bar",
+                    "item_id": 3,
+                    "access_format": ["EXTERNAL"],
+                    "group": True,
+                    "split_request": False,
+                    "is_flow": True,
+                },
                 "file_operate_sensor_num_top_EXTERNAL": {
                     "chart_type": "bar",
                     "item_id": 2,
                     "access_format": ["EXTERNAL"],
                     "split_request": False,
+                },
+                "file_operate_sensor_flow_top_EXTERNAL": {
+                    "chart_type": "bar",
+                    "item_id": 3,
+                    "access_format": ["EXTERNAM"],
+                    "split_request": "False",
+                    "is_flow": True,
                 },
             },
             "description_elname": {
@@ -1786,9 +1881,15 @@ class ReportFileOperation(PDFReport):
                                          grouping=_group)
                     merged_data = r
 
+                print(json.dumps(merged_data, indent=4, ensure_ascii=False))
+
                 if v["chart_type"] == "line":
                     # drawline
                     datas, legend_names, category_names = r['datas'], r['legend_names'], r['category_names']
+
+                    if v.get("is_flow"):
+                        datas = [[util.trans_bit_to_mb(value) for value in lst] for lst in datas]
+
                     self.report_draw_line(self.report_tpl_pg_num, element_name, datas,
                                           legend_names=legend_names,
                                           category_names=category_names)
@@ -1799,7 +1900,8 @@ class ReportFileOperation(PDFReport):
                     self.report_draw_bar1(self.report_tpl_pg_num,
                                           elname=element_name,
                                           bar_infos=merged_data,
-                                          group_bar=_group)
+                                          group_bar=_group,
+                                          is_flow=v.get("is_flow"))
 
                 elif v["chart_type"] == "pie":
                     # drawpie
@@ -1833,6 +1935,18 @@ class ReportRunLog(PDFReport):
                     "grouping": True,
                 }
             }
+        },
+        "2": {
+            "page_name": "sensor_client",
+            "rule_id": "00",
+            "search_index": "log*",
+            "fmts": ["SENSOR_POLICY_UPDATE_DAILY"],
+            "elname": {
+                "policy_change_log": {
+                    "item_id": 3,
+                    "chart_typ": "line"
+                }
+            }
         }
     }
 
@@ -1858,12 +1972,18 @@ class ReportRunLog(PDFReport):
                     page_name=page["page_name"], item_id=page["elname"][elname]["item_id"],
                     search_index=page["search_index"], grouping=_grouping
                 )
+
+                util.pretty_print(chart_ret)
                 if elname == "sensor_client_running_state_line_chart":
                     # 该图数据为折线图格式，但展示时使用柱状图
                     page["elname"][elname]["chart_typ"] = "bar"
                     chart_ret = {
                         "SENSOR_POLICY_UPDATE_DAILY": chart_ret
                     }
+                elif elname == "policy_change_log":
+                    # 策略未更新探针数量只取列表的第一个元素
+                    chart_ret["datas"] = [chart_ret["datas"][0]]
+                    chart_ret["legend_names"] = ["策略未更新探针数量"]
 
                 if page["elname"][elname]["chart_typ"] == "line":
                     self.report_draw_line(

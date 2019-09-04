@@ -55,7 +55,7 @@ class LogConstant:
         "SENSOR_CREDIBLE_PORT": "可信端口日志",
         "SENSOR_CREDIBLE_DATA": "可信数据日志",
         "SENSOR_PSYSTEM_FILE": "Linux系统应用保护日志",
-        "SENSOR_ALARM_MSG": "探针离线报警",
+        "SENSOR_ALARM_MSG": "触发违规定义报警",
         "SENSOR_NET_SHART": "网络共享日志",
         "SENSOR_POLICY_UPDATE_DAILY": "策略更新日志",
         "USB_IN": "U盘拷入",

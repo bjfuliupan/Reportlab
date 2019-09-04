@@ -2130,6 +2130,12 @@ class PDFTemplateR(object):
 
         self._pdf_file = file_name
 
+    def set_header_text(self, header_text):
+        if not isinstance(header_text, str):
+            raise ValueError("title is not str.")
+
+        self._header_text = header_text
+
     @staticmethod
     def _set_box_data(box, item_name, **kwargs):
         for it in box[PDFTemplateConstant.PDF_ITEMS]:
