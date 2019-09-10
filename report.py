@@ -30,6 +30,7 @@ REPORT_PAGE_CLASS_MAPPING = {
     "关键文件分析日志": ReportSenFile,
     "文件出入日志": ReportFileOperation,
     "运行日志": ReportRunLog,
+    "策略变更日志": ReportRunLog,
 }
 
 
@@ -107,8 +108,13 @@ def gen_report(*args, **kwargs):
     assert os.path.exists(template_path) is True
     report_template = PDFTemplateR(template_path)
     report_template.set_pdf_file(".".join([report_name, report_format]))
+    report_template.set_header_text(report_name)
 
     for page in page_info:
+
+        # if page["page_source_name"] != "主机运行日志":
+        #     continue
+
         custom_name = page["custom_name"]
         page_source_name = page["page_source_name"]
         page_source_url = page["page_source_url"]
@@ -125,6 +131,7 @@ def gen_report(*args, **kwargs):
         util.pretty_print(params)
 
         _cls = REPORT_PAGE_CLASS_MAPPING[page_source_name](report_template)
+        print(f"++++++++++++++++++{page_source_name}++++++++++++++++++")
         _cls.indicate_date_scope(payload_start_time, payload_end_time)
         _cls.indicate_groups(sensor_id_group_mapping)
         _cls.indicate_sensors(sensor_ids)
