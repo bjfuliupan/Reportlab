@@ -7,6 +7,7 @@
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
     <show_border>True</show_border>
+    <background-image>images/cover-bg.png</background-image>
     <pages>
         <page0>
             <rect>[90, 80, 450, 731]</rect>
@@ -52,10 +53,20 @@
                                     <font_size>12</font_size>
                                     <indent_flag>1</indent_flag>
                                 </description>
+                                <image>
+                                    <type>image</type>
+                                    <rect>[0, 0, 450, 200]</rect>
+                                    <path>images/background.jpg</path>
+                                </image>
                             </items>
                         </box2>
                     </items>
                 </box1>
+                <image>
+                    <type>image</type>
+                    <rect>[0, 0, 450, 200]</rect>
+                    <path>images/background.jpg</path>
+                </image>
                 <table>
                     <type>table</type>
                     <rect>[0, 0, 450, 0]</rect>

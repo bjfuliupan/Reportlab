@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 
+import os
 import xmltodict
 from copy import deepcopy
-from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
-from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph
+from abc import ABC, abstractmethod
+
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.colors import Color
-from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab.platypus import TableStyle
+from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, TableStyle, Image
+# from reportlab.pdfbase.pdfmetrics import stringWidth
+from reportlab.graphics.shapes import Drawing, String, STATE_DEFAULTS, Line, Rect
 
 from pdflib.ReportLabLineCharts import ReportLabHorizontalLineChart
 from pdflib.ReportLabBarCharts import ReportLabHorizontalBarChart, ReportLabVerticalBarChart
 from pdflib.ReportLabPieCharts import ReportLabPieChart
 from pdflib.ReportLabTable import ReportLabTable
-from pdflib.ReportLabLib import DefaultFontName, list_eval, color_eval, bool_eval
-
-from abc import ABC, abstractmethod
+from pdflib.ReportLabLib import DefaultFontName, BodyFontName, TitleFontName, get_string_width, \
+    list_eval, color_eval, bool_eval, BodyFontColor, TableTitleBGColor
 
 
 class PDFTemplateConstant(object):
@@ -30,6 +31,7 @@ class PDFTemplateConstant(object):
     PDF_COORDINATE = "coordinate"
     PDF_HEADER_TEXT = "header_text"
     PDF_SHOW_BORDER = "show_border"
+    PDF_BACKGROUND = "background-image"
 
     PDF_PAGES = "pages"
     PDF_RECT = "rect"
@@ -76,6 +78,7 @@ class PDFTemplateConstant(object):
     PDF_TABLE_TITLE_FONT_NAME = "title_font_name"
     PDF_TABLE_TITLE_FONT_SIZE = "title_font_size"
     PDF_TABLE_TITLE_FONT_COLOR = "title_font_color"
+    PDF_IMAGE_PATH = "path"
 
     PDF_ITEM_TYPE_LINE_CHART = "line_chart"
     PDF_ITEM_TYPE_BAR_CHART = "bar_chart"
@@ -83,6 +86,7 @@ class PDFTemplateConstant(object):
     PDF_ITEM_TYPE_TEXT = "text"
     PDF_ITEM_TYPE_PARAGRAPH = "paragraph"
     PDF_ITEM_TYPE_TABLE = "table"
+    PDF_ITEM_TYPE_IMAGE = "image"
     PDF_ITEM_TYPE_BOX = "box-container"
 
     def __init__(self):
@@ -236,7 +240,8 @@ class PDFTemplateItem(ABC):
 
         text = String(x, y, content)
 
-        text.fontName = DefaultFontName
+        # text.fontName = DefaultFontName
+        text.fontName = BodyFontName
         if PDFTemplateConstant.PDF_FONT_NAME in format_json:
             text.fontName = format_json[PDFTemplateConstant.PDF_FONT_NAME]
         text.fontSize = font_size
@@ -257,7 +262,7 @@ class PDFTemplateItem(ABC):
         height += 40
         text_format = {PDFTemplateConstant.PDF_RECT: [int(width / 2), int(height / 2), width, height],
                        PDFTemplateConstant.PDF_ITEM_CONTENT: "暂无数据", PDFTemplateConstant.PDF_POSITION: "middle",
-                       PDFTemplateConstant.PDF_FONT_NAME: DefaultFontName, PDFTemplateConstant.PDF_FONT_SIZE: 30,
+                       PDFTemplateConstant.PDF_FONT_NAME: BodyFontName, PDFTemplateConstant.PDF_FONT_SIZE: 30,
                        PDFTemplateConstant.PDF_FONT_COLOR: Color(0.5, 0.5, 0.5, 1)}
         t = PDFTemplateItem._draw_text(text_format)
         d.add(t)
@@ -266,7 +271,7 @@ class PDFTemplateItem(ABC):
             text_format = {PDFTemplateConstant.PDF_RECT: [0, height, width, height - 15],
                            PDFTemplateConstant.PDF_ITEM_CONTENT: format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE],
                            PDFTemplateConstant.PDF_POSITION: "start",
-                           PDFTemplateConstant.PDF_FONT_NAME: DefaultFontName,
+                           PDFTemplateConstant.PDF_FONT_NAME: TitleFontName,
                            PDFTemplateConstant.PDF_FONT_SIZE: 15,
                            PDFTemplateConstant.PDF_FONT_COLOR: Color(0.5, 0.5, 0.5, 1)}
             if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json:
@@ -438,7 +443,7 @@ class PDFTemplateLineChart(PDFTemplateItem):
             if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]) is True:
                 main_title = format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]
-            main_title_font_name = None
+            main_title_font_name = TitleFontName
             if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]) is True:
                 main_title_font_name = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
@@ -643,7 +648,7 @@ class PDFTemplateBarChart(PDFTemplateItem):
             if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]) is True:
                 main_title = format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]
-            main_title_font_name = None
+            main_title_font_name = TitleFontName
             if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]) is True:
                 main_title_font_name = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
@@ -793,7 +798,7 @@ class PDFTemplatePieChart(PDFTemplateItem):
             if PDFTemplateConstant.PDF_CHART_MAIN_TITLE in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]) is True:
                 main_title = format_json[PDFTemplateConstant.PDF_CHART_MAIN_TITLE]
-            main_title_font_name = None
+            main_title_font_name = TitleFontName
             if PDFTemplateConstant.PDF_CHART_MT_FONT_NAME in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]) is True:
                 main_title_font_name = format_json[PDFTemplateConstant.PDF_CHART_MT_FONT_NAME]
@@ -895,7 +900,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
         """
         content = format_json[PDFTemplateConstant.PDF_ITEM_CONTENT]
         style_name = format_json[PDFTemplateConstant.PDF_PARAGRAPH_STYLE]
-        font_name = DefaultFontName
+        font_name = BodyFontName
         if PDFTemplateConstant.PDF_FONT_NAME in format_json:
             font_name = format_json[PDFTemplateConstant.PDF_FONT_NAME]
         font_color = None
@@ -915,7 +920,7 @@ class PDFTemplateParagraph(PDFTemplateItem):
             ss.fontSize = font_size
         if font_color:
             ss.fillColor = font_color
-        word_width = stringWidth(" ", ss.fontName, ss.fontSize) * 2
+        word_width = get_string_width(" ", ss.fontName, ss.fontSize) * 2
         ss.leading = word_width * PDFTemplateParagraph.paragraph_leading
         if indent_flag:
             ss.firstLineIndent = word_width * 2
@@ -1121,7 +1126,7 @@ class PDFTemplateTable(PDFTemplateItem):
         self._title_content = None
         if PDFTemplateConstant.PDF_TABLE_TITLE in self.item_content:
             self._title_content = self.item_content[PDFTemplateConstant.PDF_TABLE_TITLE]
-        self._title_font_name = DefaultFontName
+        self._title_font_name = TitleFontName
         if PDFTemplateConstant.PDF_TABLE_TITLE_FONT_NAME in self.item_content:
             self._title_font_name = self.item_content[PDFTemplateConstant.PDF_TABLE_TITLE_FONT_NAME]
         self._title_font_size = self.DefaultTitleFontSize
@@ -1310,13 +1315,13 @@ class PDFTemplateTable(PDFTemplateItem):
         content = format_json[PDFTemplateConstant.PDF_ITEM_CONTENT]
         table_width = format_json[PDFTemplateConstant.PDF_RECT][2]
 
-        font_name = DefaultFontName
+        font_name = BodyFontName
         if PDFTemplateConstant.PDF_FONT_NAME in format_json:
             font_name = format_json[PDFTemplateConstant.PDF_FONT_NAME]
         font_size = STATE_DEFAULTS['fontSize']
         if PDFTemplateConstant.PDF_FONT_SIZE in format_json:
             font_size = format_json[PDFTemplateConstant.PDF_FONT_SIZE]
-        font_color = STATE_DEFAULTS['fontSize']
+        font_color = BodyFontColor
         if PDFTemplateConstant.PDF_FONT_COLOR in format_json:
             font_color = format_json[PDFTemplateConstant.PDF_FONT_COLOR]
 
@@ -1341,14 +1346,14 @@ class PDFTemplateTable(PDFTemplateItem):
 
         # generate table style
         ts = TableStyle([
-            ('FONTNAME', (0, 0), (-1, 0), DefaultFontName),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.burlywood),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.red),
-            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), BodyFontName),
+            ('BACKGROUND', (0, 0), (-1, 0), TableTitleBGColor),
+            ('TEXTCOLOR', (0, 0), (-1, 0), BodyFontColor),
+            ('INNERGRID', (0, 0), (-1, -1), 0.25, BodyFontColor),
             ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
         ])
 
-        # merage data
+        # merge data
         table = ReportLabTable(data, colWidths=col_widths)
         table.setStyle(ts)
 
@@ -1383,6 +1388,37 @@ class PDFTemplateTable(PDFTemplateItem):
         d = self._draw_table(self.item_content)
         d.wrapOn(cv, w, h)
         d.drawOn(cv, x, y + gap_h)
+
+
+class PDFTemplateImage(PDFTemplateItem):
+    """
+    图片
+    """
+
+    def __init__(self, item_content):
+        PDFTemplateItem.__init__(self, item_content)
+
+    @staticmethod
+    def format_content(item_content):
+        PDFTemplateItem.format_content(item_content)
+
+    @staticmethod
+    def args_check(item_content):
+        PDFTemplateItem.args_check(item_content)
+
+        if PDFTemplateConstant.PDF_IMAGE_PATH not in item_content:
+            raise ValueError("image no %s" % PDFTemplateConstant.PDF_IMAGE_PATH)
+        if os.path.isfile(item_content[PDFTemplateConstant.PDF_IMAGE_PATH]) is False:
+            raise ValueError("the specified image file does not exist.")
+
+    def draw(self, cv, show_border=False):
+        x, y, width, height = self.item_content[PDFTemplateConstant.PDF_RECT]
+
+        image = Image(self.item_content['path'], width, height)
+        image.wrapOn(cv, width, height)
+        image.drawOn(cv, x, y)
+
+        PDFTemplateItem.draw(self, cv, show_border)
 
 
 class PDFTemplateBox(PDFTemplateItem):
@@ -1617,6 +1653,11 @@ class PDFTemplateBox(PDFTemplateItem):
                     # 拆分成功，或者当前Item不是当前页中的第一个，则跳出循环，剩下的Item移到下一页处理
                     next_page_flag = True
                     break
+            elif item_type == PDFTemplateConstant.PDF_ITEM_TYPE_BOX:
+                # 计算并更新该Box中各Item的位置坐标
+                PDFTemplateItemClass[item_type].split_by_height(
+                    box_item[PDFTemplateConstant.PDF_ITEMS], index, valid_height
+                )
 
             index += 1
         # 处理最后一行的对齐
@@ -1666,6 +1707,7 @@ PDFTemplateItemClass = {
     PDFTemplateConstant.PDF_ITEM_TYPE_PARAGRAPH: PDFTemplateParagraph,
     PDFTemplateConstant.PDF_ITEM_TYPE_TEXT: PDFTemplateText,
     PDFTemplateConstant.PDF_ITEM_TYPE_TABLE: PDFTemplateTable,
+    PDFTemplateConstant.PDF_ITEM_TYPE_IMAGE: PDFTemplateImage,
     PDFTemplateConstant.PDF_ITEM_TYPE_BOX: PDFTemplateBox
 }
 
@@ -1691,6 +1733,7 @@ class PDFTemplatePage(object):
         self.y_padding = 0
         self.align_type = "middle"
         self.header_text = None
+        self.bg_img = None
 
         for k, v in kw.items():
             setattr(self, k, v)
@@ -1938,6 +1981,11 @@ class PDFTemplatePage(object):
                     # 拆分成功，或者当前Item不是当前页中的第一个，则跳出循环，剩下的Item移到下一页处理
                     next_page_flag = True
                     break
+            elif item_type == PDFTemplateConstant.PDF_ITEM_TYPE_BOX:
+                # 计算并更新该Box中各Item的位置坐标
+                PDFTemplateItemClass[item_type].split_by_height(
+                    page[PDFTemplateConstant.PDF_ITEMS], index, page_height
+                )
 
             index += 1
         # 处理最后一行的对齐
@@ -2025,6 +2073,13 @@ class PDFTemplatePage(object):
         d.wrapOn(cv, width, height)
         d.drawOn(cv, 0, 0)
 
+    def _draw_background(self, cv):
+        if self.bg_img:
+            width, height = self.page_size
+            bg_img = Image(self.bg_img, width, height)
+            bg_img.wrapOn(cv, width, height)
+            bg_img.drawOn(cv, 0, 0)
+
     def draw(self, cv, show_border=False):
         """
         画Page
@@ -2034,6 +2089,8 @@ class PDFTemplatePage(object):
         """
         self._compute_coord()
 
+        # 画背景
+        self._draw_background(cv)
         # 画页眉
         self._draw_header(cv)
         # 画页脚
@@ -2068,6 +2125,7 @@ class PDFTemplateR(object):
         self._header_text = None
         self._show_border = False
         self._cv = None
+        self._background = None
 
         self._read_template_file()
 
@@ -2123,6 +2181,8 @@ class PDFTemplateR(object):
             self._header_text = self._template_content[PDFTemplateConstant.PDF_HEADER_TEXT]
         if PDFTemplateConstant.PDF_SHOW_BORDER in self._template_content:
             self._show_border = self._template_content[PDFTemplateConstant.PDF_SHOW_BORDER]
+        if PDFTemplateConstant.PDF_BACKGROUND in self._template_content:
+            self._background = self._template_content[PDFTemplateConstant.PDF_BACKGROUND]
 
     def set_pdf_file(self, file_name):
         if not isinstance(file_name, str):
@@ -2274,8 +2334,8 @@ class PDFTemplateR(object):
         for page_num in pages:
             page = pages[page_num]
 
-            page_ins = PDFTemplatePage(page, page_num, self._page_size, coordinate=self._coordinate,
-                                       header_text=self._header_text)
+            page_ins = PDFTemplatePage(page, page_num, self._page_size, bg_img=self._background,
+                                       coordinate=self._coordinate, header_text=self._header_text)
 
             self._valid_pages.append(page_ins)
 

@@ -13,15 +13,48 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
 pdfmetrics.registerFont(TTFont('SimSun', 'SimSun.ttf'))
+pdfmetrics.registerFont(TTFont('PuHuiTi-R', 'Alibaba-PuHuiTi-Regular.ttf'))
+pdfmetrics.registerFont(TTFont('PuHuiTi-L', 'Alibaba-PuHuiTi-Light.ttf'))
 DefaultFontName = "SimSun"
+BodyFontName = "PuHuiTi-L"
+TitleFontName = "PuHuiTi-R"
+# BodyFontName = "SimSun"
+# TitleFontName = "SimSun"
+
+
+def get_string_width(text, font_name, font_size):
+    if font_name == "PuHuiTi-L":
+        return stringWidth(text, font_name, font_size) * 2
+    elif font_name == "PuHuiTi-R":
+        return stringWidth(text, font_name, font_size) * 2
+    else:
+        return stringWidth(text, font_name, font_size)
+
+
+BodyFontColor = colors.HexColor(0x595757)
+TableTitleBGColor = colors.HexColor(0xf5f7f9)
+
 
 ALL_COLORS = [
-    colors.Color(251/255, 192/255, 45/255, 1),
-    colors.Color(38/255, 166/255, 154/255, 1),
-    colors.Color(41/255, 182/255, 246/255, 1),
-    colors.Color(255/255, 112/255, 67/255, 1),
-    colors.Color(126/255, 87/255, 194/255, 1),
-    colors.Color(175/255, 180/255, 43/255, 1),
+    colors.HexColor(0x03a9f4),
+    colors.HexColor(0xffc107),
+    colors.HexColor(0x4caf50),
+    colors.HexColor(0xf44336),
+    colors.HexColor(0x9c27b0),
+    colors.HexColor(0x00bcd4),
+    colors.HexColor(0x607d8b),
+    colors.HexColor(0xff9800),
+    colors.HexColor(0x8bc34a),
+    colors.HexColor(0x3f51b5),
+    colors.HexColor(0xe91e63),
+    colors.HexColor(0x009688),
+    colors.HexColor(0xffeb3b),
+    colors.HexColor(0x673ab7),
+    colors.HexColor(0xcddc39),
+    colors.HexColor(0xff5722),
+    colors.HexColor(0x9e9e9e),
+    colors.HexColor(0x03a9f4),
+    colors.HexColor(0x795548),
     colors.green,
     colors.blue,
     colors.pink,

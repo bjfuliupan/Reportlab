@@ -7,8 +7,8 @@ from reportlab.lib.attrmap import AttrMapValue
 from reportlab.lib.validators import isString, isNumberInRange, isColor, isBoolean, OneOf, isNumber, \
     isListOfStringsOrNone, isListOfStrings
 from reportlab.graphics.shapes import String, STATE_DEFAULTS, Rect
-from pdflib.ReportLabLib import DefaultFontName, ALL_COLORS, ChartsLegend
-from reportlab.pdfbase.pdfmetrics import stringWidth
+from pdflib.ReportLabLib import DefaultFontName, ALL_COLORS, ChartsLegend, get_string_width
+# from reportlab.pdfbase.pdfmetrics import stringWidth
 
 
 class ReportLabPieChart(Pie):
@@ -123,8 +123,8 @@ class ReportLabPieChart(Pie):
 
         for i in range(cn_len):
             for str_i in range(len(self.legendCategoryNames[i])):
-                tmp_width = stringWidth(self.legendCategoryNames[i][str_i],
-                                        self.legendFontName, self.legendFontSize) + 2
+                tmp_width = get_string_width(self.legendCategoryNames[i][str_i],
+                                             self.legendFontName, self.legendFontSize) + 2
                 if tmp_width > max_width[str_i]:
                     max_width[str_i] = tmp_width
 

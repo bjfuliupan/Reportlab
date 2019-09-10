@@ -9,8 +9,9 @@ from reportlab.lib.validators import isBoolean, OneOf, isListOfStringsOrNone, is
     isNumberInRange, isColor
 from reportlab.graphics.shapes import Rect
 from reportlab.graphics.shapes import String, STATE_DEFAULTS
-from pdflib.ReportLabLib import ChartsLegend, ALL_COLORS, XCategoryAxisWithDesc, YValueAxisWithDesc, DefaultFontName
-from reportlab.pdfbase.pdfmetrics import stringWidth
+from pdflib.ReportLabLib import ChartsLegend, ALL_COLORS, XCategoryAxisWithDesc, YValueAxisWithDesc, DefaultFontName, \
+    get_string_width
+# from reportlab.pdfbase.pdfmetrics import stringWidth
 
 
 class LegendedHorizontalLineChart(HorizontalLineChart):
@@ -97,7 +98,8 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
         max_width = 0
         index = 0
         for label_text in self.categoryAxis.categoryNames:
-            tmp_width = stringWidth(label_text, self.categoryAxis.labels.fontName, self.categoryAxis.labels.fontSize)
+            tmp_width = get_string_width(label_text, self.categoryAxis.labels.fontName,
+                                         self.categoryAxis.labels.fontSize)
             if tmp_width > max_width:
                 max_width = tmp_width
 
@@ -145,7 +147,8 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
                 if self.legendPositionType != "null":
                     if self.legendPositionType in ["bottom-left", "bottom-mid", "bottom-right"]:
                         legend.backgroundRect = \
-                            Rect(self.x, self.y + legend.bottom_gap - self.labels_height - 15 - ((i+1) * legend.fontSize),
+                            Rect(self.x,
+                                 self.y + legend.bottom_gap - self.labels_height - 15 - ((i+1) * legend.fontSize),
                                  self.width, self.height)
                     else:
                         legend.backgroundRect = Rect(self.x, self.y - (i * legend.fontSize * 1.2),
@@ -276,7 +279,8 @@ if __name__ == "__main__":
     my_line_charts1 = ReportLabHorizontalLineChart(50, 800, 400, 125, lc_cats1, lc_values1,
                                                    legend_names=["刘攀", "lijie", "longhui", "gaofeng"],
                                                    legend_position="bottom-mid",
-                                                   main_title="My first PDF Test.刘攀", main_title_font_color=colors.blue,
+                                                   main_title="My first PDF Test.刘攀",
+                                                   main_title_font_color=colors.blue,
                                                    x_desc="月份", y_desc="数量")
     my_line_charts2 = ReportLabHorizontalLineChart(50, 600, 400, 125, lc_cats2, lc_values2,
                                                    legend_names=["刘攀", "lijie"],
