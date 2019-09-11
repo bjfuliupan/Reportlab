@@ -3,6 +3,7 @@ import copy
 import json
 import logging
 from datetime import timedelta
+from datetime import datetime
 
 import requests
 
@@ -16,8 +17,8 @@ class DummyOb(object):
     process original data class
     """
 
-    ruleng_url = "http://192.168.11.200:8002"
-    # ruleng_url = "http://192.168.10.222:8002"
+    # ruleng_url = "http://192.168.11.200:8002"
+    ruleng_url = "http://192.168.10.222:8002"
     # ruleng_url = "http://192.168.8.60:8002"
     post_time_out = 10000  # 秒
 
@@ -716,6 +717,31 @@ class PDFReport(DummyOb):
 
         data = [(category_names[i], datas[i]) for i in range(len(category_names))]
         self.report_tpl.set_item_data(page_idx, elname, content=data)
+
+    def report_draw_paragraph(self, page_idx, description_elname, description_intro):
+        """
+        自定义报告段落
+        :param page_idx: 当前操作页面的 page index
+        :param elname:  段落template对应的element name
+        :param description_intro: 段落内容
+        :return:
+        """
+        self.report_tpl.set_item_data(page_idx, description_elname, content=description_intro)
+
+
+class ReportSetTimeOfCover(PDFReport):
+    # 设置封面时间 Title
+    PG_NUM = 0
+    ELNAME = "Introduction"
+    def __init__(self, report_template: PDFTemplateR):
+        super(ReportSetTimeOfCover, self).__init__(report_template)
+        self.set_page_idx(self.PG_NUM)
+        self.set_time_of_cover()
+
+    def set_time_of_cover(self):
+        """封面时间为当前时间，格式为 年-月-日"""
+        now_date = datetime.now().strftime("%Y-%m-%d")
+        self.report_draw_paragraph(self.report_tpl_pg_num, self.ELNAME, now_date)
 
 
 class ReportSenHost(PDFReport):
