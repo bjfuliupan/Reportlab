@@ -23,16 +23,19 @@ TitleFontName = "PuHuiTi-R"
 
 
 def get_string_width(text, font_name, font_size):
-    if font_name == "PuHuiTi-L":
-        return stringWidth(text, font_name, font_size) * 2
-    elif font_name == "PuHuiTi-R":
-        return stringWidth(text, font_name, font_size) * 2
-    else:
-        return stringWidth(text, font_name, font_size)
+    # if font_name == "PuHuiTi-L":
+    #     return stringWidth(text, font_name, font_size) * 2
+    # elif font_name == "PuHuiTi-R":
+    #     return stringWidth(text, font_name, font_size) * 2
+    # else:
+    #     return stringWidth(text, font_name, font_size)
+    return stringWidth(text, font_name, font_size)
 
 
 BodyFontColor = colors.HexColor(0x595757)
 TableTitleBGColor = colors.HexColor(0xf5f7f9)
+SplitLineColor = colors.HexColor(0xb4b4b5)
+HeaderFeetFontColor = colors.HexColor(0x9e9e9f)
 
 
 ALL_COLORS = [

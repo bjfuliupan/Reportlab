@@ -7,7 +7,7 @@ from reportlab.lib.attrmap import AttrMapValue
 from reportlab.lib.validators import isString, isNumberInRange, isColor, isBoolean, OneOf, isNumber, \
     isListOfStringsOrNone, isListOfStrings
 from reportlab.graphics.shapes import String, STATE_DEFAULTS, Rect
-from pdflib.ReportLabLib import DefaultFontName, ALL_COLORS, ChartsLegend, get_string_width
+from pdflib.ReportLabLib import DefaultFontName, ALL_COLORS, ChartsLegend, get_string_width, TitleFontName
 # from reportlab.pdfbase.pdfmetrics import stringWidth
 
 
@@ -51,8 +51,8 @@ class ReportLabPieChart(Pie):
         self.slices.strokeWidth = 0.5
 
         self.titleMain = main_title
-        self.titleMainFontName = DefaultFontName
-        self.titleMainFontSize = STATE_DEFAULTS['fontSize']
+        self.titleMainFontName = TitleFontName
+        self.titleMainFontSize = 12
         self.titleMainFontColor = colors.black
         if main_title_font_name is not None:
             self.titleMainFontName = main_title_font_name
@@ -71,8 +71,8 @@ class ReportLabPieChart(Pie):
             self.legendPositionType = legend_position
             self.legendAdjustX = legend_adjust_x
             self.legendAdjustY = legend_adjust_y
-            self.legendFontSize = 7
-            self.legendFontName = DefaultFontName
+            self.legendFontSize = 8
+            self.legendFontName = TitleFontName
 
             self.slices.strokeColor = colors.Color(0, 0, 0, 0)
             self.slices.fontColor = colors.Color(0, 0, 0, 0)
@@ -95,15 +95,25 @@ class ReportLabPieChart(Pie):
             self.legendCategoryNames = []
         legend_num = len(self.legendCategoryNames)
         data_num = len(self.data)
+        data_sum = 0
+        for i in range(data_num):
+            data_sum += self.data[i]
         for i in range(data_num):
             _slice = self.slices[i]
             if self.drawLegend is False:
                 _slice.strokeColor = ALL_COLORS[i]
             _slice.fillColor = ALL_COLORS[i]
+
+            data_percent = 0
+            if data_sum > 0:
+                data_percent = self.data[i] / data_sum * 100
+
             if i >= legend_num:
-                self.legendCategoryNames.append(("unknown", str(self.data[i])))
+                self.legendCategoryNames.append(("unknown",
+                                                 str(self.data[i]) + ' | ' + str(round(data_percent, 2)) + '%'))
             else:
-                self.legendCategoryNames[i] = (self.legendCategoryNames[i], " "+str(self.data[i]))
+                self.legendCategoryNames[i] = (self.legendCategoryNames[i],
+                                               " "+str(self.data[i]) + ' | ' + str(round(data_percent, 2)) + '%')
 
     def _calc_position(self):
         self.x += 30
@@ -139,6 +149,7 @@ class ReportLabPieChart(Pie):
             legend.adjustX = self.legendAdjustX
             legend.adjustY = self.legendAdjustY
 
+            legend.fontName = self.legendFontName
             legend.fontSize = self.legendFontSize
 
             if type(self.legendCategoryNames[i]) is tuple:

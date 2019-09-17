@@ -9,7 +9,7 @@ def test_pdf():
         pdf = PDFTemplateR("templates/template1.xml")
 
         # 设置标题显示内容
-        pdf.set_item_data(0, "title", content="刘攀的第一个PDF测试文档2")
+        pdf.set_item_data(1, "title", content="刘攀的第一个PDF测试文档2")
 
         # 设置描述说明内容
         description = ("刘攀的第一个PDF测试文档。第1行我们导入Paragraph和SimpleDocTemplate类。"
@@ -128,7 +128,7 @@ def test_pdf():
                        "令等底层的东西，从而可以方便我们的文档生成。打开hello.pdf看一看效果吧。这回就象是"
                        "真正的文档，\"Hello\"放在上面了。"
                        )
-        pdf.set_item_data(0, "description", content=description)
+        pdf.set_item_data(1, "description", content=description)
 
         data = [
             (11, 22, 33, 4444444444444444444444444444444444, 55),
@@ -138,10 +138,10 @@ def test_pdf():
         ]
         for i in range(90):
             data.append((11, 22, 33, 44, 55))
-        pdf.set_item_data(0, "table", content=data)
+        pdf.set_item_data(1, "table", content=data)
 
         # 设置折线图的数据
-        pdf.set_item_data(0, "line_chart",
+        pdf.set_item_data(1, "line_chart",
                           data=
                           [(13, 5, 20, 22, 37, 45, 19, 4, 13, 5, 20, 22, 37, 45, 19, 4, 13, 5, 20, 22, 37, 45, 19, 4),
                            (5, 20, 46, 38, 23, 21, 6, 14, 5, 20, 46, 38, 23, 21, 6, 14, 5, 20, 46, 38, 23, 21, 6, 14),
@@ -162,7 +162,7 @@ def test_pdf():
                                         "乒乓球", "篮球", "排球", "足球"])
 
         # 设置柱状图的数据
-        pdf.set_item_data(0, "bar_chart",
+        pdf.set_item_data(1, "bar_chart",
                           data=[(170, 165, 167, 172, 176, 180, 160, 166, 170, 165, 167, 172, 176, 180, 160, 166),
                                 (60, 65, 55, 58, 70, 72, 68, 80, 60, 65, 55, 58, 70, 72, 68, 80)],
                           category_names=["刘攀", "立杰", "陇辉", "自建", "高峰", "依琳", "张恒", "雪松",
@@ -176,7 +176,7 @@ def test_pdf():
         #     legend_names=["身高", "体重"])
 
         # 设置柱状图的数据
-        pdf.set_item_data(2, "pie_chart", data=[170, 165, 167, 172, 176, 180, 160, 166],
+        pdf.set_item_data(3, "pie_chart", data=[170, 165, 167, 172, 176, 180, 160, 166],
                           category_names=["刘攀", "李立杰", "陇辉", "自建", "高峰", "依琳", "张恒", "雪松"])
 
         # 生成PDF文档
