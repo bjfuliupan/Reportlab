@@ -11,9 +11,11 @@ pdf:
     coordinate                                 坐标系，取值：left-top、left-bottom。rect使用的坐标系。默认为left-top
     header_text                                页眉显示的文字。默认为空
     show_border                                是否显示各page和item的边界，用于debug或初期调试位置。取值：True、False。默认为False
+    background-image                           背景图片。填写背景图片的路径，支持jpg、png格式。
     pages:
         page0:
             rect                               当前页的有效区域。格式：[x, y, width, height]。必填项
+            type                               Page类型，标记正文或者封面。取值：body、cover。默认为body。
             auto_position                      是否自动排版。取值：True、False。默认为False
             x-padding                          水平方向各item之间的间距。设置自动排版时有效。默认为0
             y-padding                          垂直方向各item之间的间距。设置自动排版时有效。默认为0
@@ -138,8 +140,19 @@ pdf:
                     margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
                 /[item_name6]
-                
-                [item_name7]:
+
+                [item_name7]
+                    type                       image。该item为图片。必填项
+                    rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
+                    path                       图片的路径。必填项
+                    margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    margin-bottom              该item的下间距。取值：整数。正数增加间距，负数缩小间距。默认为0
+                    invalid                    是否无效。取值：True、False。默认为False。当设为True时，该item不显示。默认为False
+                /[item_name7]
+
+                [item_name8]:
                     type                       box-container。该item为BOX容器。必填项
                     rect                       该item的绘画区域。格式：[x, y, width, height]。该坐标相对于page的rect而言。必填项
                     x-padding                  水平方向，Box中各item之间的间距。设置自动排版时有效。默认为0
@@ -153,7 +166,7 @@ pdf:
                     items:
                         ...                    同Page的items。各item的rect是相对于box的rect而言的
                     /items
-                /[item_name7]
+                /[item_name8]
             /items
         /page0
         page1:
