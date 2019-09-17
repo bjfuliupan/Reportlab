@@ -3,14 +3,14 @@
     <file_name>test_template.pdf</file_name>
     <author>刘攀</author>
     <title>志翔科技探针管理系统日志报告</title>
-    <page_size>[630, 891]</page_size>
+    <page_size>[630, 890]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>志翔科技探针管理系统日志报告</header_text>
-    <!--<show_border>True</show_border>-->
+    <show_border>True</show_border>
     <pages>
         <page0>
-            <rect>[90, 80, 450, 731]</rect>
-            <auto_position>True</auto_position>
+            <rect>[54, 65, 522, 760]</rect>
+            <auto_position>False</auto_position>
             <x-padding>10</x-padding>
             <y-padding>10</y-padding>
             <align-type>middle</align-type>
@@ -18,42 +18,43 @@
                 <title>
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 30]</rect>
+                    <rect>[0, 215, 522, 30]</rect>
                     <style>Title</style>
                     <content>志翔科技探针管理系统日志报告</content>
                     <!--必填项-->
                     <position>middle</position>
                     <font_color>Color(0.5,0.5,0.5,1)</font_color>
-                    <font_size>20</font_size>
+                    <font_size>24</font_size>
                 </title>
 
                 <Introduction>
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
-                    <style>BodyText</style>
+                    <rect>[0, 271, 522, 30]</rect>
+                    <style>Title</style>
                     <content>包含折线图、饼图、柱状图和表格</content>
                     <!--必填项-->
-                    <font_size>10</font_size>
-                    <indent_flag>1</indent_flag>
+                    <font_size>18</font_size>
+<!--                    <indent_flag>1</indent_flag>-->
+                    <position>middle</position>
                 </Introduction>
 
             </items>
         </page0>
         <page1>
             <!--探针主机日志分析页面-->
-            <rect>[90, 80, 450, 731]</rect>
+            <rect>[54, 65, 522, 760]</rect>
             <auto_position>True</auto_position>
-            <x-padding>10</x-padding>
-            <y-padding>25</y-padding>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
             <align-type>middle</align-type>
-<!--            <invalid>False</invalid>-->
+            <!--<invalid>False</invalid>-->
             <items>
                 <section_heading>
                     <!--段落标题-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 215, 0]</rect>
                     <content><![CDATA[探针主机日志]]> </content>
                     <!--必填项-->
                     <indent_flag>0</indent_flag>
@@ -64,11 +65,14 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <indent_flag>1</indent_flag>
                     <invalid>True</invalid>
+                    <font_size>12</font_size>
+<!--                    <style>Normal</style>-->
+                    <font_name>PuHuiTi-L</font_name>
                 </section_desc2>
 
                 <section_operation_trend_line_chart>
@@ -97,7 +101,7 @@
 
                 <section_log_distribution_pie_chart>
                     <type>pie_chart</type>
-                    <rect>[0, 0, 300, 300]</rect>
+                    <rect>[0, 0, 500, 300]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机运行日志 - 运行日志分布展示</main_title>

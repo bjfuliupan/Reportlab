@@ -14,6 +14,7 @@ from template_table3 import ReportSenHost
 from template_table3 import ReportSenNetwork
 from template_table3 import ReportSenSafe
 from template_table3 import ReportSenTrust
+from template_table3 import ReportSetTimeOfCover
 from utils import util
 from utils import constant
 
@@ -109,6 +110,8 @@ def gen_report(*args, **kwargs):
     report_template = PDFTemplateR(template_path)
     report_template.set_pdf_file(".".join([report_name, report_format]))
     report_template.set_header_text(report_name)
+    # 设置封面时间
+    ReportSetTimeOfCover(report_template)
 
     for page in page_info:
 
