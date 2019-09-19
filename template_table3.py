@@ -17,8 +17,8 @@ class DummyOb(object):
     process original data class
     """
 
-    # ruleng_url = "http://192.168.11.200:8002"
-    ruleng_url = "http://192.168.10.222:8002"
+    ruleng_url = "http://192.168.11.200:8002"
+    # ruleng_url = "http://192.168.10.222:8002"
     # ruleng_url = "http://192.168.8.60:8002"
     post_time_out = 10000  # 秒
 
@@ -495,7 +495,7 @@ class PDFReport(DummyOb):
     def report_draw_line(self, page_idx, elname,
                          datas, legend_names, category_names,
                          has_description=False, description_elname="",
-                         description_intro=""):
+                         description_intro="", is_flow=False):
         """
         自定义报告画线图
         :param page_idx: 当前操作页面的page index
@@ -512,6 +512,9 @@ class PDFReport(DummyOb):
         if has_description:
             # 设置描述说明
             self.report_tpl.set_item_data(page_idx, description_elname, content=description_intro)
+
+        if is_flow:
+            datas = [[util.trans_bit_to_mb(_) for _ in l] for l in datas]
 
         self.report_tpl.set_item_data(page_idx, elname,
                                       data=datas, category_names=category_names, legend_names=legend_names)
@@ -558,17 +561,17 @@ class PDFReport(DummyOb):
             legend_names = bar_chart_data["legend_names"]
             data = bar_chart_data["datas"]
 
-            # if len(category_names) < limit:
-            #     if grouping:
-            #         for group_name in self.sensor_group_map.values():
-            #             if group_name not in category_names and len(category_names) < limit:
-            #                 category_names.append(group_name)
-            #                 data[0].append(0)
-            #     else:
-            #         for sensor_id in self.sensors:
-            #             if sensor_id not in category_names and len(category_names) < limit:
-            #                 category_names.append(sensor_id)
-            #                 data[0].append(0)
+            if len(category_names) < limit:
+                if grouping:
+                    for group_name in self.sensor_group_map.values():
+                        if group_name not in category_names and len(category_names) < limit:
+                            category_names.append(group_name)
+                            data[0].append(0)
+                else:
+                    for sensor_id in self.sensors:
+                        if sensor_id not in category_names and len(category_names) < limit:
+                            category_names.append(sensor_id)
+                            data[0].append(0)
 
             # 触发隔离违规定义TOP10 不需要后缀
             item_name = elname_prefix \
@@ -583,6 +586,16 @@ class PDFReport(DummyOb):
                                   "SENSOR_PSYSTEM_FILE",
                                   "SENSOR_FILEPARSE_LOG",
                                   "SENSOR_POLICY_UPDATE_DAILY",
+                                  "USB_IN",
+                                  "USB_OUT",
+                                  "SEC_USB_IN",
+                                  "SEC_USB_OUT",
+                                  "CD_IN",
+                                  "CD_OUT",
+                                  "SHARE_IN",
+                                  "SHARE_OUT",
+                                  "PRINT",
+                                  "EXTERNAL",
                                   ] \
                 else f"{elname_prefix}{log_format}"
 
@@ -773,11 +786,9 @@ class ReportSenHost(PDFReport):
                 "line": "section_operation_trend_line_chart",
                 "pie": "section_log_distribution_pie_chart",
                 "bar": "sensor_top_",
-                "bar_group": "sensor_group_top_"
+                "bar_group": "sensor_group_top_",
+                "paragraph": "section_desc",
             },
-            "description_elname": {
-                "line": "section_desc2"
-            }
         },
     }
 
@@ -794,32 +805,32 @@ class ReportSenHost(PDFReport):
             tab_config["fmts"] = items["type"]
             self.items["pages"].append(tab_config)
 
-
     def draw_page(self):
         """
         """
         for page in self.items["pages"]:
+            # 设置本页日志报告描述信息
+            content = (
+                f"""
+                探针主机网络管控报告包括：运行趋势、运行日志分布展示、探针组Top10、探针Top10；日志类型：{util.convert_log_format(page['fmts'])}；
+                时间范围: {util.payload_time_to_str(self.begin_t)} 至 {util.payload_time_to_str(self.end_t)}；
+                注：运行日志分布展示图包含所有探针主机日志：{util.convert_log_format(self.ALL_FMTS)}
+                """
+            )
+
+            self.report_draw_paragraph(self.report_tpl_pg_num, page["elname"]["paragraph"], content)
+
             # 折线图
             line_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
                                         page_name=page["page_name"],
                                         item_id=page["item_id"]["line"])
             if line_ret:
-                desc = (
-                    f"""
-                    探针主机网络管控报告报告
-                    分析图：运行趋势、运行日志分布展示、探针组Top10、探针Top10
-                    日志类型: {line_ret['legend_names']}
-                    时间范围: {line_ret['category_names'][0]} 至 {line_ret['category_names'][-1]}
-                    """
-                )
                 self.report_draw_line(self.report_tpl_pg_num,
                                       page["elname"]["line"],
                                       line_ret['datas'],
                                       line_ret['legend_names'],
-                                      line_ret['category_names'],
-                                      has_description=True,
-                                      description_elname=page["description_elname"]["line"],
-                                      description_intro=desc)
+                                      line_ret['category_names']
+                                      )
 
             # 饼图
             pie_ret = self.making_data(chart_typ="pie", fmts=page["all_fmts"],
@@ -838,7 +849,7 @@ class ReportSenHost(PDFReport):
 
 
             if sensor_bar_ret:
-                self.report_draw_bar(
+                self.report_draw_bar1(
                     self.report_tpl_pg_num,
                     page["elname"]["bar"],
                     sensor_bar_ret
@@ -878,11 +889,13 @@ class ReportSenSafe(PDFReport):
 
     TAB_CONFIG_MAP = {
         "1": {
+            "page_idx": 2,
             "page_name": "violation_define",
             "rule_id": "00",
             "search_index": "log*",
             "all_fmts": ALL_VIOLATION_TRIGGERED_FMTS,
             "fmts": ALL_VIOLATION_TRIGGERED_FMTS,
+            "paragraph": "探针安全日志-违规定义日志报告包括：违规定义日志趋势、违规定义日志分布展示、触发隔离违规定义探针组Top10、触发隔离违规定义探针Top10；",
             "item_id": {
                 "line": 0,
                 "line_with_resolved": 1,
@@ -893,15 +906,18 @@ class ReportSenSafe(PDFReport):
                 "line": "violation_triggered_trend_line_chart",
                 "pie": "violation_triggered_distrbution",
                 "bar": "violation_triggered_sensor_top",
-                "bar_group": "violation_triggered_sensor_group_top"
+                "bar_group": "violation_triggered_sensor_group_top",
+                "paragraph": "violation_triggered_desc",
             },
         },
         "2": {
+            "page_idx": 3,
             "page_name": "log_classify",
             "rule_id": "00",
             "search_index": "log*",
             "all_fmts": ALL_VIOLATION_DETAIL_FMTS,
             "fmts": [],
+            "paragraph": "探针安全日志-违规详情日志报告包括：违规详情日志运行趋势、违规详情日志分布展示、探针组Top10、探针Top10；",
             "item_id": {
                 "line": 0,
                 "pie": 1,
@@ -911,15 +927,18 @@ class ReportSenSafe(PDFReport):
                 "line": "violation_detail_trend_line_chart",
                 "pie": "violation_detail_distrbution",
                 "bar": "violation_detail_distrbution_sensor_top_",
-                "bar_group": "violation_detail_distrbution_sensor_group_top_"
+                "bar_group": "violation_detail_distrbution_sensor_group_top_",
+                "paragraph": "violation_detail_desc",
             }
         },
         "3": {
+            "page_idx": 4,
             "page_name": "log_classify",
             "rule_id": "00",
             "search_index": "log*",
             "all_fmts": ALL_VIOLATION_OTHER_FMTS,
             "fmts": [],
+            "paragraph": "探针安全日志-其他安全日志报告包括：主机安全趋势、其他安全日志分布展示、探针组Top10、探针Top10；",
             "item_id": {
                 "line": 0,
                 "pie": 1,
@@ -929,7 +948,8 @@ class ReportSenSafe(PDFReport):
                 "line": "violation_others_trend_line_chart",
                 "pie": "violation_others_distrbution",
                 "bar": "violation_others_sensor_top_",
-                "bar_group": "violation_others_sensor_group_top_"
+                "bar_group": "violation_others_sensor_group_top_",
+                "paragraph": "violation_others_desc"
             }
         },
     }
@@ -937,7 +957,7 @@ class ReportSenSafe(PDFReport):
     def __init__(self, report_template: PDFTemplateR):
         super(ReportSenSafe, self).__init__(report_template)
         # 设置 page num
-        self.set_page_idx(2)
+        # self.set_page_idx(2)
         self.items = {
             "pages": []
         }
@@ -959,6 +979,19 @@ class ReportSenSafe(PDFReport):
         遍历item，获取数据并生成图
         """
         for page in self.items["pages"]:
+
+            self.set_page_idx(page["page_idx"])
+
+            content = (
+                f"""
+                {page["paragraph"]}
+                日志类型：{util.convert_log_format(page['fmts'])}日志；
+                时间范围: {util.payload_time_to_str(self.begin_t)} 至 {util.payload_time_to_str(self.end_t)}；
+                """
+            )
+
+            self.report_draw_paragraph(self.report_tpl_pg_num, page["elname"]["paragraph"], content)
+
             # 折线图
             if page["page_name"] == "violation_define":
                 self.draw_violation_define_line_chart(page)
@@ -1059,6 +1092,8 @@ class ReportSenNetwork(PDFReport):
     PG_NUM = 3
     TAB_CONFIG_MAP = {
         "1": {
+            "paragraph": "访问网络管控日志包括：访问管控策略日志运行趋势、访问管控策略违规探针组Top10、访问管控策略违规探针Top10、访问管控策略违规目的Top10、访问管控策略违规规则Top10",
+            "pg_idx": 5,
             "page_name": "network_violation",
             "rule_id": "00",
             "search_index": "datamap_precompute*",
@@ -1076,6 +1111,7 @@ class ReportSenNetwork(PDFReport):
                 "bar_sensor": "network_violation_sensor_top10",
                 "bar_dest": "network_violation_dest_top10",
                 "bar_rule": "network_violation_rule_top10",
+                "paragraph": "network_violation_desc"
             },
             "description_elname": {
                 "line": "network_violation_desc",
@@ -1088,6 +1124,8 @@ class ReportSenNetwork(PDFReport):
             }
         },
         "2": {
+            "paragraph": "流量管控策略日志包括：流量管控策略日志运行趋势、流量管控策略违规探针组Top10、流量管控策略违规探针Top10、流量管控策略违规目的Top10、流量管控策略违规规则Top10",
+            "pg_idx": 6,
             "page_name": "netflow_violation",
             "rule_id": "00",
             "search_index": "log*",
@@ -1105,6 +1143,7 @@ class ReportSenNetwork(PDFReport):
                 "bar_sensor": "netflow_violation_sensor_top10",
                 "bar_dest": "netflow_violation_dest_top10",
                 "bar_rule": "netflow_violation_rule_top10",
+                "paragraph": "netflow_violation_desc"
             },
             "description_elname": {
                 "line": "netflow_violation_desc",
@@ -1117,24 +1156,28 @@ class ReportSenNetwork(PDFReport):
             }
         },
         "3": {
+            "paragraph": "平均流量统计日志包括：平均上行流量统计趋势、平均下行流量统计趋势",
+            "pg_idx": 7,
             "page_name": "sensor_netio",
             "rule_id": "00",
             "search_index": "log*",
             # "fmts": "SENSOR_NETIO",
+            "item_id": {},
             # "item_id": {
             #     "download": 0,
             #     "upload": 1,
             # },
-            # "elname": {
-            #     "upload": "sensor_netio_aver_upload_flow_line_chart",
-            #     "download": "sensor_netio_aver_download_flow_line_chart"
-            # }
+            "elname": {
+                "upload": "sensor_netio_aver_upload_flow_line_chart",
+                "download": "sensor_netio_aver_download_flow_line_chart",
+                "paragraph": "average_flow_desc",
+            }
         },
     }
 
     def __init__(self, report_template: PDFTemplateR):
         super(ReportSenNetwork, self).__init__(report_template)
-        self.set_page_idx(self.PG_NUM)
+        # self.set_page_idx(self.PG_NUM)
         self.items = {
             "pages": []
         }
@@ -1145,21 +1188,37 @@ class ReportSenNetwork(PDFReport):
 
             # 上下行流量
             if tab == "3":
-                # 上行流量
-                if items["type"][0] == "1":
-                    tab_config["item_id"] = 1
-                    tab_config["elname"] = "sensor_netio_aver_upload_flow_line_chart"
-                # 下行流量
-                else:
-                    tab_config["item_id"] = 0
-                    tab_config["elname"] = "sensor_netio_aver_download_flow_line_chart"
+                for typ in items["type"]:
+                    # 上行流量
+                    if typ == "1":
+                        tab_config["item_id"]['upload'] = 1
+                    # 下行流量
+                    elif typ == "2":
+                        tab_config["item_id"]['download'] = 0
+                    else:
+                        print(f"Not support typ: {typ}")
+                        continue
 
-            self.items["pages"].append(tab_config)
+                self.items["pages"].append(tab_config)
+            else:
+                self.items["pages"].append(tab_config)
 
     def draw_page(self):
         """
         """
+        util.pretty_print(self.items)
         for page in self.items["pages"]:
+
+            self.set_page_idx(page["pg_idx"])
+
+            content = (
+                f"""
+                {page["paragraph"]}
+                时间范围: {util.payload_time_to_str(self.begin_t)} 至 {util.payload_time_to_str(self.end_t)}；
+                """
+            )
+
+            self.report_draw_paragraph(self.report_tpl_pg_num, page["elname"]["paragraph"], content)
 
             if page["page_name"] == "sensor_netio":
                 self.draw_netio_chart(page)
@@ -1168,23 +1227,24 @@ class ReportSenNetwork(PDFReport):
 
     def draw_netio_chart(self, page):
         # for direction in ["upload", "download"]:
-        upload_line_ret = self.making_data(chart_typ="line",
-                                           page_name=page["page_name"],
-                                           item_id=page["item_id"],
-                                           search_index=page["search_index"],
-                                           need_second=True)
-        if upload_line_ret:
-            datas = [[util.trans_bit_to_mb(_) for _ in upload_line_ret["datas"][0]],
-                     [util.trans_bit_to_mb(_) for _ in upload_line_ret["second_datas"]]]
-            # datas.append([util.trans_bit_to_mb(_) for _ in upload_line_ret["second_datas"]])
-            legend_names = ["文件访问总量", "网络平均访问量"]
-            self.report_draw_line(
-                self.report_tpl_pg_num,
-                elname=page["elname"],
-                datas=datas,
-                legend_names=legend_names,
-                category_names=upload_line_ret["category_names"]
-            )
+        for direction in page["item_id"].keys():
+            upload_line_ret = self.making_data(chart_typ="line",
+                                               page_name=page["page_name"],
+                                               item_id=page["item_id"][direction],
+                                               search_index=page["search_index"],
+                                               need_second=True)
+            if upload_line_ret:
+                datas = [[util.trans_bit_to_mb(_) for _ in upload_line_ret["datas"][0]],
+                         [util.trans_bit_to_mb(_) for _ in upload_line_ret["second_datas"]]]
+                # datas.append([util.trans_bit_to_mb(_) for _ in upload_line_ret["second_datas"]])
+                legend_names = ["文件访问总量", "网络平均访问量"]
+                self.report_draw_line(
+                    self.report_tpl_pg_num,
+                    elname=page["elname"][direction],
+                    datas=datas,
+                    legend_names=legend_names,
+                    category_names=upload_line_ret["category_names"]
+                )
 
     def draw_network_control_flow_chart(self, page):
         # 折线图
@@ -1261,10 +1321,11 @@ class ReportSenTrust(PDFReport):
     """
     端口开放管理日志生成
     """
-    OPEN_PORT_PG_NUM = 4
-    SAFE_BASE_PG_NUM = 5
+    OPEN_PORT_PG_NUM = 8
+    SAFE_BASE_PG_NUM = 9
     TYPE_CONFIG_MAP = {
         "SENSOR_OPEN_PORT": {
+            "pg_idx": 8,
             "page": "open_port",
             "page_name": "trust",
             "rule_id": "00",
@@ -1281,6 +1342,7 @@ class ReportSenTrust(PDFReport):
                 "bar_alarm_sensor": "open_port_alarm_sensor_top10",
                 "bar_deny_group": "open_port_deny_sensor_group_top10",
                 "bar_alarm_group": "open_port_alarm_sensor_group_top10",
+                "paragraph": "open_port_desc",
             },
             "description_elname": {
                 "line": "open_port_desc",
@@ -1288,9 +1350,13 @@ class ReportSenTrust(PDFReport):
             "level": {
                 "deny": "DENY",
                 "alarm": "ALARM",
-            }
+            },
+            "paragraph": "端口开放管理日志包括阻止趋势和预警趋势，其中阻止趋势包括：端口开放管理日志趋势图、阻止次数探针组Top10、预警数量探针组Top10、"
+                         "阻止次数探针Top10、预警数量探针Top10；预警趋势包括：端口开放管理日志趋势图、阻止次数探针组Top10、预警数量探针组Top10"
+                         "阻止次数探针Top10、预警数量探针Top10",
         },
         "SENSOR_CREDIBLE": {
+            "pg_idx": SAFE_BASE_PG_NUM,
             "page": "safe_base",
             "page_name": "trust",
             "rule_id": "00",
@@ -1310,6 +1376,7 @@ class ReportSenTrust(PDFReport):
                 "bar_alarm_group": "trust_alarm_sensor_group_top10",
                 "bar_alarm_app": "trust_app_alarm_sensor_top10",
                 "bar_deny_app": "trust_app_deny_sensor_top10",
+                "paragraph": "trust_desc"
             },
             "description_elname": {
                 "line": "trust_desc",
@@ -1317,7 +1384,11 @@ class ReportSenTrust(PDFReport):
             "level": {
                 "deny": "DENY",
                 "alarm": "ALARM",
-            }
+            },
+            "paragraph": "应用安全基线日志包括阻止趋势和预警趋势，其中阻止趋势包括：应用安全基线日志趋势图、阻止次数探针组Top10、预警数量探针组Top10、"
+                         "阻止次数探针Top10、预警数量探针Top10、阻止次数可信应用Top10、预警数量可信应用Top10；"
+                         "预警趋势包括：端口开放管理日志趋势图、阻止次数探针组Top10、预警数量探针组Top10"
+                         "阻止次数探针Top10、预警数量探针Top10、阻止次数可信应用Top10、预警数量可信应用Top10",
         },
     }
 
@@ -1337,6 +1408,18 @@ class ReportSenTrust(PDFReport):
 
     def draw_page(self):
         for page in self.items["pages"]:
+
+            self.set_page_idx(page["pg_idx"])
+
+            content = (
+                f"""
+                {page["paragraph"]}
+                日志类型：{util.convert_log_format(page['fmts'])}日志；
+                时间范围: {util.payload_time_to_str(self.begin_t)} 至 {util.payload_time_to_str(self.end_t)}；
+                """
+            )
+            self.report_draw_paragraph(self.report_tpl_pg_num, page["elname"]["paragraph"], content)
+
             if page["page"] == "open_port":
                 self.set_page_idx(self.OPEN_PORT_PG_NUM)
             elif page["page"] == "safe_base":
@@ -1541,7 +1624,11 @@ class ReportFileOperation(PDFReport):
     文件出入日志
     """
 
-    PG_NUM = 7
+    PG_NUM = 11
+    PARAGRAPH = "文件出入日志报告包括：统计数量和统计流量，其中统计数量包括：文件出入日志运行趋势、出入数量探针组Top10、出入流量探针组Top10、" \
+                 "出入数量探针Top10、出入流量探针Top10；统计流量包括：文件出入日志运行趋势、出入数量探针组Top10、出入流量探针组Top10、" \
+                 "出入数量探针Top10、出入流量探针Top10."
+    PARAGRAPH_ELNAME = "file_operate_desc"
 
     TYPE_CONFIG_MAP = {
         "USB": {
@@ -1803,7 +1890,8 @@ class ReportFileOperation(PDFReport):
                 "file_operate_flow_line_chart_EXTERNAL": {
                     "chart_type": "line",
                     "item_id": 1,
-                    "access_format": ["EXTERNAL"]
+                    "access_format": ["EXTERNAL"],
+                    "is_flow": True,
                 },
                 "file_operate_sensor_group_num_top_EXTERNAL": {
                     "chart_type": "bar",
@@ -1854,15 +1942,21 @@ class ReportFileOperation(PDFReport):
         }
 
     def add_items(self, items):
-        self.items["pages"].append(
-            self.TYPE_CONFIG_MAP[items["type"][0]]
-        )
+        # print('xxx', items)
+        for typ in items["type"]:
+            self.items['pages'].append(self.TYPE_CONFIG_MAP[typ])
+        # self.items["pages"].append(
+        #     self.TYPE_CONFIG_MAP[items["type"][0]]
+        # )
 
     def draw_page(self):
         """
         draw 文件出入
         :return:
         """
+
+        content = (self.PARAGRAPH)
+        self.report_draw_paragraph(self.report_tpl_pg_num, self.PARAGRAPH_ELNAME, content)
 
         for page in self.items["pages"]:
             # Todo: init title or description
@@ -1918,16 +2012,27 @@ class ReportFileOperation(PDFReport):
 
                     self.report_draw_line(self.report_tpl_pg_num, element_name, datas,
                                           legend_names=legend_names,
-                                          category_names=category_names)
+                                          category_names=category_names,
+                                          is_flow=v.get("is_flow", False))
                 elif v["chart_type"] == "bar":
                     # drawbar
 
                     _group = True if len(merged_data.keys()) > 1 else False
-                    self.report_draw_bar1(self.report_tpl_pg_num,
+
+                    if _group:
+
+                        self.report_draw_bar1(self.report_tpl_pg_num,
                                           elname=element_name,
                                           bar_infos=merged_data,
                                           group_bar=_group,
                                           is_flow=v.get("is_flow"))
+                    else:
+                        self.report_draw_bar(
+                            self.report_tpl_pg_num,
+                            elname_prefix=element_name,
+                            bar_infos=merged_data,
+                            is_flow=v.get("is_flow")
+                        )
 
                 elif v["chart_type"] == "pie":
                     # drawpie
@@ -1938,9 +2043,11 @@ class ReportFileOperation(PDFReport):
 
 class ReportRunLog(PDFReport):
     """运行日志"""
-    PG_NUM = 8
+    PG_NUM = 12
     TAB_CONFIG_MAP = {
         "1": {
+            "paragraph": "至明卫日志-运行日志包含：至明卫历史状态对比分析图、平均在线数量探针组Top10、平均离线数量探针组Top10",
+            "pg_idx": 12,
             "page_name": "sensor_client",
             "rule_id": "00",
             "search_index": "log*",
@@ -1959,10 +2066,15 @@ class ReportRunLog(PDFReport):
                     "item_id": 2,
                     "chart_typ": "bar",
                     "grouping": True,
-                }
+                },
+                "running_desc": {
+                    "chart_typ": "paragraph",
+                },
             }
         },
         "2": {
+            "paragraph": "至明卫日志-策略变更日志包含：策略未更新探针数量趋势图",
+            "pg_idx": 13,
             "page_name": "sensor_client",
             "rule_id": "00",
             "search_index": "log*",
@@ -1971,14 +2083,17 @@ class ReportRunLog(PDFReport):
                 "policy_change_log": {
                     "item_id": 3,
                     "chart_typ": "line"
-                }
+                },
+                "policy_desc": {
+                    "chart_typ": "paragraph",
+                },
             }
         }
     }
 
     def __init__(self, report_template: PDFTemplateR):
         super(ReportRunLog, self).__init__(report_template)
-        self.set_page_idx(self.PG_NUM)
+        # self.set_page_idx(self.PG_NUM)
         self.items = {
             "pages": []
         }
@@ -1989,7 +2104,13 @@ class ReportRunLog(PDFReport):
 
     def draw_page(self):
         for page in self.items["pages"]:
+            self.set_page_idx(page['pg_idx'])
+
             for elname in page["elname"]:
+
+                if page["elname"][elname]["chart_typ"] == "paragraph":
+                    self.report_draw_paragraph(self.report_tpl_pg_num, elname, page['paragraph'])
+                    continue
 
                 _grouping = True if page["elname"][elname].get("grouping") else False
 

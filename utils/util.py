@@ -7,6 +7,7 @@ from datetime import timedelta
 from datetime import timezone
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
+from utils import constant
 
 import requests
 
@@ -116,3 +117,13 @@ def parse_url(url) -> tuple:
     up = urlparse(url)
     query_params = parse_qs(up.query)
     return up.path, query_params
+
+
+def convert_log_format(fmts: list):
+    """将探针format转换为中文
+    :param fmts: 探针format列表
+    """
+    try:
+        return [constant.LogConstant.FORMAT_DETAIL_MAPPING[_] for _ in fmts]
+    except KeyError:
+        return fmts

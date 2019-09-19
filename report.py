@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
+import traceback
 
 from dateutil.relativedelta import relativedelta
 
@@ -70,6 +71,7 @@ def parse_url(url: str):
     :param url: http url 包含页面资源路径和参数
     :return:
     """
+    print(f"url: {url}")
     ret = {}
 
     url_obj = urlparse(url)
@@ -117,32 +119,35 @@ def gen_report(*args, **kwargs):
 
         # if page["page_source_name"] != "主机运行日志":
         #     continue
+        try:
+            custom_name = page["custom_name"]
+            page_source_name = page["page_source_name"]
+            page_source_url = page["page_source_url"]
+            sort_number = page["sort_number"]
+            # 关键文件分析日志pdf图需要该字段
+            rule_uuid = page.get("rule_uuid")
 
-        custom_name = page["custom_name"]
-        page_source_name = page["page_source_name"]
-        page_source_url = page["page_source_url"]
-        sort_number = page["sort_number"]
-        # 关键文件分析日志pdf图需要该字段
-        rule_uuid = page.get("rule_uuid")
+            params = parse_url(page_source_url)
+            params.update(
+                {
+                    "rule_uuid": rule_uuid
+                }
+            )
+            util.pretty_print(params)
 
-        params = parse_url(page_source_url)
-        params.update(
-            {
-                "rule_uuid": rule_uuid
-            }
-        )
-        util.pretty_print(params)
+            _cls = REPORT_PAGE_CLASS_MAPPING[page_source_name](report_template)
+            print(f"++++++++++++++++++{page_source_name}++++++++++++++++++")
+            _cls.indicate_date_scope(payload_start_time, payload_end_time)
+            _cls.indicate_groups(sensor_id_group_mapping)
+            _cls.indicate_sensors(sensor_ids)
+            _cls.indicate_page_name(custom_name)
+            _cls.indicate_sort_number(sort_number)
+            _cls.add_items(params)
 
-        _cls = REPORT_PAGE_CLASS_MAPPING[page_source_name](report_template)
-        print(f"++++++++++++++++++{page_source_name}++++++++++++++++++")
-        _cls.indicate_date_scope(payload_start_time, payload_end_time)
-        _cls.indicate_groups(sensor_id_group_mapping)
-        _cls.indicate_sensors(sensor_ids)
-        _cls.indicate_page_name(custom_name)
-        _cls.indicate_sort_number(sort_number)
-        _cls.add_items(params)
-
-        _cls.draw_page()
+            _cls.draw_page()
+        except Exception as e:
+            print(e)
+            print(traceback.format_exc())
 
     report_template.draw()
     print("report draw done")

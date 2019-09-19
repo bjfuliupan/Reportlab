@@ -6,7 +6,7 @@
     <page_size>[630, 890]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>志翔科技探针管理系统日志报告</header_text>
-    <show_border>True</show_border>
+<!--    <show_border>True</show_border>-->
     <pages>
         <page0>
             <rect>[54, 65, 522, 760]</rect>
@@ -39,6 +39,12 @@
                     <position>middle</position>
                 </Introduction>
 
+                <image>
+                    <type>image</type>
+                    <rect>[0, 0, 522, 760]</rect>
+                    <path>images/cover-bg.png</path>
+                </image>
+
             </items>
         </page0>
         <page1>
@@ -61,7 +67,7 @@
                     <invalid>True</invalid>
                 </section_heading>
 
-                <section_desc2>
+                <section_desc>
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
@@ -71,9 +77,9 @@
                     <indent_flag>1</indent_flag>
                     <invalid>True</invalid>
                     <font_size>12</font_size>
-<!--                    <style>Normal</style>-->
+                    <!--<style>Normal</style>-->
                     <font_name>PuHuiTi-L</font_name>
-                </section_desc2>
+                </section_desc>
 
                 <section_operation_trend_line_chart>
                     <!--必填项-->
@@ -101,11 +107,11 @@
 
                 <section_log_distribution_pie_chart>
                     <type>pie_chart</type>
-                    <rect>[0, 0, 500, 300]</rect>
+                    <rect>[0, 0, 208, 208]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机运行日志 - 运行日志分布展示</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>8</main_title_font_size>
                     <invalid>True</invalid>
                 </section_log_distribution_pie_chart>
 
@@ -127,7 +133,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机安全模式登录日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -141,7 +147,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机多操作系统安装日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -155,7 +161,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机虚拟机安装日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -169,7 +175,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机服务项变更日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -183,7 +189,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机服务运行日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -197,7 +203,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机硬件变更日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -211,7 +217,7 @@
                     <!--<bar_style>vertical</bar_style>-->
                     <!--<data> </data>-->
                     <!--&lt;!&ndash;必填项&ndash;&gt;-->
-                    <!--<main_title_font_size>10</main_title_font_size>-->
+                    <!--<main_title_font_size>9</main_title_font_size>-->
                 <!--</sensor_group_top_SENSOR_SOFTWARE_CHANGE>-->
 
                 <sensor_group_top_SENSOR_SOFTWARE_CHANGE>
@@ -221,7 +227,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机软件变更日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -235,7 +241,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机开关机记录日志 - 探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -260,7 +266,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机安全模式登录日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -274,7 +280,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机多操作系统安装日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -288,7 +294,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机虚拟机安装日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -302,7 +308,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机服务项变更日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -316,7 +322,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机服务运行日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -330,7 +336,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机硬件变更日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -344,7 +350,7 @@
                     <!--<bar_style>vertical</bar_style>-->
                     <!--<data> </data>-->
                     <!--&lt;!&ndash;必填项&ndash;&gt;-->
-                    <!--<main_title_font_size>10</main_title_font_size>-->
+                    <!--<main_title_font_size>9</main_title_font_size>-->
                 <!--</sensor_top_SENSOR_SOFTWARE_CHANGE>-->
 
                 <sensor_top_SENSOR_SOFTWARE_CHANGE>
@@ -354,7 +360,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机软件变更日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -368,7 +374,7 @@
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针主机开关机记录日志 - 探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -378,12 +384,23 @@
         </page1>
         <page2>
             <!--探针安全日志分析页分为三大块分别为 违规定义日志分析图， 违规详情日志， 其他安全日志-->
-            <rect>[90, 80, 450, 731]</rect>
+            <rect>[54, 65, 522, 760]</rect>
             <auto_position>True</auto_position>
-            <x-padding>10</x-padding>
-            <y-padding>10</y-padding>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
             <align-type>middle</align-type>
             <items>
+                <violation_desc>
+                    <!--探针安全日志-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 522, 50]</rect>
+                    <content> </content>
+                    <invalid>True</invalid>
+                    <indent_flag>1</indent_flag>
+                    <font_siza>12</font_siza>
+                    <font_name>PuHuiTi-L</font_name>
+                </violation_desc>
+
                 <violation_triggered_heading>
                     <!--违规定义日志-->
                     <!--必填项-->
@@ -400,21 +417,24 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <!--<style>Normal</style>-->
+                    <font_name>PuHuiTi-L</font_name>
                 </violation_triggered_desc>
 
                 <violation_triggered_trend_line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>探针安全日志 - 违规定义日志趋势</main_title>
+                    <main_title>违规定义日志 - 违规定义日志趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>(次)</x_desc>
@@ -422,22 +442,22 @@
 
                 <violation_triggered_distrbution>
                     <type>pie_chart</type>
-                    <rect>[0, 0, 300, 300]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>探针安全日志 - 违规定义日志分布展示</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规定义日志 - 违规定义日志分布展示</main_title>
+                    <main_title_font_size>8</main_title_font_size>
                 </violation_triggered_distrbution>
 
                 <violation_triggered_sensor_group_top>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 触发隔离违规定义探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规定义日志 - 触发隔离违规定义探针组Top10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -448,18 +468,27 @@
                 <violation_triggered_sensor_top>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 触发隔离违规定义探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规定义日志 - 触发隔离违规定义探针Top10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(次)</x_desc>
                 </violation_triggered_sensor_top>
-
+            </items>
+        </page2>
+        <page3>
+            <!--探针安全日志分析页分为三大块分别为 违规定义日志分析图， 违规详情日志， 其他安全日志-->
+            <rect>[54, 65, 522, 760]</rect>
+            <auto_position>True</auto_position>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
+            <align-type>middle</align-type>
+            <items>
                 <!-- 违规详情分割线 -->
 
                 <!--违规详情-->
@@ -479,21 +508,24 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <!--<style>Normal</style>-->
+                    <font_name>PuHuiTi-L</font_name>
                 </violation_detail_desc>
 
                 <violation_detail_trend_line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>探针安全日志 - 违规详情日志趋势</main_title>
+                    <main_title>违规详情日志 - 违规详情日志趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <y_desc>(次)</y_desc>
@@ -501,12 +533,12 @@
 
                 <violation_detail_distrbution>
                     <type>pie_chart</type>
-                    <rect>[0, 0, 200, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>探针安全日志 - 违规详情日志分布展示</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 违规详情日志分布展示</main_title>
+                    <main_title_font_size>8</main_title_font_size>
                 </violation_detail_distrbution>
 
                 <violation_detail_distrbution_sensor_group_top_desc>
@@ -522,11 +554,11 @@
                 <violation_detail_distrbution_sensor_group_top_SENSOR_IO>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 外设操作日志探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 外设操作日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -537,11 +569,11 @@
                 <violation_detail_distrbution_sensor_group_top_SENSOR_RESOURCE_OVERLOAD>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 资源使用超负荷日志探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 资源使用超负荷日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -552,11 +584,11 @@
                 <violation_detail_distrbution_sensor_group_top_SENSOR_SERVICE_FULL_LOAD>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 服务程序满负荷运行日志探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 服务程序满负荷运行日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -567,11 +599,11 @@
                 <violation_detail_distrbution_sensor_group_top_SENSOR_TIME_ABNORMAL>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 客户端时间异常日志探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 客户端时间异常日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -592,11 +624,11 @@
                 <violation_detail_distrbution_sensor_top_SENSOR_IO>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 外设操作日志探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 外设操作日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -607,11 +639,11 @@
                 <violation_detail_distrbution_sensor_top_SENSOR_RESOURCE_OVERLOAD>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 系统资源使用超负荷日志探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 系统资源使用超负荷日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -622,11 +654,11 @@
                 <violation_detail_distrbution_sensor_top_SENSOR_SERVICE_FULL_LOAD>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 服务程序满负荷运行日志探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 服务程序满负荷运行日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -637,11 +669,11 @@
                 <violation_detail_distrbution_sensor_top_SENSOR_TIME_ABNORMAL>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 客户端时间异常日志探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>违规详情日志 - 客户端时间异常日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -669,21 +701,23 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </violation_others_desc>
 
                 <violation_others_trend_line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>探针安全日志 - 其他安全日志趋势</main_title>
+                    <main_title>其他安全日志 - 其他安全日志趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>(次)</x_desc>
@@ -691,12 +725,12 @@
 
                 <violation_others_distrbution>
                     <type>pie_chart</type>
-                    <rect>[0, 0, 200, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>探针安全日志 - 其他安全日志分布展示</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>其他安全日志 - 其他安全日志分布展示</main_title>
+                    <main_title_font_size>8</main_title_font_size>
                 </violation_others_distrbution>
 
 
@@ -713,11 +747,11 @@
                 <violation_others_sensor_group_top_SENSOR_AUTORUN>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 自启动项变更日志探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>其他安全日志 - 自启动项变更日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -728,11 +762,11 @@
                 <violation_others_sensor_group_top_SENSOR_NET_SHARE>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 网络共享日志探针组TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>其他安全日志 - 网络共享日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -754,11 +788,11 @@
                 <violation_others_sensor_top_SENSOR_AUTORUN>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>探针安全日志 - 自启动项变更日志探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>其他安全日志 - 自启动项变更日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -769,11 +803,11 @@
                 <violation_others_sensor_top_SENSOR_NET_SHARE>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <!--必填项-->
-                    <main_title>网络共享日志探针TOP10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title>其他安全日志 - 网络共享日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -782,13 +816,154 @@
                 </violation_others_sensor_top_SENSOR_NET_SHARE>
 
             </items>
-        </page2>
-        <page3>
+        </page3>
+        <page4>
+            <!--探针安全日志分析页分为三大块分别为 违规定义日志分析图， 违规详情日志， 其他安全日志-->
+            <rect>[54, 65, 522, 760]</rect>
+            <auto_position>True</auto_position>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
+            <align-type>middle</align-type>
+            <items>
+                <!--其他安全日志-->
+                <violation_others_heading>
+                    <!--其他安全日志-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <indent_flag>0</indent_flag>
+                </violation_others_heading>
+
+                <violation_others_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 522, 50]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
+                </violation_others_desc>
+
+                <violation_others_trend_line_chart>
+                    <!--必填项-->
+                    <type>line_chart</type>
+                    <rect>[0, 0, 522, 250]</rect>
+                    <data> </data>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <main_title>其他安全日志 - 其他安全日志趋势</main_title>
+                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
+                    <x_desc>(次)</x_desc>
+                </violation_others_trend_line_chart>
+
+                <violation_others_distrbution>
+                    <type>pie_chart</type>
+                    <rect>[0, 0, 522, 250]</rect>
+                    <data> </data>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <main_title>其他安全日志 - 其他安全日志分布展示</main_title>
+                    <main_title_font_size>8</main_title_font_size>
+                </violation_others_distrbution>
+
+
+                <violation_others_sensor_group_top_desc>
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <indent_flag>1</indent_flag>
+                </violation_others_sensor_group_top_desc>
+
+                <violation_others_sensor_group_top_SENSOR_AUTORUN>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 522, 200]</rect>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>其他安全日志 - 自启动项变更日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
+                    <invalid>True</invalid>
+                    <bar_style>horizontal</bar_style>
+                    <cat_label_all>True</cat_label_all>
+                    <cat_label_angle>0</cat_label_angle>
+                    <x_desc>(次)</x_desc>
+                </violation_others_sensor_group_top_SENSOR_AUTORUN>
+
+                <violation_others_sensor_group_top_SENSOR_NET_SHARE>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 522, 200]</rect>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>其他安全日志 - 网络共享日志探针组TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
+                    <invalid>True</invalid>
+                    <bar_style>horizontal</bar_style>
+                    <cat_label_all>True</cat_label_all>
+                    <cat_label_angle>0</cat_label_angle>
+                    <x_desc>(次)</x_desc>
+                </violation_others_sensor_group_top_SENSOR_NET_SHARE>
+
+
+                <violation_others_sensor_top_desc>
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <indent_flag>1</indent_flag>
+                </violation_others_sensor_top_desc>
+
+                <violation_others_sensor_top_SENSOR_AUTORUN>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 522, 200]</rect>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>其他安全日志 - 自启动项变更日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
+                    <invalid>True</invalid>
+                    <bar_style>horizontal</bar_style>
+                    <cat_label_all>True</cat_label_all>
+                    <cat_label_angle>0</cat_label_angle>
+                    <x_desc>(次)</x_desc>
+                </violation_others_sensor_top_SENSOR_AUTORUN>
+
+                <violation_others_sensor_top_SENSOR_NET_SHARE>
+                    <!--必填项-->
+                    <type>bar_chart</type>
+                    <rect>[0, 0, 522, 200]</rect>
+                    <data> </data>
+                    <!--必填项-->
+                    <main_title>其他安全日志 - 网络共享日志探针TOP10</main_title>
+                    <main_title_font_size>9</main_title_font_size>
+                    <invalid>True</invalid>
+                    <bar_style>horizontal</bar_style>
+                    <cat_label_all>True</cat_label_all>
+                    <cat_label_angle>0</cat_label_angle>
+                    <x_desc>(次)</x_desc>
+                </violation_others_sensor_top_SENSOR_NET_SHARE>
+
+            </items>
+        </page4>
+        <page5>
              <!--探针主机网络管控页分为三大块分别为 访问管控策略日志 流量管控日志 平均流量统计-->
-             <rect>[90, 80, 450, 731]</rect>
+             <rect>[54, 65, 522, 760]</rect>
              <auto_position>True</auto_position>
-             <x-padding>10</x-padding>
-             <y-padding>10</y-padding>
+             <x-padding>0</x-padding>
+             <y-padding>42</y-padding>
              <align-type>middle</align-type>
              <items>
                  <network_violation_heading>
@@ -807,17 +982,19 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </network_violation_desc>
 
                 <network_violation_trend_line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <bar_style>vertical</bar_style>
                     <data> </data>
                     <!--必填项-->
@@ -829,11 +1006,11 @@
 
                  <network_violation_sensor_group_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略日志 - 访问管控策略违规探针组Top10</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <bar_style>horizontal</bar_style>
                      <cat_label_all>True</cat_label_all>
@@ -843,11 +1020,11 @@
 
                  <network_violation_sensor_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略日志 - 访问管控策略违规探针Top10</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <bar_style>horizontal</bar_style>
                      <cat_label_all>True</cat_label_all>
@@ -857,11 +1034,11 @@
 
                  <network_violation_dest_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略日志 - 访问管控策略违规目的Top10</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <bar_style>horizontal</bar_style>
                      <cat_label_all>True</cat_label_all>
@@ -871,18 +1048,27 @@
 
                  <network_violation_rule_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <data> </data>
                      <!--必填项-->
                      <main_title>访问管控策略日志 - 访问管控策略违规规则Top10</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <bar_style>horizontal</bar_style>
                      <cat_label_all>True</cat_label_all>
                      <cat_label_angle>0</cat_label_angle>
                      <x_desc>(次)</x_desc>
                  </network_violation_rule_top10>
-
+             </items>
+        </page5>
+        <page6>
+             <!--探针主机网络管控页分为三大块分别为 访问管控策略日志 流量管控日志 平均流量统计-->
+             <rect>[54, 65, 522, 760]</rect>
+             <auto_position>True</auto_position>
+             <x-padding>0</x-padding>
+             <y-padding>42</y-padding>
+             <align-type>middle</align-type>
+             <items>
                  <!--流量管控策略日志-->
 
                  <netflow_violation_heading>
@@ -901,17 +1087,19 @@
                       <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                       <!--必填项-->
                       <type>paragraph</type>
-                      <rect>[0, 0, 450, 0]</rect>
+                      <rect>[0, 0, 522, 50]</rect>
                       <content> </content>
                       <!--必填项-->
                       <invalid>True</invalid>
                       <indent_flag>1</indent_flag>
+                      <font_size>12</font_size>
+                      <font_name>PuHuiTi-L</font_name>
                  </netflow_violation_desc>
 
                  <netflow_violation_trend_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -923,11 +1111,11 @@
 
                   <netflow_violation_sensor_group_top10>
                       <type>bar_chart</type>
-                      <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                       <data> </data>
                       <!--必填项-->
                       <main_title>流量管控策略日志 - 流量管控策略违规探针组Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -937,11 +1125,11 @@
 
                   <netflow_violation_sensor_top10>
                       <type>bar_chart</type>
-                      <rect>[0, 0, 500, 200]</rect>
+                      <rect>[0, 0, 522, 200]</rect>
                       <data> </data>
                       <!--必填项-->
                       <main_title>流量管控策略日志 - 流量管控策略违规探针Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -951,11 +1139,11 @@
 
                   <netflow_violation_dest_top10>
                       <type>bar_chart</type>
-                      <rect>[0, 0, 500, 200]</rect>
+                      <rect>[0, 0, 522, 200]</rect>
                       <data> </data>
                       <!--必填项-->
                       <main_title>流量管控策略日志 - 流量管控策略违规目的Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -965,11 +1153,11 @@
 
                   <netflow_violation_rule_top10>
                       <type>bar_chart</type>
-                      <rect>[0, 0, 500, 200]</rect>
+                      <rect>[0, 0, 522, 200]</rect>
                       <data> </data>
                       <!--必填项-->
                       <main_title>流量管控策略日志 - 流量管控策略违规规则Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -977,10 +1165,35 @@
                       <x_desc>(次)</x_desc>
                   </netflow_violation_rule_top10>
 
+
+             </items>
+        </page6>
+        <page7>
+             <!--探针主机网络管控页分为三大块分别为 访问管控策略日志 流量管控日志 平均流量统计-->
+             <rect>[54, 65, 522, 760]</rect>
+             <auto_position>True</auto_position>
+             <x-padding>0</x-padding>
+             <y-padding>42</y-padding>
+             <align-type>middle</align-type>
+             <items>
+
+                 <average_flow_desc>
+                      <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                      <!--必填项-->
+                      <type>paragraph</type>
+                      <rect>[0, 0, 522, 50]</rect>
+                      <content> </content>
+                      <!--必填项-->
+                      <invalid>True</invalid>
+                      <indent_flag>1</indent_flag>
+                      <font_size>12</font_size>
+                      <font_name>PuHuiTi-L</font_name>
+                 </average_flow_desc>
+
                   <sensor_netio_aver_upload_flow_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -993,7 +1206,7 @@
                  <sensor_netio_aver_download_flow_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -1004,13 +1217,13 @@
                  </sensor_netio_aver_download_flow_line_chart>
 
              </items>
-        </page3>
-        <page4>
+        </page7>
+        <page8>
              <!--端口开放管理日志分析图页-端口开放管理日志分析图-->
-             <rect>[90, 80, 450, 731]</rect>
+             <rect>[54, 65, 522, 760]</rect>
              <auto_position>True</auto_position>
-             <x-padding>10</x-padding>
-             <y-padding>10</y-padding>
+             <x-padding>0</x-padding>
+             <y-padding>42</y-padding>
              <align-type>middle</align-type>
              <items>
                  <open_port_heading>
@@ -1029,17 +1242,19 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </open_port_desc>
 
                  <open_port_deny_trend_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -1052,7 +1267,7 @@
                  <open_port_alarm_trend_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -1068,7 +1283,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>端口开放管理日志 - 阻止次数探针组Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1082,7 +1297,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>端口开放管理日志 - 预警数量探针组Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1096,7 +1311,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>端口开放管理日志 - 阻止次数探针Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1110,7 +1325,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>端口开放管理日志 - 预警数量探针Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1119,13 +1334,13 @@
                  </open_port_alarm_sensor_top10>
 
              </items>
-        </page4>
-        <page5>
+        </page8>
+        <page9>
              <!--应用安全基线日志分析图页-->
-             <rect>[90, 80, 450, 731]</rect>
+             <rect>[54, 65, 522, 760]</rect>
              <auto_position>True</auto_position>
-             <x-padding>10</x-padding>
-             <y-padding>10</y-padding>
+             <x-padding>0</x-padding>
+             <y-padding>42</y-padding>
              <align-type>middle</align-type>
              <items>
                  <trust_base_heading>
@@ -1144,17 +1359,19 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </trust_desc>
 
                  <trust_deny_trend_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -1167,7 +1384,7 @@
                  <trust_alarm_trend_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -1183,7 +1400,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>应用安全基线日志 - 阻止次数探针组Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1197,7 +1414,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>应用安全基线日志 - 预警数量探针组Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1211,7 +1428,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>应用安全基线日志 - 阻止次数探针Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1225,7 +1442,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>应用安全基线日志 - 预警数量探针Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1239,7 +1456,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>应用安全基线日志 - 阻止次数可信应用Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1253,7 +1470,7 @@
                       <data> </data>
                       <!--必填项-->
                       <main_title>应用安全基线日志 - 预警数量可信应用Top10</main_title>
-                      <main_title_font_size>10</main_title_font_size>
+                      <main_title_font_size>9</main_title_font_size>
                       <invalid>True</invalid>
                       <bar_style>horizontal</bar_style>
                       <cat_label_all>True</cat_label_all>
@@ -1262,14 +1479,14 @@
                  </trust_app_alarm_sensor_top10>
 
              </items>
-        </page5>
+        </page9>
 
-        <page6>
+        <page10>
              <!--关键文件分析日志分析图页-->
-             <rect>[90, 80, 450, 731]</rect>
+             <rect>[54, 65, 622, 760]</rect>
              <auto_position>True</auto_position>
-             <x-padding>10</x-padding>
-             <y-padding>10</y-padding>
+             <x-padding>0</x-padding>
+             <y-padding>42</y-padding>
              <align-type>middle</align-type>
              <items>
                  <key_file_base_heading>
@@ -1288,17 +1505,19 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </key_file_desc>
 
                  <key_file_trend_line_chart>
                      <!--必填项-->
                      <type>line_chart</type>
-                     <rect>[0, 0, 450, 200]</rect>
+                     <rect>[0, 0, 522, 250]</rect>
                      <bar_style>vertical</bar_style>
                      <data> </data>
                      <!--必填项-->
@@ -1310,7 +1529,7 @@
 
                  <file_name_top5>
                      <type>table</type>
-                     <rect>[0, 0, 450, 0]</rect>
+                     <rect>[0, 0, 522, 0]</rect>
                      <font_size>12</font_size>
                      <!--<content>文件名称Top5</content>-->
                      <invalid>True</invalid>
@@ -1323,7 +1542,7 @@
 
                  <file_content_key_heat_top10>
                      <type>table</type>
-                     <rect>[0, 0, 450, 0]</rect>
+                     <rect>[0, 0, 500, 0]</rect>
                      <position>middle</position>
                      <invalid>True</invalid>
                      <font_size>12</font_size>
@@ -1335,12 +1554,12 @@
 
                  <key_file_sensor_group_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>使用关键文件探针组Top5</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <cat_label_all>True</cat_label_all>
                      <cat_label_angle>0</cat_label_angle>
@@ -1348,12 +1567,12 @@
 
                  <key_file_sensor_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>使用关键文件探针组Top5</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <cat_label_all>True</cat_label_all>
                      <cat_label_angle>0</cat_label_angle>
@@ -1393,14 +1612,14 @@
                  <!--</trust_app_alarm_sensor_top10>-->
 
              </items>
-        </page6>
+        </page10>
 
-        <page7>
+        <page11>
             <!-- 文件出入日志 -->
-            <rect>[90, 80, 450, 731]</rect>
+            <rect>[54, 65, 522, 760]</rect>
             <auto_position>True</auto_position>
-            <x-padding>10</x-padding>
-            <y-padding>10</y-padding>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
             <align-type>middle</align-type>
             <items>
                 <file_operate_heading>
@@ -1418,11 +1637,13 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 50]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </file_operate_desc>
 
                 <file_operate_heading_USB>
@@ -1439,7 +1660,7 @@
                 <file_operate_num_line_chart_USB>
                     <!-- 文件操作 usb 统计数量 -->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1452,7 +1673,7 @@
                 <file_operate_flow_line_chart_USB>
                     <!--文件操作 usb 统计流量-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1464,10 +1685,10 @@
 
                 <file_operate_sensor_group_num_top_USB>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 -  USB出入数量探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1477,10 +1698,10 @@
 
                 <file_operate_sensor_group_flow_top_USB>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - USB出入流量探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1490,10 +1711,10 @@
 
                 <file_operate_sensor_num_top_USB>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - USB出入数量探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1503,10 +1724,10 @@
 
                 <file_operate_sensor_flow_top_USB>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - USB出入流量探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1530,7 +1751,7 @@
                 <file_operate_num_line_chart_CD>
                     <!-- 文件操作 CD 统计数量 -->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1543,7 +1764,7 @@
                 <file_operate_flow_line_chart_CD>
                     <!--文件操作 CD 统计流量-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1555,10 +1776,10 @@
 
                 <file_operate_sensor_group_num_top_CD>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 光盘出入数量探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1568,10 +1789,10 @@
 
                 <file_operate_sensor_group_flow_top_CD>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 光盘日志出入流量探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1581,10 +1802,10 @@
 
                 <file_operate_sensor_num_top_CD>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 光盘日志出入数量探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1595,10 +1816,10 @@
 
                 <file_operate_sensor_flow_top_CD>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 光盘日志出入流量探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1622,11 +1843,11 @@
                 <file_operate_num_line_chart_SHARE>
                     <!-- 文件操作 NET_SHARE 统计数量 -->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title> </main_title>
+                    <main_title>文件出入日志 - 共享服务器日志统计数量运行趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <x_desc>日期</x_desc>
@@ -1636,22 +1857,22 @@
                 <file_operate_flow_line_chart_SHARE>
                     <!--文件操作 NET_SHARE 统计流量-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
-                    <main_title>文件出入日志 - 共享服务器日志统计数量运行趋势 </main_title>
+                    <main_title>文件出入日志 - 共享服务器日志统计流量运行趋势 </main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
-                    <y_desc>(次)</y_desc>
+                    <y_desc>(MB)</y_desc>
                 </file_operate_flow_line_chart_SHARE>
 
                 <file_operate_sensor_group_num_top_SHARE>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 共享服务器出入数量探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1661,10 +1882,10 @@
 
                 <file_operate_sensor_group_flow_top_SHARE>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 共享服务器出入流量探侦组TOP10 </main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <bar_style>horizontal</bar_style>
                     <cat_label_all>True</cat_label_all>
@@ -1674,28 +1895,30 @@
 
                 <file_operate_sensor_num_top_SHARE>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <invalid>True</invalid>
                     <main_title>文件出入日志 - 共享服务器出入数量探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(次)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_num_top_SHARE>
 
                 <file_operate_sensor_flow_top_SHARE>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <invalid>True</invalid>
                     <main_title>文件出入日志 - 共享服务器出入流量探针Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(MB)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_flow_top_SHARE>
 
                 <!-- 打印统计-->
@@ -1714,7 +1937,7 @@
                 <file_operate_num_line_chart_PRINT>
                     <!-- 文件操作 PRINT 统计数量 -->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1727,28 +1950,30 @@
 
                 <file_operate_sensor_group_num_top_PRINT>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 打印数量探针组Top10</main_title>
                     <invalid>True</invalid>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(次)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_group_num_top_PRINT>
 
                 <file_operate_sensor_num_top_PRINT>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 打印数量探针Top10</main_title>
                     <invalid>True</invalid>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(次)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_num_top_PRINT>
 
                 <!--外部互传 统计-->
@@ -1766,7 +1991,7 @@
                 <file_operate_num_line_chart_EXTERNAL>
                     <!-- 文件操作 EXTERNAL 统计数量 -->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1779,78 +2004,82 @@
                 <file_operate_flow_line_chart_EXTERNAL>
                     <!--文件操作 EXTERNAL 统计流量-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 450, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <main_title>文件出入日志 - 外部互传日志统计流量运行趋势</main_title>
                     <main_title_font_size>10</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
-                    <y_desc>(次)</y_desc>
+                    <y_desc>(MB)</y_desc>
                 </file_operate_flow_line_chart_EXTERNAL>
 
                 <file_operate_sensor_group_num_top_EXTERNAL>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 外部互传数量探针组Top10</main_title>
                     <invalid>True</invalid>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(次)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_group_num_top_EXTERNAL>
 
                 <file_operate_sensor_group_flow_top_EXTERNAL>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 外部互传流量探针组Top10</main_title>
                     <invalid>True</invalid>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(MB)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_group_flow_top_EXTERNAL>
 
                 <file_operate_sensor_num_top_EXTERNAL>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 外部互传数量探针Top10</main_title>
                     <invalid>True</invalid>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(次)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_num_top_EXTERNAL>
 
                 <file_operate_sensor_flow_top_EXTERNAL>
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <data> </data>
                     <main_title>文件出入日志 - 外部互传流量探针Top10</main_title>
                     <invalid>True</invalid>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <main_title_font_color>Color(0,0,0,1)</main_title_font_color>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
                     <x_desc>(MB)</x_desc>
+                    <bar_style>horizontal</bar_style>
                 </file_operate_sensor_flow_top_EXTERNAL>
 
             </items>
 
-        </page7>
+        </page11>
 
-        <page8>
+        <page12>
             <!-- 运行日志 -->
-            <rect>[90, 80, 450, 731]</rect>
+            <rect>[54, 65, 522, 760]</rect>
             <auto_position>True</auto_position>
-            <x-padding>10</x-padding>
-            <y-padding>10</y-padding>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
             <align-type>middle</align-type>
 
             <items>
@@ -1869,17 +2098,19 @@
                     <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
                     <!--必填项-->
                     <type>paragraph</type>
-                    <rect>[0, 0, 450, 0]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <content> </content>
                     <!--必填项-->
                     <invalid>True</invalid>
                     <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
                 </running_desc>
 
                 <sensor_client_running_state_line_chart>
                     <!-- 至明卫历史状态对比分析 -->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 200]</rect>
                     <bar_style>vertical</bar_style>
                     <data> </data>
                     <!--必填项-->
@@ -1893,12 +2124,12 @@
 
                 <aver_online_sensor_group_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>至明卫日志 - 平均在线数量探针组Top10</main_title>
-                    <main_title_font_size>10</main_title_font_size>
+                    <main_title_font_size>9</main_title_font_size>
                     <invalid>True</invalid>
                     <cat_label_all>True</cat_label_all>
                     <cat_label_angle>0</cat_label_angle>
@@ -1907,22 +2138,58 @@
 
                 <aver_offline_sensor_group_top10>
                      <type>bar_chart</type>
-                     <rect>[0, 0, 500, 200]</rect>
+                     <rect>[0, 0, 522, 200]</rect>
                      <bar_style>horizontal</bar_style>
                      <data> </data>
                      <!--必填项-->
                      <main_title>至明卫日志 - 平均离线数量探针组Top10</main_title>
-                     <main_title_font_size>10</main_title_font_size>
+                     <main_title_font_size>9</main_title_font_size>
                      <invalid>True</invalid>
                      <cat_label_all>True</cat_label_all>
                      <cat_label_angle>0</cat_label_angle>
                      <x_desc>(个/天)</x_desc>
                  </aver_offline_sensor_group_top10>
 
+            </items>
+        </page12>
+
+        <page13>
+            <!-- 运行日志 -->
+            <rect>[54, 65, 522, 760]</rect>
+            <auto_position>True</auto_position>
+            <x-padding>0</x-padding>
+            <y-padding>42</y-padding>
+            <align-type>middle</align-type>
+
+            <items>
+                <running_heading>
+                    <!-- 运行日志 标题-->
+                    <type>paragraph</type>
+                    <style>Heading2</style>
+                    <rect>[0, 0, 450, 0]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <indent_flag>0</indent_flag>
+                </running_heading>
+
+                <policy_desc>
+                    <!--描述这个自定一报告，产生的是什么时间段内，哪些探针组或哪些探针产生的日志分析图，这里要描述清楚-->
+                    <!--必填项-->
+                    <type>paragraph</type>
+                    <rect>[0, 0, 522, 250]</rect>
+                    <content> </content>
+                    <!--必填项-->
+                    <invalid>True</invalid>
+                    <indent_flag>1</indent_flag>
+                    <font_size>12</font_size>
+                    <font_name>PuHuiTi-L</font_name>
+                </policy_desc>
+
                 <policy_change_log>
                     <!-- 文件操作 EXTERNAL 统计数量 -->
                     <type>line_chart</type>
-                    <rect>[0, 0, 500, 200]</rect>
+                    <rect>[0, 0, 522, 250]</rect>
                     <data> </data>
                     <!--必填项-->
                     <invalid>True</invalid>
@@ -1933,7 +2200,7 @@
                 </policy_change_log>
 
             </items>
-        </page8>
+        </page13>
 
     </pages>
 </pdf>
