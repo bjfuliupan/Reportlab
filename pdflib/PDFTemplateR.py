@@ -2307,6 +2307,19 @@ class PDFTemplateR(object):
 
         return _pages
 
+    def set_page_data(self, page_num, item_name, value):
+        """
+        设置page属性，如invaid、rect等
+        :param item_name: item名称
+        :param value: item值
+        :return:
+        """
+        _page_flag = "page%s" % page_num
+        if _page_flag not in self._pages:
+            raise ValueError("page number '%s' do not exist." % page_num)
+        self._pages[_page_flag][item_name] = value
+
+
     @staticmethod
     def _auto_calc_position(pages):
         """

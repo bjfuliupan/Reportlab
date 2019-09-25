@@ -743,6 +743,14 @@ class PDFReport(DummyOb):
         """
         self.report_tpl.set_item_data(page_idx, description_elname, content=description_intro)
 
+    def report_set_page_valid(self, page_idx):
+        """
+        将page的invalid属性设置为False，即使该页面 暂无数据也会展示出来
+        :param page_idx:
+        :return:
+        """
+        self.report_tpl.set_page_data(page_idx, item_name='invalid', value=False)
+
 
 class ReportSetTimeOfCover(PDFReport):
     # 设置封面时间 Title
@@ -773,7 +781,7 @@ class ReportSenHost(PDFReport):
     ]
 
     TAB_CONFIG_MAP = {
-        "1": {
+        "working": {
             "page_name": "log_classify",
             "rule_id": "00",
             "search_index": "log*",
@@ -797,6 +805,7 @@ class ReportSenHost(PDFReport):
     def __init__(self, report_template: PDFTemplateR):
         super(ReportSenHost, self).__init__(report_template)
         self.set_page_idx(self.PG_NUM)
+        self.report_set_page_valid(self.report_tpl_pg_num)
         self.items = {
             "pages": []
         }
@@ -890,7 +899,7 @@ class ReportSenSafe(PDFReport):
     ]
 
     TAB_CONFIG_MAP = {
-        "1": {
+        "define": {
             "page_idx": 2,
             "page_name": "violation_define",
             "rule_id": "00",
@@ -912,7 +921,7 @@ class ReportSenSafe(PDFReport):
                 "paragraph": "violation_triggered_desc",
             },
         },
-        "2": {
+        "abnormal": {
             "page_idx": 3,
             "page_name": "log_classify",
             "rule_id": "00",
@@ -933,7 +942,7 @@ class ReportSenSafe(PDFReport):
                 "paragraph": "violation_detail_desc",
             }
         },
-        "3": {
+        "security": {
             "page_idx": 4,
             "page_name": "log_classify",
             "rule_id": "00",
@@ -983,6 +992,7 @@ class ReportSenSafe(PDFReport):
         for page in self.items["pages"]:
 
             self.set_page_idx(page["page_idx"])
+            self.report_set_page_valid(self.report_tpl_pg_num)
 
             content = (
                 f"""
@@ -1093,7 +1103,7 @@ class ReportSenNetwork(PDFReport):
     """
     PG_NUM = 3
     TAB_CONFIG_MAP = {
-        "1": {
+        "network": {
             "paragraph": "访问网络管控日志包括：访问管控策略日志运行趋势、访问管控策略违规探针组Top10、访问管控策略违规探针Top10、访问管控策略违规目的Top10、访问管控策略违规规则Top10",
             "pg_idx": 5,
             "page_name": "network_violation",
@@ -1125,7 +1135,7 @@ class ReportSenNetwork(PDFReport):
                 "bar_sensor": 1,
             }
         },
-        "2": {
+        "flow": {
             "paragraph": "流量管控策略日志包括：流量管控策略日志运行趋势、流量管控策略违规探针组Top10、流量管控策略违规探针Top10、流量管控策略违规目的Top10、流量管控策略违规规则Top10",
             "pg_idx": 6,
             "page_name": "netflow_violation",
@@ -1157,7 +1167,7 @@ class ReportSenNetwork(PDFReport):
                 "bar_sensor": 1,
             }
         },
-        "3": {
+        "average": {
             "paragraph": "平均流量统计日志包括：平均上行流量统计趋势、平均下行流量统计趋势",
             "pg_idx": 7,
             "page_name": "sensor_netio",
@@ -1212,6 +1222,7 @@ class ReportSenNetwork(PDFReport):
         for page in self.items["pages"]:
 
             self.set_page_idx(page["pg_idx"])
+            self.report_set_page_valid(self.report_tpl_pg_num)
 
             content = (
                 f"""
@@ -1412,6 +1423,7 @@ class ReportSenTrust(PDFReport):
         for page in self.items["pages"]:
 
             self.set_page_idx(page["pg_idx"])
+            self.report_set_page_valid(self.report_tpl_pg_num)
 
             content = (
                 f"""
@@ -1526,6 +1538,7 @@ class ReportSenFile(PDFReport):
     def __init__(self, report_template: PDFTemplateR):
         super(ReportSenFile, self).__init__(report_template)
         self.set_page_idx(self.PG_NUM)
+        self.report_set_page_valid(self.report_tpl_pg_num)
         self.items = {
             "pages": []
         }
@@ -1939,6 +1952,7 @@ class ReportFileOperation(PDFReport):
     def __init__(self, report_template: PDFTemplateR):
         super(ReportFileOperation, self).__init__(report_template)
         self.set_page_idx(self.PG_NUM)
+        self.report_set_page_valid(self.report_tpl_pg_num)
         self.items = {
             "pages": []
         }
@@ -2047,7 +2061,7 @@ class ReportRunLog(PDFReport):
     """运行日志"""
     PG_NUM = 12
     TAB_CONFIG_MAP = {
-        "1": {
+        "working": {
             "paragraph": "至明卫日志-运行日志包含：至明卫历史状态对比分析图、平均在线数量探针组Top10、平均离线数量探针组Top10",
             "pg_idx": 12,
             "page_name": "sensor_client",
@@ -2074,7 +2088,7 @@ class ReportRunLog(PDFReport):
                 },
             }
         },
-        "2": {
+        "strategy": {
             "paragraph": "至明卫日志-策略变更日志包含：策略未更新探针数量趋势图",
             "pg_idx": 13,
             "page_name": "sensor_client",
@@ -2107,6 +2121,7 @@ class ReportRunLog(PDFReport):
     def draw_page(self):
         for page in self.items["pages"]:
             self.set_page_idx(page['pg_idx'])
+            self.report_set_page_valid(self.report_tpl_pg_num)
 
             for elname in page["elname"]:
 
@@ -2249,6 +2264,7 @@ class ReportVm(PDFReport):
     def __init__(self, report_template: PDFTemplateR):
         super(ReportVm, self).__init__(report_template)
         self.set_page_idx(self.PG_NUM)
+        self.report_set_page_valid(self.report_tpl_pg_num)
         self.items = {}
 
     def add_items(self, items: dict):
@@ -2276,8 +2292,6 @@ class ReportVm(PDFReport):
                     grouping=chart_info.get('is_group', False),
                     level=chart_info['level']
                 )
-
-                util.pretty_print(line_ret)
 
                 if line_ret.get('datas'):
                     self.report_draw_line(

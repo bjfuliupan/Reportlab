@@ -56,7 +56,8 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
-            <!--<invalid>False</invalid>-->
+            <invalid>True</invalid>
+
             <items>
                 <section_heading>
                     <!--段落标题-->
@@ -407,6 +408,8 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
+
             <items>
                 <violation_desc>
                     <!--探针安全日志-->
@@ -508,6 +511,8 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
+
             <items>
                 <!-- 违规详情分割线 -->
 
@@ -856,6 +861,8 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
+
             <items>
                 <!--其他安全日志-->
                 <violation_others_heading>
@@ -1001,6 +1008,8 @@
              <x-padding>0</x-padding>
              <y-padding>42</y-padding>
              <align-type>middle</align-type>
+             <invalid>True</invalid>
+
              <items>
                  <network_violation_heading>
                     <!--违规定义日志-->
@@ -1108,6 +1117,8 @@
              <x-padding>0</x-padding>
              <y-padding>42</y-padding>
              <align-type>middle</align-type>
+             <invalid>True</invalid>
+
              <items>
                  <!--流量管控策略日志-->
 
@@ -1219,6 +1230,8 @@
              <x-padding>0</x-padding>
              <y-padding>42</y-padding>
              <align-type>middle</align-type>
+             <invalid>True</invalid>
+
              <items>
 
                  <average_flow_desc>
@@ -1269,6 +1282,8 @@
              <x-padding>0</x-padding>
              <y-padding>42</y-padding>
              <align-type>middle</align-type>
+             <invalid>True</invalid>
+
              <items>
                  <open_port_heading>
                     <!--端口开放管理日志-->
@@ -1390,6 +1405,8 @@
              <x-padding>0</x-padding>
              <y-padding>42</y-padding>
              <align-type>middle</align-type>
+             <invalid>True</invalid>
+
              <items>
                  <trust_base_heading>
                     <!--应用安全基线日志-->
@@ -1542,6 +1559,8 @@
              <x-padding>0</x-padding>
              <y-padding>42</y-padding>
              <align-type>middle</align-type>
+             <invalid>True</invalid>
+
              <items>
                  <key_file_base_heading>
                     <!--关键文件分析日志-->
@@ -1677,6 +1696,8 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
+
             <items>
                 <file_operate_heading>
                     <!-- 文件出入日志 标题-->
@@ -2154,6 +2175,7 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
 
             <items>
                 <running_heading>
@@ -2236,6 +2258,7 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
 
             <items>
                 <running_heading>
@@ -2287,6 +2310,7 @@
             <x-padding>0</x-padding>
             <y-padding>42</y-padding>
             <align-type>middle</align-type>
+            <invalid>True</invalid>
 
             <items>
                 <vm_desc>
