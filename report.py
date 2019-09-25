@@ -16,6 +16,7 @@ from template_table3 import ReportSenNetwork
 from template_table3 import ReportSenSafe
 from template_table3 import ReportSenTrust
 from template_table3 import ReportSetTimeOfCover
+from template_table3 import ReportVm
 from utils import util
 from utils import constant
 
@@ -33,6 +34,7 @@ REPORT_PAGE_CLASS_MAPPING = {
     "文件出入日志": ReportFileOperation,
     "运行日志": ReportRunLog,
     "策略变更日志": ReportRunLog,
+    "容器和虚机日志": ReportVm,
 }
 
 
@@ -41,7 +43,7 @@ def validate(func):
     def wrapper(*args, **kwargs):
         for kw in ["report_name", "data_scope",
                    "sensor_ids", "sensor_id_group_mapping",
-                   "page_info", "send_mail", "report_format"]:
+                   "page_info", "report_format"]:
             assert kwargs.get(kw) is not None, f"Require {kw}!"
         return func(*args, **kwargs)
 

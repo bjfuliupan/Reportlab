@@ -17,8 +17,8 @@ class DummyOb(object):
     process original data class
     """
 
-    ruleng_url = "http://192.168.11.200:8002"
-    # ruleng_url = "http://192.168.10.222:8002"
+    # ruleng_url = "http://192.168.11.200:8002"
+    ruleng_url = "http://192.168.10.222:8002"
     # ruleng_url = "http://192.168.8.60:8002"
     post_time_out = 10000  # 秒
 
@@ -596,6 +596,8 @@ class PDFReport(DummyOb):
                                   "SHARE_OUT",
                                   "PRINT",
                                   "EXTERNAL",
+                                  "SENSOR_DOCKER_CONTROL",
+                                  "SENSOR_VM_CONTROL"
                                   ] \
                 else f"{elname_prefix}{log_format}"
 
@@ -1485,7 +1487,7 @@ class ReportSenFile(PDFReport):
     """
     端口开放管理日志生成
     """
-    PG_NUM = 6
+    PG_NUM = 10
     LIMIT_NUM = 5
     CONFIG = {
         "page_name": "critical_file",
@@ -2150,3 +2152,162 @@ class ReportRunLog(PDFReport):
 
                 else:
                     raise KeyError("chart type is not in ('line', 'bar')")
+
+
+class ReportVm(PDFReport):
+    """容器和虚机日志"""
+    PG_NUM = 14
+    TAB_CONFIG_MAP = {
+        "page_name": "docker_vm_safety",
+        "rule_id": "00",
+        "search_index": "datamap*",
+        "elname_name": {
+            "vm_desc": {
+                "typ": "paragraph",
+                "content": "容器和虚机安全日志包含：阻止趋势图、预警趋势图、阻止次数探针组Top10、告警数量探针组Top10、"
+                           "阻止次数探针Top10、告警数量探针Top10、阻止次数镜像Top10、预警数量镜像Top10"
+            },
+            "vm_container_deny_trend": {
+                "typ": "line",
+                "fmts": ["SENSOR_DOCKER_CONTROL", "SENSOR_VM_CONTROL"],
+                "level": "DENY",
+                "item_id": 0,
+            },
+            "vm_container_alarm_trend": {
+                "typ": "line",
+                "fmts": ["SENSOR_DOCKER_CONTROL", "SENSOR_VM_CONTROL"],
+                "level": "ALARM",
+                "item_id": 0,
+            },
+            "vm_deny_sensor_group_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_VM_CONTROL"],
+                "level": "DENY",
+                "item_id": 1,
+                "is_group": True,
+            },
+            "container_deny_sensor_group_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_DOCKER_CONTROL"],
+                "level": "ALARM",
+                "item_id": 1,
+                "is_group": True,
+            },
+            "vm_alarm_sensor_group_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_VM_CONTROL"],
+                "level": "ALARM",
+                "item_id": 1,
+                "is_group": True,
+            },
+            "container_alarm_sensor_group_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_DOCKER_CONTROL"],
+                "level": "ALARM",
+                "item_id": 1,
+                "is_group": True,
+            },
+            "vm_deny_sensor_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_VM_CONTROL"],
+                "level": "DENY",
+                "item_id": 1,
+            },
+            "container_deny_sensor_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_DOCKER_CONTROL"],
+                "level": "DENY",
+                "item_id": 1,
+            },
+            "vm_alarm_sensor_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_VM_CONTROL"],
+                "level": "ALARM",
+                "item_id": 1,
+            },
+            "container_alarm_sensor_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_DOCKER_CONTROL"],
+                "level": "ALARM",
+                "item_id": 1,
+            },
+            "vm_image_deny_sensor_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_VM_CONTROL"],
+                "level": "ALARM",
+                "item_id": 2,
+            },
+            "container_image_alarm_sensor_top10": {
+                "typ": "bar",
+                "fmts": ["SENSOR_DOCKER_CONTROL"],
+                "level": "ALARM",
+                "item_id": 2
+            }
+        }
+    }
+
+    def __init__(self, report_template: PDFTemplateR):
+        super(ReportVm, self).__init__(report_template)
+        self.set_page_idx(self.PG_NUM)
+        self.items = {}
+
+    def add_items(self, items: dict):
+        self.items = self.TAB_CONFIG_MAP
+
+    def draw_page(self):
+        for elname, chart_info in self.items['elname_name'].items():
+
+            if chart_info["typ"] == "paragraph":
+                print('num: ', self.report_tpl_pg_num)
+                self.report_draw_paragraph(
+                    self.report_tpl_pg_num,
+                    elname,
+                    chart_info["content"]
+                )
+
+            elif chart_info["typ"] == "line":
+                line_ret = self.making_data(
+                    chart_typ=chart_info['typ'],
+                    fmts=chart_info['fmts'],
+                    page_name=self.items['page_name'],
+                    item_id=chart_info['item_id'],
+                    rule_id=self.items['rule_id'],
+                    search_index=self.items['search_index'],
+                    grouping=chart_info.get('is_group', False),
+                    level=chart_info['level']
+                )
+
+                util.pretty_print(line_ret)
+
+                if line_ret.get('datas'):
+                    self.report_draw_line(
+                        self.report_tpl_pg_num,
+                        elname,
+                        line_ret['datas'],
+                        line_ret['legend_names'],
+                        line_ret['category_names']
+                    )
+
+            elif chart_info['typ'] == 'bar':
+                bar_ret = self.making_data(
+                    chart_typ=chart_info['typ'],
+                    fmts=chart_info['fmts'],
+                    page_name=self.items['page_name'],
+                    item_id=chart_info['item_id'],
+                    rule_id=self.items['rule_id'],
+                    search_index=self.items['search_index'],
+                    grouping=chart_info.get('is_group', False),
+                    level=chart_info['level']
+                )
+
+                if bar_ret:
+                    self.report_draw_bar(
+                        self.report_tpl_pg_num,
+                        elname_prefix=elname,
+                        bar_infos=bar_ret
+                    )
+
+            else:
+                raise ValueError("chart type is not in (paragraph, line_chart, bar_chart)")
+
+

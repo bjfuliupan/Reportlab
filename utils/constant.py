@@ -70,6 +70,8 @@ class LogConstant:
         "EXTERNAL": "外部互传",
         "online": "在线",
         "offline": "离线",
+        "SENSOR_DOCKER_CONTROL": "容器安全运行日志",
+        "SENSOR_VM_CONTROL": "虚机安全运行日志",
     }
 
     CATAEGORY_TIME_FORMAT = "%Y-%m-%d"
