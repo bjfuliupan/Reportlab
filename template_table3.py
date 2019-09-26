@@ -183,9 +183,10 @@ class DummyOb(object):
 
         return ret
 
-    def cook_pie_data(self, payload: dict):
+    def cook_pie_data(self, payload: dict, max_len=10):
         """通过payload及时间参数，获取ES日志，并清洗,返回饼图日志类别、日志数量
         :param payload:
+        :param max_len:
         :return:
         """
         payload_log_format = payload["data_scope"]["FORMAT.raw"]
@@ -221,6 +222,12 @@ class DummyOb(object):
             pie_data[_]
             for _ in payload_log_format
         ]
+
+        # 避免数据过多造成 饼图 展示不清，默认展示10条数据，将第10条及之后的数据归类为 ‘其他’
+        if len(datas) >= max_len:
+            datas, category_names = zip(*sorted(zip(datas, category_names), reverse=True))
+            datas = datas[:9].append(sum(datas[9:]))
+            category_names = category_names[:9].append('其他')
 
         ret = {
             "datas": datas,
@@ -809,6 +816,7 @@ class ReportSenHost(PDFReport):
         self.items = {
             "pages": []
         }
+        self.ruleng_url = "http://192.168.8.60:8002"
 
     def add_items(self, items: dict):
         for tab in items["tab"]:
@@ -972,15 +980,16 @@ class ReportSenSafe(PDFReport):
         self.items = {
             "pages": []
         }
+        self.ruleng_url = "http://192.168.8.60:8002"
 
     def add_items(self, items):
 
         for tab in items["tab"]:
             tab_config = self.TAB_CONFIG_MAP[tab]
             # 违规详情日志、其他安全日志需要传入 log FORMAT
-            if tab == "2":
+            if tab == "abnormal":
                 tab_config["fmts"] = self.ALL_VIOLATION_DETAIL_FMTS
-            elif tab == "3":
+            elif tab == "security":
                 tab_config["fmts"] = self.ALL_VIOLATION_OTHER_FMTS
 
             self.items["pages"].append(tab_config)
@@ -1014,6 +1023,7 @@ class ReportSenSafe(PDFReport):
                 line_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
                                             item_id=page["item_id"]["line"],
                                             page_name=page["page_name"])
+
                 if line_ret:
                     self.report_draw_line(
                         self.report_tpl_pg_num,
@@ -1125,9 +1135,6 @@ class ReportSenNetwork(PDFReport):
                 "bar_rule": "network_violation_rule_top10",
                 "paragraph": "network_violation_desc"
             },
-            "description_elname": {
-                "line": "network_violation_desc",
-            },
             "opt1": {
                 "line_user": 0,
                 "line_sensor": 1,
@@ -1156,9 +1163,6 @@ class ReportSenNetwork(PDFReport):
                 "bar_dest": "netflow_violation_dest_top10",
                 "bar_rule": "netflow_violation_rule_top10",
                 "paragraph": "netflow_violation_desc"
-            },
-            "description_elname": {
-                "line": "netflow_violation_desc",
             },
             "opt1": {
                 "line_user": 0,
@@ -1193,13 +1197,14 @@ class ReportSenNetwork(PDFReport):
         self.items = {
             "pages": []
         }
+        self.ruleng_url = "http://192.168.8.60:8002"
 
     def add_items(self, items):
         for tab in items["tab"]:
             tab_config = self.TAB_CONFIG_MAP[tab]
 
             # 上下行流量
-            if tab == "3":
+            if tab == "average":
                 for typ in items["type"]:
                     # 上行流量
                     if typ == "1":
@@ -1218,7 +1223,6 @@ class ReportSenNetwork(PDFReport):
     def draw_page(self):
         """
         """
-        util.pretty_print(self.items)
         for page in self.items["pages"]:
 
             self.set_page_idx(page["pg_idx"])
@@ -1261,12 +1265,13 @@ class ReportSenNetwork(PDFReport):
 
     def draw_network_control_flow_chart(self, page):
         # 折线图
-        line_ret = self.making_data(chart_typ="line", fmts=page["fmts"],
+        line_ret = self.making_data(chart_typ="line",
                                     page_name=page["page_name"],
                                     item_id=page["item_id"]["line"],
                                     search_index=page["search_index"],
                                     opt1=page["opt1"]["line_sensor"],
                                     grouping=True)
+
         if all((line_ret.values())):
             desc = (
                 f"探针主机网络管控报告，包含：访问管控策略日志、流量管控日志、平均流量统计"
@@ -1277,10 +1282,8 @@ class ReportSenNetwork(PDFReport):
                                   page["elname"]["line"],
                                   line_ret['datas'],
                                   line_ret['legend_names'],
-                                  line_ret['category_names'],
-                                  has_description=True,
-                                  description_elname=page["description_elname"]["line"],
-                                  description_intro=desc)
+                                  line_ret['category_names']
+                                  )
         # 柱状图（探针组）
         sensor_group_bar_ret = self.making_data(chart_typ="bar",
                                                 fmts=page["fmts"],
@@ -1410,6 +1413,7 @@ class ReportSenTrust(PDFReport):
         self.items = {
             "pages": []
         }
+        self.ruleng_url = "http://192.168.8.60:8002"
 
     def add_items(self, items: dict):
         if not items.get("type"):
@@ -1542,6 +1546,7 @@ class ReportSenFile(PDFReport):
         self.items = {
             "pages": []
         }
+        self.ruleng_url = "http://192.168.8.60:8002"
 
     def add_items(self, items):
         self.CONFIG["rule_uuid"]["line_rule_file"] = items["rule_uuid"]
@@ -1598,7 +1603,6 @@ class ReportSenFile(PDFReport):
                                                     without_format=True
                                                     )
 
-            util.pretty_print(table_key_heat_top10)
 
             if table_key_heat_top10:
                 self.report_draw_table(
@@ -2137,7 +2141,6 @@ class ReportRunLog(PDFReport):
                     search_index=page["search_index"], grouping=_grouping
                 )
 
-                util.pretty_print(chart_ret)
                 if elname == "sensor_client_running_state_line_chart":
                     # 该图数据为折线图格式，但展示时使用柱状图
                     page["elname"][elname]["chart_typ"] = "bar"
