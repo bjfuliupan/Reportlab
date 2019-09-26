@@ -77,7 +77,11 @@ class ReportLabBarChart(BarChart):
 
         if label_format is not None:
             self.barLabelFormat = label_format
-            self.barLabels.boxTarget = "mid"
+            if len(data) > 1 and style == "stacked":
+                self.barLabels.boxTarget = "mid"
+            else:
+                self.barLabels.boxTarget = "hi"
+                self.barLabels.nudge = 15
 
         min_value, max_value, step = self.get_limit_value(step_count)
 
