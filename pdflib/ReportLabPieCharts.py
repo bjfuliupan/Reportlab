@@ -128,8 +128,9 @@ class ReportLabPieChart(Pie):
     def _draw_legend(self, g):
         max_width = []
         cn_len = len(self.legendCategoryNames)
-        for i in range(len(self.legendCategoryNames[0])):
-            max_width.append(0)
+        if cn_len > 0:
+            for i in range(len(self.legendCategoryNames[0])):
+                max_width.append(0)
 
         for i in range(cn_len):
             for str_i in range(len(self.legendCategoryNames[i])):
