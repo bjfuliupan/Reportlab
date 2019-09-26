@@ -30,7 +30,7 @@ REPORT_PAGE_CLASS_MAPPING = {
     "平均流量统计": ReportSenNetwork,
     "端口开放管理日志": ReportSenTrust,
     "应用安全基线日志": ReportSenTrust,
-    "关键文件分析日志": ReportSenFile,
+    "文件内容分析日志": ReportSenFile,
     "文件出入日志": ReportFileOperation,
     "运行日志": ReportRunLog,
     "策略变更日志": ReportRunLog,
