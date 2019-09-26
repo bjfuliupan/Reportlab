@@ -236,7 +236,9 @@ class ReportLabBarChart(BarChart):
             title.fontName = self.titleMainFontName
             title.fillColor = self.titleMainFontColor
             title.textAnchor = 'start'
-            title.x = self.x - 20
+            # title.x = self.x - 20
+            # title.y = self.y + self.height + 20
+            title.x = 0
             title.y = self.y + self.height + 20
 
             g.add(title)

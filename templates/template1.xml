@@ -6,8 +6,8 @@
     <page_size>[630, 891]</page_size>
     <coordinate>left-top</coordinate>
     <header_text>我的第一个PDF测试文档</header_text>
-<!--    <show_border>True</show_border>-->
-    <background-image>images/cover-bg.png</background-image>
+    <show_border>True</show_border>
+<!--    <background-image>images/cover-bg.png</background-image>-->
     <pages>
         <page0>
             <rect>[0, 0, 630, 891]</rect>
@@ -229,7 +229,7 @@
                     <!--必填项-->
                     <page_num>2</page_num>
                     <type>pie_chart</type>
-                    <rect>[100, 460, 250, 200]</rect>
+                    <rect>[100, 460, 330, 200]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针组身体状况示意图</main_title>

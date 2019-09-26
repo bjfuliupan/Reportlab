@@ -6,7 +6,7 @@ from reportlab.lib.attrmap import AttrMap
 from reportlab.lib.attrmap import AttrMapValue
 from reportlab.lib.validators import isString, isNumberInRange, isColor, isBoolean, OneOf, isNumber, \
     isListOfStringsOrNone, isListOfStrings
-from reportlab.graphics.shapes import String, STATE_DEFAULTS, Rect
+from reportlab.graphics.shapes import String, Rect
 from pdflib.ReportLabLib import DefaultFontName, ALL_COLORS, ChartsLegend, get_string_width, TitleFontName
 # from reportlab.pdfbase.pdfmetrics import stringWidth
 
@@ -144,7 +144,8 @@ class ReportLabPieChart(Pie):
             legend.positionType = self.legendPositionType
             if self.legendPositionType != "null":
                 legend.backgroundRect = \
-                    Rect(self.x + 5, self.y - (i * int(self.legendFontSize * 1.5)), self.width, self.height)
+                    Rect(self.x, self.y - (i * int(self.legendFontSize * 1.5)),
+                         self.width + int(self.width * (64 / 200)), self.height)
 
             legend.adjustX = self.legendAdjustX
             legend.adjustY = self.legendAdjustY
@@ -196,7 +197,8 @@ class ReportLabPieChart(Pie):
             title.fontName = self.titleMainFontName
             title.fillColor = self.titleMainFontColor
             title.textAnchor = 'start'
-            title.x = self.x - 20
+            # title.x = self.x - 20
+            title.x = 0
             title.y = self.y + self.height + 20
 
             g.add(title)
