@@ -196,6 +196,7 @@ class ReportLabBarChart(BarChart):
             self.legendCategoryNames = temp_category_names
 
     def _draw_legend(self, g):
+        legend_count = 0
         for i in range(len(self.legendCategoryNames)):
             legend = ChartsLegend()
 
@@ -216,8 +217,9 @@ class ReportLabBarChart(BarChart):
 
             legend.colorNamePairs = []
             for j in range(len(self.legendCategoryNames[i])):
-                legend.colorNamePairs.append((ALL_COLORS[i * len(self.legendCategoryNames[i]) + j],
+                legend.colorNamePairs.append((ALL_COLORS[legend_count + j],
                                               self.legendCategoryNames[i][j]))
+            legend_count += len(self.legendCategoryNames[i])
 
             g.add(legend)
 

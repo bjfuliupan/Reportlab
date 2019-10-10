@@ -140,6 +140,7 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
         g = HorizontalLineChart.draw(self)
 
         if self.drawLegend:
+            legend_count = 0
             for i in range(len(self.legendCategoryNames)):
                 legend = ChartsLegend()
 
@@ -161,8 +162,9 @@ class LegendedHorizontalLineChart(HorizontalLineChart):
 
                 legend.colorNamePairs = []
                 for j in range(len(self.legendCategoryNames[i])):
-                    legend.colorNamePairs.append((ALL_COLORS[i * len(self.legendCategoryNames[i]) + j],
+                    legend.colorNamePairs.append((ALL_COLORS[legend_count + j],
                                                   self.legendCategoryNames[i][j]))
+                legend_count += len(self.legendCategoryNames[i])
 
                 g.add(legend)
 
