@@ -53,6 +53,10 @@ class ReportLabBarChart(BarChart):
             style = "parallel"
         self.categoryAxis.style = style
 
+        self.valueAxis.visibleGrid = 1
+        self.valueAxis.gridStrokeColor = colors.Color(0.5, 0.5, 0.5, 0.5)
+        self.valueAxis.gridStrokeWidth = 1
+
         self.x = x
         self.y = y
         self.height = height

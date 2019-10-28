@@ -195,6 +195,10 @@ class ReportLabHorizontalLineChart(LegendedHorizontalLineChart):
         self.categoryAxis = XCategoryAxisWithDesc(desc=x_desc)
         self.valueAxis = YValueAxisWithDesc(desc=y_desc)
 
+        self.valueAxis.visibleGrid = 1
+        self.valueAxis.gridStrokeColor = colors.Color(0.5, 0.5, 0.5, 0.5)
+        self.valueAxis.gridStrokeWidth = 1
+
         self.x = x
         self.y = y
         self.height = height
