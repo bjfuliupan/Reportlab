@@ -1,3 +1,7 @@
 .idea
 pdflib/__pycache__
 test_template.pdf
+lptest.pdf
+test.pdf
+utils/__pycache__
+__pycache__
