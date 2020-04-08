@@ -108,7 +108,7 @@
                 <line_chart>
                     <!--必填项-->
                     <type>line_chart</type>
-                    <rect>[0, 0, 200, 200]</rect>
+                    <rect>[0, 0, 450, 200]</rect>
                     <data> </data>
                     <!--必填项-->
                     <main_title>每月消费数量示意图</main_title>
@@ -120,14 +120,14 @@
                     <legend_position>top-right</legend_position>
                     <cat_label_all>False</cat_label_all>
                     <cat_label_angle>60</cat_label_angle>
-                    <margin-right>-10</margin-right>
-                    <margin-bottom>-10</margin-bottom>
+<!--                    <margin-right>-10</margin-right>-->
+<!--                    <margin-bottom>-10</margin-bottom>-->
                 </line_chart>
                 <bar_chart>
                     <!--必填项-->
                     <type>bar_chart</type>
-                    <rect>[0, 0, 200, 200]</rect>
-                    <bar_style>horizontal</bar_style>
+                    <rect>[0, 0, 450, 250]</rect>
+                    <bar_style>vertical</bar_style>
                     <data> </data>
                     <!--必填项-->
                     <main_title>探针组身体状况示意图</main_title>
@@ -139,6 +139,7 @@
                     <cat_label_angle>60</cat_label_angle>
                     <style>stacked</style>
                     <label_format>%s</label_format>
+                    <label_sum>True</label_sum>
                 </bar_chart>
                 <line_chart2>
                     <!--必填项-->

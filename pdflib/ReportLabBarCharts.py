@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import math
+
 from reportlab.lib import colors
 from reportlab.graphics.charts.barcharts import BarChart
 from reportlab.lib.attrmap import AttrMap
 from reportlab.lib.attrmap import AttrMapValue
 from reportlab.lib.validators import isBoolean, OneOf, isListOfStringsOrNone, isListOfStrings, isNumber, isString, \
     isNumberInRange, isColor
+from reportlab.lib.utils import isStr
 from reportlab.graphics.shapes import Rect
 from pdflib.ReportLabLib import ChartsLegend, ALL_COLORS, XCategoryAxisWithDesc, YCategoryAxisWithDesc, \
     YValueAxisWithDesc, XValueAxisWithDesc, DefaultFontName
@@ -37,7 +39,7 @@ class ReportLabBarChart(BarChart):
     )
 
     def __init__(self, x, y, width, height, cat_names, data, step_count=4, style="parallel", label_format=None,
-                 legend_names=None, legend_position="top-right", legend_adjust_x=0, legend_adjust_y=0,
+                 label_sum=False, legend_names=None, legend_position="top-right", legend_adjust_x=0, legend_adjust_y=0,
                  main_title="", main_title_font_name=None, main_title_font_size=None, main_title_font_color=None,
                  x_desc=None, y_desc=None, cat_label_angle=30, cat_label_all=False):
         BarChart.__init__(self)
@@ -79,10 +81,17 @@ class ReportLabBarChart(BarChart):
                         cat_names[i] = ""
         self.categoryAxis.categoryNames = cat_names
 
+        self._lable_sum = []
         if label_format is not None:
             self.barLabelFormat = label_format
             if len(data) > 1 and style == "stacked":
-                self.barLabels.boxTarget = "mid"
+                if label_sum:
+                    self._cal_col_sum()
+
+                    self.barLabels.boxTarget = "hi"
+                    self.barLabels.nudge = 15
+                else:
+                    self.barLabels.boxTarget = "mid"
             else:
                 self.barLabels.boxTarget = "hi"
                 self.barLabels.nudge = 15
@@ -116,6 +125,15 @@ class ReportLabBarChart(BarChart):
 
         self.x_labels_height = 0
         self.y_labels_height = 0
+
+    def _cal_col_sum(self):
+        for i in range(len(self.data[0])):
+            self._lable_sum.append(0)
+        for d in self.data:
+            idx = 0
+            for i in d:
+                self._lable_sum[idx] += i
+                idx += 1
 
     def get_limit_value(self, step_count):
         min_value = 0xffffffff
@@ -226,6 +244,46 @@ class ReportLabBarChart(BarChart):
             legend_count += len(self.legendCategoryNames[i])
 
             g.add(legend)
+
+    def _get_label_sum_text(self, row_no, col_no):
+        """
+        return formatted label text
+        :param row_no:
+        :param col_no:
+        :return:
+        """
+        len_row = len(self.data)
+        if row_no != len_row - 1:
+            return None
+
+        text = self._lable_sum[col_no]
+
+        label_fmt = self.barLabelFormat
+        if isinstance(label_fmt, (list, tuple)):
+            label_fmt = label_fmt[row_no]
+            if isinstance(label_fmt, (list, tuple)):
+                label_fmt = label_fmt[col_no]
+
+        if label_fmt is None:
+            label_text = None
+        elif label_fmt == 'values':
+            label_text = text
+        elif isStr(label_fmt):
+            label_text = label_fmt % text
+        elif hasattr(label_fmt, '__call__'):
+            label_text = label_fmt(text)
+        else:
+            msg = "Unknown formatter type %s, expected string or function" % label_fmt
+            raise Exception(msg)
+        return label_text
+
+    def _addBarLabel(self, g, row_no, col_no, x, y, width, height):
+        if self._lable_sum:
+            text = self._get_label_sum_text(row_no, col_no)
+        else:
+            text = self._getLabelText(row_no, col_no)
+        if text:
+            self._addLabel(text, self.barLabels[(row_no, col_no)], g, row_no, col_no, x, y, width, height)
 
     def draw(self):
         self.set_bar_color()

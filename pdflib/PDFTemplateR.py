@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.colors import Color
-from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings
+from reportlab.lib.validators import isListOfNumbers, isString, isNumber, isListOfStrings, isBoolean
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, TableStyle, Image
 # from reportlab.pdfbase.pdfmetrics import stringWidth
@@ -75,6 +75,7 @@ class PDFTemplateConstant(object):
     PDF_BAR_STYLE = "style"
     PDF_PARAGRAPH_STYLE = "style"
     PDF_BAR_LABEL_FORMAT = "label_format"
+    PDF_BAR_LABEL_SUM = "label_sum"
     PDF_TABLE_COLUMNS = "columns"
     PDF_TABLE_COL_WIDTHS = "col_widths"
     PDF_TABLE_TITLE = "title"
@@ -543,6 +544,12 @@ class PDFTemplateBarChart(PDFTemplateItem):
                 item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] = True
             elif item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] == "False":
                 item_content[PDFTemplateConstant.PDF_CHART_CAT_LABEL_ALL] = False
+        if PDFTemplateConstant.PDF_BAR_LABEL_SUM in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_BAR_LABEL_SUM], bool):
+            if item_content[PDFTemplateConstant.PDF_BAR_LABEL_SUM] == "True":
+                item_content[PDFTemplateConstant.PDF_BAR_LABEL_SUM] = True
+            elif item_content[PDFTemplateConstant.PDF_BAR_LABEL_SUM] == "False":
+                item_content[PDFTemplateConstant.PDF_BAR_LABEL_SUM] = False
         if PDFTemplateConstant.PDF_CHART_LEGEND_NAMES in item_content and \
                 isinstance(item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES], str):
             item_content[PDFTemplateConstant.PDF_CHART_LEGEND_NAMES] = \
@@ -598,6 +605,9 @@ class PDFTemplateBarChart(PDFTemplateItem):
         if PDFTemplateConstant.PDF_CHART_STEP_COUNT in item_content and \
                 not isinstance(item_content[PDFTemplateConstant.PDF_CHART_STEP_COUNT], int):
             raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_CHART_STEP_COUNT)
+        if PDFTemplateConstant.PDF_BAR_LABEL_SUM in item_content and \
+                not isinstance(item_content[PDFTemplateConstant.PDF_BAR_LABEL_SUM], bool):
+            raise ValueError("bar chart %s format error." % PDFTemplateConstant.PDF_BAR_LABEL_SUM)
 
     @staticmethod
     def _draw_bar_chart(format_json):
@@ -627,6 +637,10 @@ class PDFTemplateBarChart(PDFTemplateItem):
             if PDFTemplateConstant.PDF_BAR_LABEL_FORMAT in format_json and \
                     isString(format_json[PDFTemplateConstant.PDF_BAR_LABEL_FORMAT]) is True:
                 label_format = format_json[PDFTemplateConstant.PDF_BAR_LABEL_FORMAT]
+            label_sum = False
+            if PDFTemplateConstant.PDF_BAR_LABEL_SUM in format_json and \
+                    isBoolean(format_json[PDFTemplateConstant.PDF_BAR_LABEL_SUM]) is True:
+                label_sum = format_json[PDFTemplateConstant.PDF_BAR_LABEL_SUM]
             step_count = 4
             if PDFTemplateConstant.PDF_CHART_STEP_COUNT in format_json and \
                     isNumber(format_json[PDFTemplateConstant.PDF_CHART_STEP_COUNT]) is True:
@@ -682,7 +696,7 @@ class PDFTemplateBarChart(PDFTemplateItem):
             if bar_style == "horizontal":
                 bar_chart = ReportLabHorizontalBarChart(
                     0, 0, width, height, cat_names, data, style=style,
-                    label_format=label_format, step_count=step_count,
+                    label_format=label_format, label_sum=label_sum, step_count=step_count,
                     legend_names=legend_names, legend_position=legend_position,
                     legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,
                     main_title=main_title, main_title_font_name=main_title_font_name,
@@ -692,7 +706,7 @@ class PDFTemplateBarChart(PDFTemplateItem):
             elif bar_style == "vertical":
                 bar_chart = ReportLabVerticalBarChart(
                     0, 0, width, height, cat_names, data, style=style,
-                    label_format=label_format, step_count=step_count,
+                    label_format=label_format, label_sum=label_sum, step_count=step_count,
                     legend_names=legend_names, legend_position=legend_position,
                     legend_adjust_x=legend_adjust_x, legend_adjust_y=legend_adjust_y,
                     main_title=main_title, main_title_font_name=main_title_font_name,

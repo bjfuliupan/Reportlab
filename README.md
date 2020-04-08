@@ -98,6 +98,7 @@ pdf:
                     cat_label_angle            category lable的显示倾斜度。取值：[0, 90]。默认为30
                     style                      bar的style。取值：parallel、stacked。默认为parallel
                     label_format               bar label的格式。如，%s表示显示每个bar的数值。默认不显示
+                    label_sum                  在stacked模式下，是否计算显示每列的和。取值：True、False。默认为False
                     margin-left                该item的左间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-right               该item的右间距。取值：整数。正数增加间距，负数缩小间距。默认为0
                     margin-top                 该item的上间距。取值：整数。正数增加间距，负数缩小间距。默认为0
