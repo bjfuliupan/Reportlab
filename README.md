@@ -1,5 +1,5 @@
 # Reportlab
-Reportlab
+模板化生成PDF文档。基于 Reportlab，使用前请先安装。
 
 ## 1 PDF模板结构
 ```
